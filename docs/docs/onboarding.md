@@ -6,7 +6,7 @@ This section contains some references and material that will assist users and in
 
 The definite guide for integrators remains the Airflow [documentation](https://airflow.apache.org/docs/) and [API reference](https://airflow.apache.org/docs/apache-airflow/stable/stable-rest-api-ref.html).
 
-Airflow is an open source project and the codebase is available uuder [Apache License Version 2.0](https://github.com/apache/airflow/blob/main/LICENSE) in the project's [GitHub code repository](https://github.com/apache/airflow).
+Airflow is an open source project and the codebase is available under [Apache License Version 2.0](https://github.com/apache/airflow/blob/main/LICENSE) in the project's [GitHub code repository](https://github.com/apache/airflow).
 
 Custom workflows applying for the DataGEMS use cases are available under [Apache License Version 2.0](license.md) in our [GitHub code repository](https://github.com/datagems-eosc/dg-data-workflow).
 

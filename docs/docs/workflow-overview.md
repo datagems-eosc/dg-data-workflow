@@ -8,7 +8,7 @@
 
 **TODO: Provide information**
 
-## Other Aspects of workflow execution
+## Aspects of workflow execution
 
 ### Retries
 
