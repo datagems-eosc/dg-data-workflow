@@ -5,6 +5,7 @@ logs/
 plugins/
 postgres-db-volume/
 .env/
+compose.yml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
