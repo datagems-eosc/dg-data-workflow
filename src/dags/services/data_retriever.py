@@ -1,11 +1,20 @@
 import ftplib
 import tempfile
-from contextlib import contextmanager, closing
+from contextlib import closing
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
-from utils.http_requests import http_get_raw
 
 from services.logger import Logger
+from utils.http_requests import http_get_raw
+
+
+@dataclass
+class RetrievedFile:
+    stream: Any
+    file_name: str
+    file_extension: str
 
 
 class DataRetriever:
@@ -21,9 +30,8 @@ class DataRetriever:
         self.access_token = access_token
         self.http_timeout = http_timeout
         self.logger = Logger()
-        # self._s3 = boto3.client("s3")
 
-    def retrieve_http(self, url: str):
+    def retrieve_http(self, url: str) -> RetrievedFile:
         """
         Stream a remote HTTP(S) file.
 
@@ -34,15 +42,15 @@ class DataRetriever:
         if self.access_token:
             headers["Authorization"] = f"Bearer {self.access_token}"
         response = http_get_raw(url, headers=headers)
-        return response
+        parsed = urlparse(url)
+        file_name = Path(parsed.path).name or "downloaded_file"
+        file_extension = Path(file_name).suffix.lstrip(".")
+        return RetrievedFile(closing(response), file_name, file_extension)
 
-    def retrieve_ftp(self, url: str):
+    def retrieve_ftp(self, url: str) -> RetrievedFile:
         """
         Stream a file from an FTP server using a temporary on-disk file.
         Avoids buffering entire content in memory.
-
-        Returns:
-            tempfile.SpooledTemporaryFile (file-like stream)
         """
         parsed = urlparse(url)
         if parsed.scheme != "ftp":
@@ -58,46 +66,34 @@ class DataRetriever:
             ftp.retrbinary(f"RETR {parsed.path}", temp_file.write)
 
         temp_file.seek(0)
-        return temp_file
+        file_name = Path(parsed.path).name or "ftp_file"
+        file_extension = Path(file_name).suffix.lstrip(".")
+        return RetrievedFile(closing(temp_file), file_name, file_extension)
 
-
-    def retrieve_file(self, path: str):
+    def retrieve_file(self, path: str) -> RetrievedFile:
         """
         Open a local file or S3 object and return a streaming handle.
-
-        - Local files use Python's open() in binary read mode.
-        - S3 objects return a boto3 StreamingBody.
-
-        Returns:
-            io.BufferedReader or botocore.response.StreamingBody
         """
-        # if path.startswith("s3://"):
-        #     parsed = urlparse(path)
-        #     bucket = parsed.netloc
-        #     key = parsed.path.lstrip("/")
-        #
-        #     obj = self._s3.get_object(Bucket=bucket, Key=key)
-        #     # obj["Body"] is a botocore.response.StreamingBody (streaming, chunked)
-        #     return obj["Body"]
-
-        # Local file
         file_path = Path(path)
         if not file_path.exists():
             raise FileNotFoundError(f"File not found: {path}")
-        return open(file_path, "rb")
+        stream = open(file_path, "rb")
+        file_name = file_path.name
+        file_extension = file_path.suffix.lstrip(".")
+        return RetrievedFile(closing(stream), file_name, file_extension)
 
-    def retrieve(self, kind: str, url_or_path: str):
+    def retrieve(self, kind: str, url_or_path: str) -> RetrievedFile | None:
         """
         Convenience wrapper that picks the right retriever.
         """
-        stream = None
+        result = None
         match kind.lower():
             case "http":
-                stream = self.retrieve_http(url_or_path)
+                result = self.retrieve_http(url_or_path)
             case "ftp":
-                stream = self.retrieve_ftp(url_or_path)
+                result = self.retrieve_ftp(url_or_path)
             case "file" | "remote":
-                stream = self.retrieve_file(url_or_path)
+                result = self.retrieve_file(url_or_path)
             case _:
                 raise ValueError(f"Unsupported dataLocation.kind: {kind}")
-        return closing(stream)
+        return result
