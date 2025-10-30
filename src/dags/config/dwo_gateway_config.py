@@ -1,7 +1,9 @@
-from utils.configurations import get as fetch
+from airflow.sdk import Variable
+
+from config.base_config import BaseConfig
 
 
-class GatewayConfig:
+class GatewayConfig(BaseConfig):
     class GatewayCoreConfig:
         class DatasetConfig:
             def __init__(self, data: dict):
@@ -14,11 +16,12 @@ class GatewayConfig:
             self.dataset = self.DatasetConfig(data.get("dataset"))
 
     def __init__(self):
-        self.login_client_id = fetch("dwo_aai_clientid")
-        self.login_client_password = fetch("dwo_aai_clientsecret")
-        aai_core = AAICoreConfig(fetch("aai", composite=True))
+        super().__init__("variables_dev.json")
+        self.login_client_id = Variable.get("dwo_aai_clientid")
+        self.login_client_password = Variable.get("dwo_aai_clientsecret")
+        aai_core = AAICoreConfig(self._configuration_file_data.get("aai"))
         self.login_url = aai_core.base_url
-        self.options = self.GatewayCoreConfig(fetch("gateway", composite=True))
+        self.options = self.GatewayCoreConfig(self._configuration_file_data.get("gateway"))
 
 
 class AAICoreConfig:
