@@ -76,13 +76,14 @@ def process_location(location, stream_service: DataRetriever, stage_service: Dat
                      config: DatasetOnboardingConfig) -> str | bool:
     kind: str = location["kind"]
     url = location["url"]
+    if kind.lower() == "file" or kind.lower() == "remote":
+        return True
     local_path = f"{config.local_staging_path}{kind}_{abs(hash(url))}.dat"
     try:
         with stream_service.retrieve(kind, url) as retrieved_file:
-            if kind.lower() != "remote":
-                full_path = build_file_path(config.local_staging_path, retrieved_file.file_name + str(uuid.uuid4()),
-                                            retrieved_file.file_extension)
-                stage_service.store(retrieved_file.stream, os.fspath(full_path))
+            full_path = build_file_path(config.local_staging_path, retrieved_file.file_name + str(uuid.uuid4()),
+                                        retrieved_file.file_extension)
+            stage_service.store(retrieved_file.stream, os.fspath(full_path))
         return local_path
     except Exception as e:
         log.error(e)

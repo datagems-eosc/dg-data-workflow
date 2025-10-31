@@ -1,10 +1,9 @@
 from airflow.sdk import Variable
 
 from config.aai_core_config import AAICoreConfig
-from config.base_config import BaseConfig
 
 
-class ProfilerConfig(BaseConfig):
+class ProfilerConfig:
     class ProfilerCoreConfig:
         class ProfilerConfig:
             def __init__(self, data: dict):
@@ -18,9 +17,8 @@ class ProfilerConfig(BaseConfig):
             self.profiler = self.ProfilerConfig(data.get("profiler"))
 
     def __init__(self):
-        super().__init__("variables_dev.json")
         self.login_client_id = Variable.get("dwo_aai_clientid")
         self.login_client_password = Variable.get("dwo_aai_clientsecret")
-        aai_core = AAICoreConfig(self._configuration_file_data.get("aai"))
+        aai_core = AAICoreConfig(Variable.get("aai", deserialize_json=True))
         self.login_url = aai_core.base_url
-        self.options = self.ProfilerCoreConfig(self._configuration_file_data.get("gateway"))
+        self.options = self.ProfilerCoreConfig(Variable.get("gateway", deserialize_json=True))
