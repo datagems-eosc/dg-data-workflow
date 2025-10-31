@@ -1,5 +1,6 @@
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any
 
 from airflow.exceptions import AirflowException
 from airflow.sdk import dag, task, get_current_context
@@ -17,7 +18,7 @@ from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, co
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
 def dataset_onboarding():
     @task()
-    def stage_dataset_files():
+    def stage_dataset_files() -> list[tuple[str, str]]:
         dag_context = get_current_context()
         log = Logger()
         config = DatasetOnboardingConfig()
@@ -25,12 +26,12 @@ def dataset_onboarding():
         stream_service = DataRetriever()
         stage_service = DataStagingService()
 
-        results = []
+        results: list[tuple[str, str]] = []
         failed_locations = []
 
         with ThreadPoolExecutor() as executor:
             future_to_location = {
-                executor.submit(process_location, loc, stream_service, stage_service, log, config): loc
+                executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service, log, config): loc
                 for loc in json.loads(dag_context["params"]["dataLocations"])
             }
 
@@ -54,21 +55,18 @@ def dataset_onboarding():
         return results
 
     @task()
-    def request_onboarding():
+    def request_onboarding(data_locations: list[tuple[str, str]]):
         dag_context = get_current_context()
         log = Logger()
         gateway_config = GatewayConfig()
         log.info("Request onboarding")
         access_token = DwoGatewayAuthService().get_token()
-        gateway_url, headers, payload = config_onboarding(access_token, dag_context, gateway_config)
+        gateway_url, headers, payload = config_onboarding(access_token, dag_context, gateway_config, data_locations)
 
         return http_post(url=gateway_url, data=payload,
                          headers=headers)
 
-    stage_dataset_files = stage_dataset_files()
-    request_onboarding = request_onboarding()
-
-    stage_dataset_files >> request_onboarding
+    _ = request_onboarding(stage_dataset_files())
 
 
 dataset_onboarding()

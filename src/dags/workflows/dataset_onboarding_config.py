@@ -48,7 +48,7 @@ DAG_PARAMS = {
 DAG_TAGS = ["DatasetOnboarding", ]
 
 
-def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConfig):
+def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConfig, data_locations: list[tuple[str, str]]):
     gateway_url: str = config.options.base_url + config.options.dataset.onboarding_mock
     payload = {
         "Id": dag_context["params"]["id"],
@@ -65,26 +65,27 @@ def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConf
         "FieldOfScience": dag_context["params"]["fields_of_science"],
         "Language": dag_context["params"]["languages"],
         "Country": dag_context["params"]["countries"],
-        "DatePublished": "2025-10-23"
+        "DatePublished": "2025-10-23",
+        "DataLocations": [{"kind": k, "url": u} for k, u in data_locations]
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return gateway_url, headers, payload
 
 
-def process_location(location, stream_service: DataRetriever, stage_service: DataStagingService, log: Logger,
-                     config: DatasetOnboardingConfig) -> str | bool:
+def process_location(guid: str, location, stream_service: DataRetriever, stage_service: DataStagingService, log: Logger,
+                     config: DatasetOnboardingConfig) -> tuple[str, str] | bool:
     kind: str = location["kind"]
-    url = location["url"]
+    url: str = location["url"]
     if kind.lower() == "file" or kind.lower() == "remote":
-        return True
-    local_path = f"{config.local_staging_path}{kind}_{abs(hash(url))}.dat"
+        return kind, url
     try:
         with stream_service.retrieve(kind, url) as retrieved_file:
-            full_path = build_file_path(config.local_staging_path, retrieved_file.file_name + str(uuid.uuid4()),
-                                        retrieved_file.file_extension)
-            stage_service.store(retrieved_file.stream, os.fspath(full_path))
-        return local_path
+            full_path = os.fspath(
+                build_file_path(config.local_staging_path, guid, retrieved_file.file_name + str(uuid.uuid4()),
+                                retrieved_file.file_extension))
+            stage_service.store(retrieved_file.stream, full_path)
+            return kind, full_path
     except Exception as e:
         log.error(e)
         return False

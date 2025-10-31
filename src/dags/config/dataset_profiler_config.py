@@ -19,6 +19,6 @@ class ProfilerConfig:
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")
         self.login_client_password = Variable.get("dwo_aai_clientsecret")
-        aai_core = AAICoreConfig(Variable.get("aai", deserialize_json=True))
+        aai_core = AAICoreConfig(Variable.get("aai"))
         self.login_url = aai_core.base_url
-        self.options = self.ProfilerCoreConfig(Variable.get("gateway", deserialize_json=True))
+        self.options = self.ProfilerCoreConfig(Variable.get("gateway"))
