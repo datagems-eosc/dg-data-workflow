@@ -44,7 +44,7 @@ def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConf
     gateway_url: str = config.options.base_url + config.options.dataset.onboarding_mock
     payload = {
         "Id": dag_context["params"]["id"],
-        "Code": dag_context["params"]["id"],
+        "Code": dag_context["params"]["code"],
         "Name": dag_context["params"]["name"],
         "Description": dag_context["params"]["description"],
         "Headline": dag_context["params"]["headline"],
@@ -57,7 +57,7 @@ def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConf
         "Size": dag_context["params"]["size"],
         "DataLocations": [{"kind": k, "url": u} for k, u in data_locations],
         "Version": dag_context["params"]["version"],
-        "MimeType": dag_context["params"]["license"],
+        "MimeType": dag_context["params"]["mime_type"],
         "DatePublished": dag_context["params"]["date_published"],
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
