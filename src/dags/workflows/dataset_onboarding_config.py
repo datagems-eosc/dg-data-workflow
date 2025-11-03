@@ -1,6 +1,7 @@
 import datetime
 import os
 import uuid
+from pathlib import Path
 from typing import Any
 
 from airflow.models.param import Param
@@ -75,9 +76,18 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
         return location
     try:
         with stream_service.retrieve(location) as retrieved_file:
+            base_name = Path(retrieved_file.file_name).stem
+            extension = retrieved_file.file_extension
+            unique_name = f"{base_name}.{uuid.uuid4()}"
             full_path = os.fspath(
-                build_file_path(config.local_staging_path, guid, retrieved_file.file_name + str(uuid.uuid4()),
-                                retrieved_file.file_extension))
+                build_file_path(
+                    config.local_staging_path,
+                    guid,
+                    unique_name,
+                    extension
+                )
+            )
+
             stage_service.store(retrieved_file.stream, full_path)
             return DataLocation(DataLocationKind.File, full_path)
     except Exception as e:
