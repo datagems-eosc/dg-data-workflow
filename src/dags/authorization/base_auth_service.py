@@ -1,6 +1,6 @@
 import time
 
-from services.logger import Logger
+from services.logging.logger import Logger
 
 
 class BaseAuthService:

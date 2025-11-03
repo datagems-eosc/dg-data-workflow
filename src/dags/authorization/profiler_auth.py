@@ -1,5 +1,5 @@
-from config.dataset_profiler_config import ProfilerConfig
-from utils.http_requests import http_post
+from configurations.dataset_profiler_config import ProfilerConfig
+from common.extensions.http_requests import http_post
 from .base_auth_service import BaseAuthService
 
 

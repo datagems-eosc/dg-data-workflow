@@ -1,5 +1,4 @@
 import json
-from enum import Enum
 from http.cookiejar import CookieJar
 from typing import Any, Iterable, Mapping, MutableMapping, Callable, TypeAlias, Protocol, TypeVar
 
@@ -8,12 +7,7 @@ import requests
 from requests import PreparedRequest, Response
 from requests.auth import AuthBase
 
-
-class HttpMethod(Enum):
-    POST = 1
-    GET = 2
-    DELETE = 3
-
+from common.enum.http_method import HttpMethod
 
 _KT = TypeVar("_KT")
 _VT = TypeVar("_VT")
@@ -47,6 +41,7 @@ HttpTimeout: TypeAlias = (float | tuple[float, float] | tuple[float, None] | Non
 HttpHooks: TypeAlias = (Mapping[str, Iterable[Callable[[Response], Any]] | Callable[[Response], Any]] | None)
 HttpCert: TypeAlias = (str | tuple[str, str] | None)
 
+
 def _sanitize_for_json(obj: Any) -> Any:
     """Recursively replace NaN/Infinity values with None."""
     if isinstance(obj, float):
@@ -64,6 +59,7 @@ def _safe_json_dumps(data: Any) -> str:
     """Safely serialize data to JSON, replacing invalid numbers."""
     sanitized = _sanitize_for_json(data)
     return json.dumps(sanitized, allow_nan=False)
+
 
 def http_request(method: HttpMethod, **kwargs):
     if "timeout" not in kwargs or kwargs["timeout"] is None:
@@ -87,6 +83,8 @@ def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpH
     response = http_request(HttpMethod.POST, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
     return response.json()
 
-def http_get_raw(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None):
+
+def http_get_raw(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,
+                 auth: HttpAuth = None):
     response = http_request(HttpMethod.GET, url=url, params=params, headers=headers, auth=auth, stream=True)
     return response.raw

@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 class BaseConfig:
-    _CONFIGURATION_DIR_PATH = "/opt/airflow/config/"
+    _CONFIGURATION_DIR_PATH = "/opt/airflow/configurations/"
     def __init__(self, file_name: str):
         file_path = Path(self._CONFIGURATION_DIR_PATH + file_name)
         if not file_path.exists():

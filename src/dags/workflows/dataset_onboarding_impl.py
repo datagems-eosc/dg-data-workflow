@@ -1,17 +1,16 @@
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any
 
 from airflow.exceptions import AirflowException
 from airflow.sdk import dag, task, get_current_context
 
-from config.dwo_gateway_config import GatewayConfig
-from config.workflows_dataset_onboarding_config import DatasetOnboardingConfig
-from services.data_retriever import DataRetriever
-from services.data_staging import DataStagingService
-from services.dwo_gateway_auth import DwoGatewayAuthService
-from services.logger import Logger
-from utils.http_requests import http_post
+from common.extensions.http_requests import http_post
+from configurations.dwo_gateway_config import GatewayConfig
+from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
+from authorization.dwo_gateway_auth import DwoGatewayAuthService
+from services.data_management.data_retriever import DataRetriever
+from services.data_management.data_staging import DataStagingService
+from services.logging.logger import Logger
 from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, config_onboarding, process_location
 
 
@@ -31,7 +30,8 @@ def dataset_onboarding():
 
         with ThreadPoolExecutor() as executor:
             future_to_location = {
-                executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service, log, config): loc
+                executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service, log,
+                                config): loc
                 for loc in json.loads(dag_context["params"]["dataLocations"])
             }
 

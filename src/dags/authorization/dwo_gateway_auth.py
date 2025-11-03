@@ -1,5 +1,5 @@
-from config.dwo_gateway_config import GatewayConfig
-from utils.http_requests import http_post
+from configurations.dwo_gateway_config import GatewayConfig
+from common.extensions.http_requests import http_post
 from .base_auth_service import BaseAuthService
 
 

@@ -5,12 +5,12 @@ import uuid
 from airflow.models.param import Param
 from airflow.sdk import Context
 
-from config.dwo_gateway_config import GatewayConfig
-from config.workflows_dataset_onboarding_config import DatasetOnboardingConfig
-from services.data_retriever import DataRetriever
-from services.data_staging import DataStagingService
-from services.logger import Logger
-from utils.file_extensions import build_file_path
+from common.extensions.file_extensions import build_file_path
+from configurations.dwo_gateway_config import GatewayConfig
+from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
+from services.data_management.data_retriever import DataRetriever
+from services.data_management.data_staging import DataStagingService
+from services.logging.logger import Logger
 
 DAG_ID = "DATASET_ONBOARDING"
 
@@ -66,18 +66,18 @@ def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConf
 
 
 def process_location(guid: str, location, stream_service: DataRetriever, stage_service: DataStagingService, log: Logger,
-                     config: DatasetOnboardingConfig) -> tuple[str, str] | bool:
+                     config: DatasetOnboardingConfig) -> tuple[int, str] | bool:
     kind: str = location["kind"]
     url: str = location["url"]
     if kind.lower() == "file" or kind.lower() == "remote":
-        return kind, url
+        return 0, url
     try:
         with stream_service.retrieve(kind, url) as retrieved_file:
             full_path = os.fspath(
                 build_file_path(config.local_staging_path, guid, retrieved_file.file_name + str(uuid.uuid4()),
                                 retrieved_file.file_extension))
             stage_service.store(retrieved_file.stream, full_path)
-            return kind, full_path
+            return 0, full_path
     except Exception as e:
         log.error(e)
         return False

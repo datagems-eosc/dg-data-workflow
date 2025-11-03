@@ -1,20 +1,11 @@
 import ftplib
 import tempfile
-from contextlib import closing
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 from urllib.parse import urlparse
 
-from services.logger import Logger
-from utils.http_requests import http_get_raw
-
-
-@dataclass
-class RetrievedFile:
-    stream: Any
-    file_name: str
-    file_extension: str
+from common.extensions.http_requests import http_get_raw
+from common.types.retrieved_file import RetrievedFile
+from services.logging.logger import Logger
 
 
 class DataRetriever:
@@ -23,7 +14,7 @@ class DataRetriever:
 
     - All methods return file-like *binary* streams.
     - No method buffers the full file in memory.
-    - Access token is injected externally (no auth handled here).
+    - Access token is injected externally (no authorization handled here).
     """
 
     def __init__(self, access_token: str | None = None, *, http_timeout: int = 60):
@@ -45,7 +36,7 @@ class DataRetriever:
         parsed = urlparse(url)
         file_name = Path(parsed.path).name or "downloaded_file"
         file_extension = Path(file_name).suffix.lstrip(".")
-        return RetrievedFile(closing(response), file_name, file_extension)
+        return RetrievedFile(response, file_name, file_extension)
 
     def retrieve_ftp(self, url: str) -> RetrievedFile:
         """
@@ -68,7 +59,7 @@ class DataRetriever:
         temp_file.seek(0)
         file_name = Path(parsed.path).name or "ftp_file"
         file_extension = Path(file_name).suffix.lstrip(".")
-        return RetrievedFile(closing(temp_file), file_name, file_extension)
+        return RetrievedFile(temp_file, file_name, file_extension)
 
     def retrieve_file(self, path: str) -> RetrievedFile:
         """
@@ -80,7 +71,7 @@ class DataRetriever:
         stream = open(file_path, "rb")
         file_name = file_path.name
         file_extension = file_path.suffix.lstrip(".")
-        return RetrievedFile(closing(stream), file_name, file_extension)
+        return RetrievedFile(stream, file_name, file_extension)
 
     def retrieve(self, kind: str, url_or_path: str) -> RetrievedFile | None:
         """

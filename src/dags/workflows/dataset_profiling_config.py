@@ -1,9 +1,7 @@
-from typing import Any
-
 from airflow.models.param import Param
 from airflow.sdk import Context
 
-from config.dataset_profiler_config import ProfilerConfig
+from configurations.dataset_profiler_config import ProfilerConfig
 
 DAG_ID = "DATASET_PROFILING"
 
@@ -27,10 +25,11 @@ DAG_PARAMS = {
 
 DAG_TAGS = ["DatasetProfiling", ]
 
+
 def config_profiling(auth_token: str, dag_context: Context, config: ProfilerConfig):
     profiler_url = config.options.base_url + config.options.profiler.trigger_profile + "/" + dag_context["params"]["id"]
     payload = {
-        
+
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}

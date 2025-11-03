@@ -1,6 +1,6 @@
 from airflow.sdk import Variable
 
-from config.aai_core_config import AAICoreConfig
+from configurations.aai_core_config import AAICoreConfig
 
 
 class GatewayConfig:

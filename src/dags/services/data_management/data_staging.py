@@ -1,12 +1,5 @@
 import os
 from io import IOBase
-from typing import BinaryIO
-from urllib.parse import urlparse
-
-import boto3
-
-from services.data_retriever import DataRetriever as DataDownloader
-from services.logger import Logger
 
 
 class DataStagingService:
