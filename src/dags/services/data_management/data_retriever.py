@@ -3,7 +3,9 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlparse
 
+from common.enum.data_location_kind import DataLocationKind
 from common.extensions.http_requests import http_get_raw
+from common.types.data_location import DataLocation
 from common.types.retrieved_file import RetrievedFile
 from services.logging.logger import Logger
 
@@ -73,18 +75,18 @@ class DataRetriever:
         file_extension = file_path.suffix.lstrip(".")
         return RetrievedFile(stream, file_name, file_extension)
 
-    def retrieve(self, kind: str, url_or_path: str) -> RetrievedFile | None:
+    def retrieve(self, data_location: DataLocation) -> RetrievedFile | None:
         """
         Convenience wrapper that picks the right retriever.
         """
         result = None
-        match kind.lower():
-            case "http":
-                result = self.retrieve_http(url_or_path)
-            case "ftp":
-                result = self.retrieve_ftp(url_or_path)
-            case "file" | "remote":
-                result = self.retrieve_file(url_or_path)
+        match data_location.kind:
+            case DataLocationKind.Http:
+                result = self.retrieve_http(data_location.url)
+            case DataLocationKind.Ftp:
+                result = self.retrieve_ftp(data_location.url)
+            case DataLocationKind.File | DataLocationKind.Remote:
+                result = self.retrieve_file(data_location.url)
             case _:
-                raise ValueError(f"Unsupported dataLocation.kind: {kind}")
+                raise ValueError(f"Unsupported dataLocation.kind: {data_location.kind}")
         return result
