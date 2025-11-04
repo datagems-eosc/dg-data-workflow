@@ -13,7 +13,7 @@ from configurations.workflows_dataset_onboarding_config import DatasetOnboarding
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
 from services.logging.logger import Logger
-from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, config_onboarding, process_location
+from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, request_onboarding_builder, process_location
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
@@ -64,7 +64,7 @@ def dataset_onboarding():
         gateway_config = GatewayConfig()
         log.info("Request onboarding")
         access_token = DwoGatewayAuthService().get_token()
-        gateway_url, headers, payload = config_onboarding(access_token, dag_context, gateway_config, data_locations)
+        gateway_url, headers, payload = request_onboarding_builder(access_token, dag_context, gateway_config, data_locations)
 
         return http_post(url=gateway_url, data=payload,
                          headers=headers)

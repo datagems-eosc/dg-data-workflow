@@ -42,8 +42,8 @@ DAG_PARAMS = {
 DAG_TAGS = ["DatasetOnboarding", ]
 
 
-def config_onboarding(auth_token: str, dag_context: Context, config: GatewayConfig,
-                      data_locations: list[DataLocation]) -> tuple[str, dict[str, str], dict[str | Any, Any]]:
+def request_onboarding_builder(auth_token: str, dag_context: Context, config: GatewayConfig,
+                               data_locations: list[DataLocation]) -> tuple[str, dict[str, str], dict[str | Any, Any]]:
     gateway_url: str = config.options.base_url + config.options.dataset.onboarding_mock
     payload = {
         "Id": dag_context["params"]["id"],
