@@ -1,5 +1,6 @@
 import json
 
+from airflow.exceptions import AirflowFailException
 from airflow.sdk import dag, task, get_current_context
 
 from authorization.dwo_gateway_auth import DwoGatewayAuthService
@@ -39,9 +40,13 @@ def dataset_profiling():
         url, headers = wait_for_completion_builder(access_token, dag_context, config, profile_id)
         status_response = http_get(url=url, headers=headers)
         profile_status = ProfileStatus(status_response)
-        log.info(status_response)
-        # TODO: ask for info for handling of additional enum values, since some may denote failed processing
-        return profile_status is ProfileStatus.HeavyProfileReady or profile_status is ProfileStatus.LightProfileReady
+        if profile_status is ProfileStatus.CLEANED_UP:
+            error_message = f"Profile {profile_id} is cleaned up"
+            log.error(error_message)
+            raise AirflowFailException(error_message)
+        else:
+            log.info(f"Profile {profile_id} status is {profile_status}")
+        return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
 
     @task()
     def fetch_profile(profile_id: str):
