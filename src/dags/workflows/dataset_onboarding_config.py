@@ -35,7 +35,7 @@ DAG_PARAMS = {
     "dataLocations": Param([], type="string"),
     "version": Param(type="string"),
     "mime_type": Param(type="string"),
-    "date_published": Param(datetime.date.today(), type="string", format="date"),
+    "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
 
 }
 
