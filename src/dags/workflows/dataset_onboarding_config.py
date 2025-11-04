@@ -4,8 +4,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from airflow.models.param import Param
-from airflow.sdk import Context
+from airflow.sdk import Context, Param
 
 from common.enum.data_location_kind import DataLocationKind
 from common.extensions.file_extensions import build_file_path
@@ -36,7 +35,7 @@ DAG_PARAMS = {
     "dataLocations": Param([], type="string"),
     "version": Param(type="string"),
     "mime_type": Param(type="string"),
-    "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+    "date_published": Param(datetime.date.today(), type="string", format="date"),
 
 }
 
