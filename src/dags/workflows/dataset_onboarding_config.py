@@ -18,7 +18,7 @@ from services.logging.logger import Logger
 DAG_ID = "DATASET_ONBOARDING"
 
 DAG_PARAMS = {
-    "id": Param(type="string", format="uuid"),
+    "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
     "code": Param(type="string"),
     "name": Param(type="string"),
     "description": Param(type="string"),
