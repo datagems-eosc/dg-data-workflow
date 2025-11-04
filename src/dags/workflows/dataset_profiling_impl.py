@@ -11,7 +11,8 @@ from configurations.dataset_profiler_config import ProfilerConfig
 from configurations.dwo_gateway_config import GatewayConfig
 from services.logging.logger import Logger
 from workflows.dataset_profiling_config import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
-    wait_for_completion_builder, fetch_profile_builder, update_data_management_builder
+    wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
+    WAIT_FOR_COMPLETION_POKE_INTERVAL
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
@@ -28,9 +29,10 @@ def dataset_profiling():
                                                                                                         config)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
+        log.info(f"Server responded with {trigger_response}")
         return trigger_response["job_id"]
 
-    @task.sensor(poke_interval=15, timeout=3600, mode="reschedule")
+    @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule")
     def wait_for_completion(profile_id: str):
         dag_context = get_current_context()
         log = Logger()
@@ -57,24 +59,26 @@ def dataset_profiling():
         access_token = DwoGatewayAuthService().get_token()
         url, headers = fetch_profile_builder(access_token, dag_context, config, profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
-        log.info(fetch_profile_response)
+        log.info(f"Server responded with {fetch_profile_response}")
         return json.dumps(fetch_profile_response)
 
     @task()
-    def update_data_management(profile_id: str, stringified_profile_data: str):
+    def update_data_management(stringified_profile_data: str):
         dag_context = get_current_context()
         log = Logger()
         log.info("Fetch ready profile")
         gateway_config = GatewayConfig()
         access_token = DwoGatewayAuthService().get_token()
-        url, headers, payload = update_data_management_builder(access_token, dag_context, gateway_config, profile_id,
+        url, headers, payload = update_data_management_builder(access_token, dag_context, gateway_config,
                                                                stringified_profile_data)
-        return http_post(url=url, headers=headers, data=payload)
+        response = http_post(url=url, headers=headers, data=payload)
+        log.info(f"Server responded with {response}")
+        return response
 
     fetched_id = trigger_profile()
     completed_procedure = wait_for_completion(fetched_id)
     fetched_profile = fetch_profile(fetched_id)
-    data_management_id = update_data_management(fetched_id, fetched_profile)
+    data_management_id = update_data_management(fetched_profile)
 
     fetched_id >> completed_procedure >> fetched_profile >> data_management_id
 

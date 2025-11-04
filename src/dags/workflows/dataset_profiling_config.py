@@ -27,6 +27,8 @@ DAG_PARAMS = {
 
 DAG_TAGS = ["DatasetProfiling", ]
 
+WAIT_FOR_COMPLETION_POKE_INTERVAL = ProfilerConfig().options.profiler.poke_interval
+
 
 def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig) -> tuple[
     str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
@@ -56,20 +58,26 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
     return profiler_url, headers, payload
 
 
-def wait_for_completion_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[Any, dict[str, str]]:
+def wait_for_completion_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> \
+        tuple[Any, dict[str, str]]:
     url = config.options.base_url + config.options.profiler.job_status.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
 
-def fetch_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str):
+
+def fetch_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[
+    Any, dict[str, str]]:
     url = config.options.base_url + config.options.profiler.get_profile.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
 
-def update_data_management_builder(auth_token: str, dag_context: Context, config: GatewayConfig, profile_id: str, stringified_profile_data: str):
-    url = config.options.base_url + config.options.dataset.profiling_mock.format(id=profile_id)
+
+def update_data_management_builder(auth_token: str, dag_context: Context, config: GatewayConfig,
+                                   stringified_profile_data: str) -> tuple[str, dict[str, str], str]:
+    url: str = config.options.base_url + config.options.dataset.profiling_mock.format(
+        id=dag_context["params"]["id"]) + "?f=Id"
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers, stringified_profile_data
