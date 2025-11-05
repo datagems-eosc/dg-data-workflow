@@ -9,6 +9,8 @@ from common.types.data_location import DataLocation
 from common.types.retrieved_file import RetrievedFile
 from services.logging.logger import Logger
 
+DEFAULT_FILE_NAME = "downloaded_file"
+MAX_FILE_NAME_LENGTH = 255
 
 class DataRetriever:
     """
@@ -36,7 +38,9 @@ class DataRetriever:
             headers["Authorization"] = f"Bearer {self.access_token}"
         response = http_get_raw(url, headers=headers)
         parsed = urlparse(url)
-        file_name = Path(parsed.path).name or "downloaded_file"
+        file_name = Path(parsed.path).name or DEFAULT_FILE_NAME
+        if len(file_name) > MAX_FILE_NAME_LENGTH:
+            file_name = DEFAULT_FILE_NAME
         file_extension = Path(file_name).suffix.lstrip(".")
         return RetrievedFile(response, file_name, file_extension)
 
