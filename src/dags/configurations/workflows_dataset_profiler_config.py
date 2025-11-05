@@ -29,3 +29,4 @@ class ProfilerConfig:
         aai_core = AAICoreConfig(Variable.get("aai", deserialize_json=True))
         self.login_url = aai_core.base_url
         self.options = self.ProfilerCoreConfig(Variable.get("dataset_profiler", deserialize_json=True))
+        self.dataset_path = Variable.get("dataset_path")

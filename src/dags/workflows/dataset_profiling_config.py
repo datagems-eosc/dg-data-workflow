@@ -3,8 +3,8 @@ from typing import Any
 
 from airflow.sdk import Context, Param
 
-from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from configurations.dwo_gateway_config import GatewayConfig
+from configurations.workflows_dataset_profiler_config import ProfilerConfig
 
 DAG_ID = "DATASET_PROFILING"
 DAG_PARAMS = {
@@ -30,7 +30,8 @@ DAG_DISPLAY_NAME = "Dataset Profiling"
 WAIT_FOR_COMPLETION_POKE_INTERVAL = ProfilerConfig().options.profiler.poke_interval
 
 
-def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig) -> tuple[
+def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, is_light_profile: bool) -> \
+tuple[
     str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
     profiler_url: str = config.options.base_url + config.options.profiler.trigger_profile
     payload = {
@@ -45,13 +46,13 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "keywords": dag_context["params"]["keywords"],
                 "fields_of_science": dag_context["params"]["fields_of_science"],
                 "languages": dag_context["params"]["languages"],
-                "country": dag_context["params"]["countries"][0],  # TODO: ask which prevails
+                "country": dag_context["params"]["countries"][0],
                 "date_published": dag_context["params"]["date_published"],
                 "cite_as": "foo",  # TODO: get it from backend
-                "uploaded_by": "ADMIN",  # TODO: ask if it's the airflow user or is given from backend
-                "dataset_file_path": "dataset/8930240b-a0e8-46e7-ace8-aab2b42fcc01/"  # TODO: can't it be many datasets?
+                "uploaded_by": "ADMIN",  # TODO: get it from backend
+                "dataset_file_path": config.dataset_path.format(id=dag_context["params"]["id"])
             },
-        "only_light_profile": False
+        "only_light_profile": is_light_profile
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}

@@ -27,14 +27,14 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
-    def trigger_profile():
+    def trigger_profile(is_light: bool):
         dag_context = get_current_context()
         log = Logger()
         config = profiler_config
         access_token = profiler_auth_service.get_token()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(access_token,
                                                                                                         dag_context,
-                                                                                                        config)
+                                                                                                        config, is_light)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
         log.info(f"Server responded with {trigger_response}")
@@ -86,12 +86,19 @@ def dataset_profiling():
         log.info(f"Server responded with {response}")
         return response
 
-    fetched_id = trigger_profile()
-    completed_procedure = wait_for_completion(fetched_id)
-    fetched_profile = fetch_profile(fetched_id)
-    data_management_id = update_data_management(fetched_profile)
+    light_fetched_id = trigger_profile(True)
+    heavy_fetched_id = trigger_profile(False)
 
-    fetched_id >> completed_procedure >> fetched_profile >> data_management_id
+    light_completed_procedure = wait_for_completion(light_fetched_id)
+    heavy_completed_procedure = wait_for_completion(heavy_fetched_id)
 
+    fetched_light_profile = fetch_profile(light_fetched_id)
+    fetched_heavy_profile = fetch_profile(heavy_fetched_id)
+
+    data_management_heavy_id = update_data_management(fetched_heavy_profile)
+    data_management_light_id = update_data_management(fetched_light_profile)
+
+    light_completed_procedure >> fetched_light_profile
+    heavy_completed_procedure >> fetched_heavy_profile
 
 dataset_profiling()
