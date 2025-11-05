@@ -14,10 +14,10 @@ from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from services.logging.logger import Logger
 from workflows.dataset_profiling_config import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
-    WAIT_FOR_COMPLETION_POKE_INTERVAL
+    WAIT_FOR_COMPLETION_POKE_INTERVAL, DAG_DISPLAY_NAME
 
 
-@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_profiling():
     profiler_auth_service = ProfilerAuthService()
     gateway_auth_service = DwoGatewayAuthService()

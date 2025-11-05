@@ -16,10 +16,10 @@ from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
 from services.logging.logger import Logger
 from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, request_onboarding_builder, \
-    process_location
+    process_location, DAG_DISPLAY_NAME
 
 
-@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     gateway_config = GatewayConfig()

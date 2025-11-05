@@ -16,7 +16,7 @@ from services.data_management.data_staging import DataStagingService
 from services.logging.logger import Logger
 
 DAG_ID = "DATASET_ONBOARDING"
-
+DAG_DISPLAY_NAME = "Dataset Onboarding"
 DAG_PARAMS = {
     "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
     "code": Param(type="string"),
