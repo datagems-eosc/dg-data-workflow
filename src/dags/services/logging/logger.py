@@ -1,6 +1,6 @@
 import logging
 
-from airflow.sdk import get_current_context
+from airflow.sdk import get_current_context, Context
 
 
 class Logger:
@@ -8,8 +8,11 @@ class Logger:
     Centralised logging service. Uses Python logging module to emit messages that will appear in the task logs.
     """
 
-    def __init__(self):
-        ctx = get_current_context()
+    def __init__(self, context: Context | None = None):
+        if context is None:
+            ctx = get_current_context()
+        else:
+            ctx = context
         self.ti = ctx["ti"]
         self.dag_id = self.ti.dag_id
         self.task_id = self.ti.task_id

@@ -6,6 +6,8 @@ from airflow.exceptions import AirflowException
 from airflow.sdk import dag, task, get_current_context
 
 from authorization.dwo_gateway_auth import DwoGatewayAuthService
+from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
+    on_retry_callback, on_failure_callback
 from common.extensions.http_requests import http_post
 from common.types.data_location import DataLocation
 from configurations.dwo_gateway_config import GatewayConfig
@@ -23,11 +25,12 @@ def dataset_onboarding():
     gateway_config = GatewayConfig()
     gateway_auth_service = DwoGatewayAuthService()
 
-    @task()
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback)
     def stage_dataset_files() -> list[dict[str, int | str | None]]:
         dag_context = get_current_context()
         log = Logger()
-        log.info("Stage Dataset File Task")
         stream_service = DataRetriever()
         stage_service = DataStagingService()
 
@@ -60,12 +63,13 @@ def dataset_onboarding():
             )
         return [res.to_dict() for res in results]
 
-    @task()
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback)
     def request_onboarding(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
         dag_context = get_current_context()
         log = Logger()
-        log.info("Request onboarding")
         access_token = gateway_auth_service.get_token()
         gateway_url, headers, payload = request_onboarding_builder(access_token, dag_context, gateway_config,
                                                                    data_locations)

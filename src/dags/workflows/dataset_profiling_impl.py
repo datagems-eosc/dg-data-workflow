@@ -6,6 +6,8 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.dwo_gateway_auth import DwoGatewayAuthService
 from authorization.profiler_auth import ProfilerAuthService
 from common.enum.profile_status import ProfileStatus
+from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
+    on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
@@ -22,11 +24,12 @@ def dataset_profiling():
     profiler_config = ProfilerConfig()
     gateway_config = GatewayConfig()
 
-    @task()
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback)
     def trigger_profile():
         dag_context = get_current_context()
         log = Logger()
-        log.info("Request to create profile")
         config = profiler_config
         access_token = profiler_auth_service.get_token()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(access_token,
@@ -37,11 +40,13 @@ def dataset_profiling():
         log.info(f"Server responded with {trigger_response}")
         return trigger_response["job_id"]
 
-    @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule")
+    @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
+                 on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+                 on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+                 on_skipped_callback=on_skipped_callback)
     def wait_for_completion(profile_id: str):
         dag_context = get_current_context()
         log = Logger()
-        log.info("Ask for profile status")
         config = profiler_config
         access_token = gateway_auth_service.get_token()
         url, headers = wait_for_completion_builder(access_token, dag_context, config, profile_id)
@@ -55,11 +60,12 @@ def dataset_profiling():
             log.info(f"Profile {profile_id} status is {profile_status}")
         return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
 
-    @task()
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback)
     def fetch_profile(profile_id: str):
         dag_context = get_current_context()
         log = Logger()
-        log.info("Fetch ready profile")
         config = profiler_config
         access_token = gateway_auth_service.get_token()
         url, headers = fetch_profile_builder(access_token, dag_context, config, profile_id)
@@ -67,11 +73,12 @@ def dataset_profiling():
         log.info(f"Server responded with {fetch_profile_response}")
         return json.dumps(fetch_profile_response)
 
-    @task()
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback)
     def update_data_management(stringified_profile_data: str):
         dag_context = get_current_context()
         log = Logger()
-        log.info("Fetch ready profile")
         access_token = gateway_auth_service.get_token()
         url, headers, payload = update_data_management_builder(access_token, dag_context, gateway_config,
                                                                stringified_profile_data)
