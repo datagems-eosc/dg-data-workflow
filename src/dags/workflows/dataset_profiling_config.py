@@ -3,7 +3,7 @@ from typing import Any
 
 from airflow.sdk import Context, Param
 
-from configurations.dataset_profiler_config import ProfilerConfig
+from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from configurations.dwo_gateway_config import GatewayConfig
 
 DAG_ID = "DATASET_PROFILING"

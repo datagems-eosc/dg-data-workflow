@@ -19,11 +19,14 @@ from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, re
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS)
 def dataset_onboarding():
+    dataset_onboarding_config = DatasetOnboardingConfig()
+    gateway_config = GatewayConfig()
+    gateway_auth_service = DwoGatewayAuthService()
+
     @task()
     def stage_dataset_files() -> list[dict[str, int | str | None]]:
         dag_context = get_current_context()
         log = Logger()
-        config = DatasetOnboardingConfig()
         log.info("Stage Dataset File Task")
         stream_service = DataRetriever()
         stage_service = DataStagingService()
@@ -34,7 +37,7 @@ def dataset_onboarding():
         with ThreadPoolExecutor() as executor:
             future_to_location = {
                 executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service, log,
-                                config): loc
+                                dataset_onboarding_config): loc
                 for loc in data_locations
             }
 
@@ -62,12 +65,10 @@ def dataset_onboarding():
         data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
         dag_context = get_current_context()
         log = Logger()
-        gateway_config = GatewayConfig()
         log.info("Request onboarding")
-        access_token = DwoGatewayAuthService().get_token()
+        access_token = gateway_auth_service.get_token()
         gateway_url, headers, payload = request_onboarding_builder(access_token, dag_context, gateway_config,
                                                                    data_locations)
-
         response = http_post(url=gateway_url, data=payload,
                              headers=headers)
         log.info(f"Server responded with {response}")

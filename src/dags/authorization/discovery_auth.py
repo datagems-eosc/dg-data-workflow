@@ -1,11 +1,11 @@
-from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from common.extensions.http_requests import http_post
+from configurations.cross_dataset_discovery_indexing_config import DatasetDiscoveryConfig
 from .base_auth_service import BaseAuthService
 
 
-class ProfilerAuthService(BaseAuthService):
+class DiscoveryAuthService(BaseAuthService):
     def __init__(self):
-        self.config = ProfilerConfig()
+        self.config = DatasetDiscoveryConfig()
         super().__init__(
             client_id=self.config.login_client_id,
             client_secret=self.config.login_client_password,

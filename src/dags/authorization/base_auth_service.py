@@ -5,7 +5,6 @@ from services.logging.logger import Logger
 
 class BaseAuthService:
     def __init__(self, client_id, client_secret, url, scope):
-        self.logger = Logger()
         self.client_id = client_id
         self.client_secret = client_secret
         self.url = url
