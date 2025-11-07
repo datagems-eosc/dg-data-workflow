@@ -24,6 +24,7 @@ DAG_PARAMS = {
     "languages": Param([], type="array"),
     "countries": Param([], type="array"),
     "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+    "dataset_file_path": Param("", type="string"),
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
@@ -34,7 +35,8 @@ WAIT_FOR_COMPLETION_POKE_INTERVAL = ProfilerConfig().options.profiler.poke_inter
 def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, is_light_profile: bool) -> \
         tuple[
             str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
-    profiler_url: str = config.options.base_url + config.options.profiler.trigger_profile
+    profiler_url: str = config.options.base_url + \
+                        config.options.profiler.trigger_profile
 
     payload = {
         "profile_specification":
@@ -52,7 +54,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%m-%d-%Y"),
                 "cite_as": "foo",  # TODO: get it from backend
                 "uploaded_by": "ADMIN",  # TODO: get it from backend
-                "dataset_file_path": "dataset/8930240b-a0e8-46e7-ace8-aab2b42fcc01/"# TODO: config.dataset_path.format(id=dag_context["params"]["id"])
+                "dataset_file_path": dag_context["params"]["dataset_file_path"],
             },
         "only_light_profile": is_light_profile
     }
@@ -63,7 +65,8 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
 
 def wait_for_completion_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> \
         tuple[Any, dict[str, str]]:
-    url = config.options.base_url + config.options.profiler.job_status.format(id=profile_id)
+    url = config.options.base_url + \
+          config.options.profiler.job_status.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
@@ -71,7 +74,8 @@ def wait_for_completion_builder(auth_token: str, dag_context: Context, config: P
 
 def fetch_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[
     Any, dict[str, str]]:
-    url = config.options.base_url + config.options.profiler.get_profile.format(id=profile_id)
+    url = config.options.base_url + \
+          config.options.profiler.get_profile.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
