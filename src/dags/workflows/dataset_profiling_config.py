@@ -4,6 +4,7 @@ from typing import Any
 from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
+from common.enum.connector_type import ConnectorType
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
 
@@ -55,6 +56,13 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "cite_as": "foo",  # TODO: get it from backend
                 "uploaded_by": "ADMIN",  # TODO: get it from backend
                 "dataset_file_path": dag_context["params"]["dataset_file_path"],
+                "data_connectors": [
+                    {
+                        "type": ConnectorType.RawDataPath.value,
+                        # TODO: keep track for when there is logic for getting a specific connector
+                        "dataset_id": dag_context["params"]["id"]
+                    }
+                ]
             },
         "only_light_profile": is_light_profile
     }
