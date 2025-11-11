@@ -6,6 +6,7 @@ import math
 import requests
 from requests import PreparedRequest, Response
 from requests.auth import AuthBase
+from urllib3 import HTTPResponse
 
 from common.enum.http_method import HttpMethod
 
@@ -61,7 +62,7 @@ def _safe_json_dumps(data: Any) -> str:
     return json.dumps(sanitized, allow_nan=False)
 
 
-def http_request(method: HttpMethod, **kwargs):
+def http_request(method: HttpMethod, **kwargs) -> Response:
     if "timeout" not in kwargs or kwargs["timeout"] is None:
         kwargs["timeout"] = (10, 1200)
     response = requests.request(method=method.name, **kwargs)
@@ -71,13 +72,14 @@ def http_request(method: HttpMethod, **kwargs):
     return response
 
 
-def http_get(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None):
+def http_get(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,
+             auth: HttpAuth = None) -> Any:
     response = http_request(HttpMethod.GET, url=url, params=params, headers=headers, auth=auth)
     return response.json()
 
 
 def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None,
-              data: HttpData = None, files: HttpFiles = None, ):
+              data: HttpData = None, files: HttpFiles = None, ) -> Any:
     if data is not None and headers.get('Content-Type') == 'application/json':
         data = _safe_json_dumps(data)
     response = http_request(HttpMethod.POST, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
@@ -85,6 +87,6 @@ def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpH
 
 
 def http_get_raw(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,
-                 auth: HttpAuth = None):
+                 auth: HttpAuth = None) -> HTTPResponse | Any:
     response = http_request(HttpMethod.GET, url=url, params=params, headers=headers, auth=auth, stream=True)
     return response.raw

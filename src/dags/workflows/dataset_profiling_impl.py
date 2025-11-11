@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from airflow.exceptions import AirflowFailException
 from airflow.sdk import dag, task, get_current_context
@@ -27,7 +28,7 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
-    def trigger_profile(is_light: bool):
+    def trigger_profile(is_light: bool) -> Any:
         dag_context = get_current_context()
         log = Logger()
         config = profiler_config
@@ -44,7 +45,7 @@ def dataset_profiling():
                  on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
                  on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
                  on_skipped_callback=on_skipped_callback)
-    def wait_for_completion(profile_id: str):
+    def wait_for_completion(profile_id: str) -> Any:
         dag_context = get_current_context()
         log = Logger()
         config = profiler_config
@@ -63,7 +64,7 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
-    def fetch_profile(profile_id: str):
+    def fetch_profile(profile_id: str) -> str:
         dag_context = get_current_context()
         log = Logger()
         config = profiler_config
@@ -76,7 +77,7 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
-    def update_data_management(stringified_profile_data: str):
+    def update_data_management(stringified_profile_data: str) -> Any:
         dag_context = get_current_context()
         log = Logger()
         access_token = gateway_auth_service.get_token()
