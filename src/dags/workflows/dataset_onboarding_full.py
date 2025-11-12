@@ -20,7 +20,7 @@ from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, process_lo
 from services.logging.logger import Logger
 
 
-@dag(DAG_ID + "_FUTURE", params=DAG_PARAMS, tags=[d + "_FUTURE" for d in DAG_TAGS],
+@dag(DAG_ID + "_FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],
      dag_display_name=DAG_DISPLAY_NAME + "_FUTURE")
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
