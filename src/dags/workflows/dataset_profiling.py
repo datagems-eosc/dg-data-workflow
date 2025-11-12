@@ -12,10 +12,10 @@ from common.extensions.callbacks import on_execute_callback, on_retry_callback, 
 from common.extensions.http_requests import http_post, http_get
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
-from services.logging.logger import Logger
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
     WAIT_FOR_COMPLETION_POKE_INTERVAL, DAG_DISPLAY_NAME
+from services.logging.logger import Logger
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
@@ -29,13 +29,11 @@ def dataset_profiling():
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
     def trigger_profile(is_light: bool) -> Any:
-        dag_context = get_current_context()
         log = Logger()
-        config = profiler_config
-        access_token = profiler_auth_service.get_token()
-        trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(access_token,
-                                                                                                        dag_context,
-                                                                                                        config, is_light)
+        trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
+            profiler_auth_service.get_token(),
+            get_current_context(),
+            profiler_config, is_light)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
         log.info(f"Server responded with {trigger_response}")
@@ -46,11 +44,9 @@ def dataset_profiling():
                  on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
                  on_skipped_callback=on_skipped_callback)
     def wait_for_completion(profile_id: str) -> Any:
-        dag_context = get_current_context()
         log = Logger()
-        config = profiler_config
-        access_token = gateway_auth_service.get_token()
-        url, headers = wait_for_completion_builder(access_token, dag_context, config, profile_id)
+        url, headers = wait_for_completion_builder(gateway_auth_service.get_token(), get_current_context(),
+                                                   profiler_config, profile_id)
         status_response = http_get(url=url, headers=headers)
         profile_status = ProfileStatus(status_response)
         if profile_status is ProfileStatus.CLEANED_UP:
@@ -65,11 +61,9 @@ def dataset_profiling():
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
     def fetch_profile(profile_id: str) -> str:
-        dag_context = get_current_context()
         log = Logger()
-        config = profiler_config
-        access_token = gateway_auth_service.get_token()
-        url, headers = fetch_profile_builder(access_token, dag_context, config, profile_id)
+        url, headers = fetch_profile_builder(gateway_auth_service.get_token(), get_current_context(), profiler_config,
+                                             profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
         log.info(f"Server responded with {fetch_profile_response}")
         return json.dumps(fetch_profile_response)
@@ -78,10 +72,9 @@ def dataset_profiling():
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback)
     def update_data_management(stringified_profile_data: str) -> Any:
-        dag_context = get_current_context()
         log = Logger()
-        access_token = gateway_auth_service.get_token()
-        url, headers, payload = update_data_management_builder(access_token, dag_context, gateway_config,
+        url, headers, payload = update_data_management_builder(gateway_auth_service.get_token(), get_current_context(),
+                                                               gateway_config,
                                                                stringified_profile_data)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
@@ -101,5 +94,6 @@ def dataset_profiling():
 
     light_completed_procedure >> fetched_light_profile
     heavy_completed_procedure >> fetched_heavy_profile
+
 
 dataset_profiling()

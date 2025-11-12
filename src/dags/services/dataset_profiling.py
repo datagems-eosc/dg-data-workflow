@@ -72,18 +72,18 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
 
 
 def wait_for_completion_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> \
-        tuple[Any, dict[str, str]]:
-    url = config.options.base_url + \
-          config.options.profiler.job_status.format(id=profile_id)
+        tuple[str, dict[str, str]]:
+    url: str = config.options.base_url + \
+               config.options.profiler.job_status.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
 
 
 def fetch_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[
-    Any, dict[str, str]]:
-    url = config.options.base_url + \
-          config.options.profiler.get_profile.format(id=profile_id)
+    str, dict[str, str]]:
+    url: str = config.options.base_url + \
+               config.options.profiler.get_profile.format(id=profile_id)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
