@@ -85,6 +85,13 @@ def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpH
     response = http_request(HttpMethod.POST, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
     return response.json()
 
+def http_put(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None,
+              data: HttpData = None, files: HttpFiles = None, ) -> Any:
+    if data is not None and headers.get('Content-Type') == 'application/json':
+        data = _safe_json_dumps(data)
+    response = http_request(HttpMethod.PUT, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
+    return response.json()
+
 
 def http_get_raw(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,
                  auth: HttpAuth = None) -> HTTPResponse | Any:

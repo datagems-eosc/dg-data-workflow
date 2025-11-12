@@ -14,9 +14,9 @@ from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
+from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, DAG_DISPLAY_NAME, process_location, \
+    request_onboarding_builder
 from services.logging.logger import Logger
-from workflows.dataset_onboarding_config import DAG_ID, DAG_TAGS, DAG_PARAMS, request_onboarding_builder, \
-    process_location, DAG_DISPLAY_NAME
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)

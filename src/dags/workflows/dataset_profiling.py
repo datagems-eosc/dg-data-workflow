@@ -13,7 +13,7 @@ from common.extensions.http_requests import http_post, http_get
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from services.logging.logger import Logger
-from workflows.dataset_profiling_config import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
+from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
     WAIT_FOR_COMPLETION_POKE_INTERVAL, DAG_DISPLAY_NAME
 
