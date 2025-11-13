@@ -111,7 +111,8 @@ def pass_index_files_builder(auth_token: str, dag_context: Context, config: Data
     return url, headers, payload
 
 
-def profile_cleanup_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str):
+def profile_cleanup_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[
+    str, dict[str, str], dict[str, str]]:
     url: str = config.options.base_url + config.options.profiler.cleanup
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
