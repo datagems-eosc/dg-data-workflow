@@ -129,6 +129,7 @@ def dataset_profiling():
     heavy_profile_cleanup_response = profile_cleanup(heavy_fetched_id)
 
     light_completed_procedure >> fetched_light_profile
+    data_management_light_id >> data_management_heavy_id >> heavy_profile_cleanup_response
     heavy_completed_procedure >> fetched_heavy_profile >> heavy_profile_cleanup_response
 
 
