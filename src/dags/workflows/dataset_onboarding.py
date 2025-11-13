@@ -10,16 +10,18 @@ from common.extensions.callbacks import on_execute_callback, on_success_callback
     on_retry_callback, on_failure_callback
 from common.extensions.http_requests import http_post
 from common.types.data_location import DataLocation
+from documentations.dataset_onboarding import DAG_DESCRIPTION, STAGE_DATASET_FILES_DOC, \
+    STAGE_DATASET_FILES_ID, REQUEST_ONBOARDING_ID, REQUEST_ONBOARDING_DOC, DAG_DISPLAY_NAME
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, DAG_DISPLAY_NAME, process_location, \
+from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, process_location, \
     request_onboarding_builder
 from services.logging.logger import Logger
 
 
-@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME, description=DAG_DESCRIPTION)
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     gateway_config = GatewayConfig()
@@ -27,7 +29,7 @@ def dataset_onboarding():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+          on_skipped_callback=on_skipped_callback, task_id=STAGE_DATASET_FILES_ID, doc_md=STAGE_DATASET_FILES_DOC)
     def stage_dataset_files() -> list[dict[str, int | str | None]]:
         dag_context = get_current_context()
         log = Logger()
@@ -65,7 +67,7 @@ def dataset_onboarding():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+          on_skipped_callback=on_skipped_callback, task_id=REQUEST_ONBOARDING_ID, doc_md=REQUEST_ONBOARDING_DOC)
     def request_onboarding(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
         dag_context = get_current_context()
@@ -78,7 +80,8 @@ def dataset_onboarding():
         log.info(f"Server responded with {response}")
         return response
 
-    _ = request_onboarding(stage_dataset_files())
+    stage_dataset_files_response = stage_dataset_files()
+    _ = request_onboarding(stage_dataset_files_response)
 
 
 dataset_onboarding()

@@ -12,16 +12,18 @@ from common.extensions.callbacks import on_execute_callback, on_success_callback
 from common.extensions.http_requests import http_post, http_put
 from common.types.data_location import DataLocation
 from configurations.data_model_management_config import DataModelManagementConfig
+from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
+    STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, process_location, DAG_DISPLAY_NAME, \
+from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, process_location, \
     register_dataset_builder, load_dataset_builder
 from services.logging.logger import Logger
 
 
 @dag(DAG_ID + "_FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],
-     dag_display_name=DAG_DISPLAY_NAME + "_FUTURE")
+     dag_display_name=DAG_DISPLAY_NAME)
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     dmm_config = DataModelManagementConfig()
@@ -29,7 +31,7 @@ def dataset_onboarding():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+          on_skipped_callback=on_skipped_callback, task_id=STAGE_DATASET_FILES_ID, doc_md=STAGE_DATASET_FILES_DOC)
     def stage_dataset_files() -> list[dict[str, int | str | None]]:
         dag_context = get_current_context()
         log = Logger()
@@ -67,7 +69,7 @@ def dataset_onboarding():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+          on_skipped_callback=on_skipped_callback, task_id=REGISTER_DATASET_ID, doc_md=REGISTER_DATASET_DOC)
     def register_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
         utc_now = datetime.now(timezone.utc)
@@ -80,7 +82,7 @@ def dataset_onboarding():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+          on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC)
     def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
         url, headers, payload = load_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,

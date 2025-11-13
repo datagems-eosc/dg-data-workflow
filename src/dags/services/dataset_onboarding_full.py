@@ -18,22 +18,32 @@ from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
 from services.logging.logger import Logger
 
-DAG_ID = "DATASET_ONBOARDING"
+DAG_ID = "DATASET_ONBOARDING_FUTURE"
+DAG_DISPLAY_NAME = "Dataset Onboarding Future"
 
-DAG_PARAMS = {"id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
-              "code": Param(type="string"), "name": Param(type="string"), "description": Param(type="string"),
-              "headline": Param(type="string"), "fields_of_science": Param([], type="array"),
-              "languages": Param([], type="array"), "keywords": Param([], type="array"),
-              "countries": Param([], type="array"), "publishedUrl": Param(type="string", format="uri"),
-              "doi": Param(type="string", format="uri"), "citeAs": Param("", type="string"),
-              "license": Param(type="string"), "size": Param(type="integer", minimum=0),
-              "dataLocations": Param([], type="string"), "version": Param(type="string"),
-              "mime_type": Param(type="string"),
-              "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+DAG_PARAMS = {
+    "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
+    "code": Param(type="string"),
+    "name": Param(type="string"),
+    "description": Param(type="string"),
+    "headline": Param(type="string"),
+    "fields_of_science": Param([], type="array"),
+    "languages": Param([], type="array"),
+    "keywords": Param([], type="array"),
+    "countries": Param([], type="array"),
+    "publishedUrl": Param(type="string", format="uri"),
+    "doi": Param(type="string", format="uri"),
+    "citeAs": Param("", type="string"),
+    "license": Param(type="string"),
+    "size": Param(type="integer", minimum=0),
+    "dataLocations": Param([], type="string"),
+    "version": Param(type="string"),
+    "mime_type": Param(type="string"),
+    "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+    "userId": Param(type="string"),
+}
 
-              }
-
-DAG_TAGS = ["DatasetOnboarding", ]
+DAG_TAGS = ["DatasetOnboardingFuture", ]
 
 
 def request_onboarding_builder(auth_token: str, dag_context: Context, config: GatewayConfig,
@@ -169,7 +179,8 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations) 
     })
     data_node = AnalyticalPatternNode(labels=["sc:Dataset"], properties={
         "@type": "sc:Dataset",
-        "archivedAt": data_locations[0].url,
+        "archivedAt": "s3://dataset_staging/38125a01-eca5-4ed3-b3ee-be782ecac739/BOOK1.21cb724648b64b51a86aef2887a5e06b.CSV",
+        # TODO: swap with data_locations[0].url
         "citeAs": "",
         "conformsTo": "",
         "country": dag_context["params"]["countries"][0],
