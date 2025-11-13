@@ -5,6 +5,7 @@ from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
 from common.enum.connector_type import ConnectorType
+from configurations.cross_dataset_discovery_indexing_config import DatasetDiscoveryConfig
 from configurations.dwo_gateway_config import GatewayConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
 
@@ -96,3 +97,25 @@ def update_data_management_builder(auth_token: str, dag_context: Context, config
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers, stringified_profile_data
+
+
+def pass_index_files_builder(auth_token: str, dag_context: Context, config: DatasetDiscoveryConfig,
+                             stringified_profile_data: str) -> tuple[str, dict[str, str], dict[str, str]]:
+    # TODO: this method should be implemented when the cross dataset discovery is
+    url: str = config.options.base_url + config.options.dataset.insert
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
+               "Connection": "keep-alive"}
+    payload = {
+        "data_placeholder": stringified_profile_data
+    }
+    return url, headers, payload
+
+
+def profile_cleanup_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str):
+    url: str = config.options.base_url + config.options.profiler.cleanup
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
+               "Connection": "keep-alive"}
+    payload = {
+        "profile_job_id": profile_id
+    }
+    return url, headers, payload

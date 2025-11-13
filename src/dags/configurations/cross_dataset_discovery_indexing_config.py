@@ -5,10 +5,15 @@ from configurations.aai_core_config import AAICoreConfig
 
 class DatasetDiscoveryConfig:
     class CrossDatasetDiscoveryIndexingCore:
+        class DatasetConfig:
+            def __init__(self, data: dict):
+                self.insert = data["insert"]
+                self.remove = data["remove"]
+
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
             self.scope = data.get("scope")
-            # TODO: add the class and mappings to the endpoints
+            self.dataset = self.DatasetConfig(data.get("dataset"))
 
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")

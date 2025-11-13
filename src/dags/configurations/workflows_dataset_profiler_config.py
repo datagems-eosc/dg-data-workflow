@@ -10,6 +10,7 @@ class ProfilerConfig:
                 self.trigger_profile = data["trigger_profile"]
                 self.job_status = data["job_status"]
                 self.get_profile = data["get_profile"]
+                self.cleanup = data["cleanup"]
                 self.poke_interval = data["poke_interval"]
 
         def __init__(self, data: dict):
