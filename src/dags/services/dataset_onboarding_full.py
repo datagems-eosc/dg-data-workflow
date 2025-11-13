@@ -66,6 +66,7 @@ def request_onboarding_builder(auth_token: str, dag_context: Context, config: Ga
         "Version": dag_context["params"]["version"],
         "MimeType": dag_context["params"]["mime_type"],
         "DatePublished": dag_context["params"]["date_published"],
+        "userId": Param(type="string"),
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
     return gateway_url, headers, payload
@@ -127,11 +128,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
     })
     user_node = AnalyticalPatternNode(labels=["User"],
                                       properties={
-                                          "City": "Verona",
-                                          "Country": "Italy",
-                                          "Email": "user1@example.com",
-                                          "Name": "user1",
-                                          "Preferences": ["preferredLanguage=it"]
+                                          "UserId": dag_context["params"]["userId"]
                                       })
     dataset_registering_node = AnalyticalPatternNode(labels=["Task"],
                                                      properties={
@@ -179,8 +176,7 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations) 
     })
     data_node = AnalyticalPatternNode(labels=["sc:Dataset"], properties={
         "@type": "sc:Dataset",
-        "archivedAt": "s3://dataset_staging/38125a01-eca5-4ed3-b3ee-be782ecac739/BOOK1.21cb724648b64b51a86aef2887a5e06b.CSV",
-        # TODO: swap with data_locations[0].url
+        "archivedAt": data_locations[0].url,
         "citeAs": "",
         "conformsTo": "",
         "country": dag_context["params"]["countries"][0],
@@ -197,11 +193,7 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations) 
     })
     user_node = AnalyticalPatternNode(labels=["User"],
                                       properties={
-                                          "City": "Verona",
-                                          "Country": "Italy",
-                                          "Email": "user1@example.com",
-                                          "Name": "user1",
-                                          "Preferences": ["preferredLanguage=it"]
+                                          "UserId": dag_context["params"]["userId"]
                                       })
     dataset_loading_node = AnalyticalPatternNode(labels=["Task"],
                                                  properties={

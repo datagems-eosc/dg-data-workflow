@@ -56,11 +56,9 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%m-%d-%Y"),
                 "cite_as": "foo",  # TODO: get it from backend
                 "uploaded_by": "ADMIN",  # TODO: get it from backend
-                "dataset_file_path": dag_context["params"]["dataset_file_path"],
                 "data_connectors": [
                     {
                         "type": ConnectorType.RawDataPath.value,
-                        # TODO: keep track for when there is logic for getting a specific connector
                         "dataset_id": dag_context["params"]["id"]
                     }
                 ]
