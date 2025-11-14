@@ -9,15 +9,16 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.data_model_management_auth import DataModelManagementAuthService
 from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
     on_retry_callback, on_failure_callback
+from common.extensions.file_extensions import process_location
 from common.extensions.http_requests import http_post, http_put
 from common.types.data_location import DataLocation
 from configurations.data_model_management_config import DataModelManagementConfig
+from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
     STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
-from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, process_location, \
+from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, \
     register_dataset_builder, load_dataset_builder
 from services.logging.logger import Logger
 
@@ -76,6 +77,7 @@ def dataset_onboarding():
         url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          utc_now)
+        log.warning(payload)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(response)
         return response

@@ -1,22 +1,14 @@
-import datetime
-import os
 import uuid
-from pathlib import Path
+from datetime import date
 from typing import Any
 
 from airflow.sdk import Context, Param
 
-from common.enum.data_location_kind import DataLocationKind
-from common.extensions.file_extensions import build_file_path
 from common.types.analytical_pattern_edge import AnalyticalPatternEdge
-from common.types.analytical_pattern_graph import AnalyticalPatternGraph
 from common.types.analytical_pattern_node import AnalyticalPatternNode
 from common.types.data_location import DataLocation
 from configurations.dwo_gateway_config import GatewayConfig
-from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
-from services.data_management.data_retriever import DataRetriever
-from services.data_management.data_staging import DataStagingService
-from services.logging.logger import Logger
+from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
 DAG_ID = "DATASET_ONBOARDING"
 
@@ -37,7 +29,7 @@ DAG_PARAMS = {
     "dataLocations": Param([], type="string"),
     "version": Param(type="string"),
     "mime_type": Param(type="string"),
-    "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+    "date_published": Param(f"{date.today()}", type="string", format="date"),
     "userId": Param(type="string")
 }
 
@@ -69,148 +61,64 @@ def request_onboarding_builder(auth_token: str, dag_context: Context, config: Ga
     return gateway_url, headers, payload
 
 
-def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
-                     stage_service: DataStagingService, log: Logger,
-                     config: DatasetOnboardingConfig) -> DataLocation | bool:
-    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote:
-        return location
-    try:
-        with stream_service.retrieve(location) as retrieved_file:
-            base_name = Path(retrieved_file.file_name).stem
-            extension = retrieved_file.file_extension
-            unique_name = f"{base_name}.{uuid.uuid4()}"
-            full_path = os.fspath(build_file_path(config.local_staging_path, guid, unique_name, extension))
-
-            stage_service.store(retrieved_file.stream, full_path)
-            return DataLocation(DataLocationKind.File, full_path)
-    except Exception as e:
-        log.error(e)
-        return False
-
-
 def register_dataset_builder(access_token, dag_context, dmm_config, data_locations, utc_now) -> tuple[
-    str, dict[str, str], dict[str, list[AnalyticalPatternEdge] | list[AnalyticalPatternNode]]]:
-    register_dataset_node = AnalyticalPatternNode(labels=["Analytical_Pattern"],
-                                                  properties={
-                                                      "Description": "Analytical Pattern to register a dataset",
-                                                      "Name": "Register Dataset AP",
-                                                      "Process": "register",
-                                                      "PublishedDate": "2025-06-30",
-                                                      "StartTime": "10:00:00"
-                                                  })
-    register_operator_node = AnalyticalPatternNode(labels=["DataModelManagement_Operator"], properties={
-        "Description": "An operator to register a dataset into DataGEMS",
-        "Name": "Register Operator",
-        "Parameters": {"command": "create"},
-        "PublishedDate": "2025-06-30",
-        "StartTime": "10:00:00",
-        "Step": 1
+    str, dict[str, str], dict[str, Any]]:
+    payload = AnalyticalPatternParser().gen_register_dataset({
+        "analytical_pattern_node_id": uuid.uuid4(),
+        "dmm_operator_node_id": uuid.uuid4(),
+        "published_date": utc_now.strftime("%d-%m-%Y"),
+        "start_time": utc_now.strftime("%H:%M:%S"),
+        "dataset_archived_at": data_locations[0].url,
+        "dataset_node_id": dag_context["params"]["id"],
+        "dataset_cite_as": "",  # TODO
+        "dataset_conforms_to": "",  # TODO
+        "dataset_country": dag_context["params"]["countries"][0],
+        "dataset_date_published": dag_context["params"]["date_published"],
+        "dataset_description": dag_context["params"]["description"],
+        "dataset_fields_of_science": dag_context["params"]["fields_of_science"],
+        "dataset_headline": dag_context["params"]["headline"],
+        "dataset_languages": dag_context["params"]["languages"],
+        "dataset_keywords": dag_context["params"]["keywords"],
+        "dataset_license": dag_context["params"]["license"],
+        "dataset_name": dag_context["params"]["name"],
+        "dataset_url": dag_context["params"]["publishedUrl"],
+        "dataset_version": dag_context["params"]["version"],
+        "user_node_id": uuid.uuid4(),
+        "UserId": dag_context["params"]["userId"],
+        "task_node_id": uuid.uuid4()
     })
-    data_node = AnalyticalPatternNode(labels=["sc:Dataset"], properties={
-        "@type": "sc:Dataset",
-        "archivedAt": data_locations[0].url,
-        "citeAs": "",
-        "conformsTo": "",
-        "country": dag_context["params"]["countries"][0],
-        "datePublished": dag_context["params"]["date_published"],
-        "description": dag_context["params"]["description"],
-        "fieldOfScience": dag_context["params"]["fields_of_science"],
-        "headline": dag_context["params"]["headline"],
-        "inLanguage": dag_context["params"]["languages"],
-        "keywords": dag_context["params"]["keywords"],
-        "license": dag_context["params"]["license"],
-        "name": dag_context["params"]["name"],
-        "url": dag_context["params"]["publishedUrl"],
-        "version": ""
-    })
-    user_node = AnalyticalPatternNode(labels=["User"],
-                                      properties={
-                                          "UserId": dag_context["params"]["userId"]
-                                      })
-    dataset_registering_node = AnalyticalPatternNode(labels=["Task"],
-                                                     properties={
-                                                         "Description": "Task to register a dataset",
-                                                         "Name": "Dataset Registering Task"
-                                                     })
-
-    consist_of_edge = AnalyticalPatternEdge.from_nodes(frm=register_dataset_node, to=register_operator_node,
-                                                       labels=["consist_of"])
-    input_edge = AnalyticalPatternEdge.from_nodes(frm=register_operator_node, to=data_node, labels=["input"])
-    intervene_edge = AnalyticalPatternEdge.from_nodes(frm=register_operator_node, to=user_node, labels=["intervene"])
-    request_edge = AnalyticalPatternEdge.from_nodes(frm=register_operator_node, to=dataset_registering_node,
-                                                    labels=["request"])
-    accomplished_edge = AnalyticalPatternEdge.from_nodes(frm=dataset_registering_node, to=register_dataset_node,
-                                                         labels=["is_accomplished"])
-
-    payload = AnalyticalPatternGraph(
-        nodes=[register_dataset_node, register_operator_node, data_node, user_node, dataset_registering_node],
-        edges=[consist_of_edge, input_edge, intervene_edge, request_edge, accomplished_edge]
-    ).to_dict()
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.register
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
     return url, headers, payload
 
 
-def load_dataset_builder(access_token, dag_context, dmm_config, data_locations) -> tuple[
+def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, utc_now) -> tuple[
     str, dict[str, str], dict[str, list[AnalyticalPatternEdge] | list[AnalyticalPatternNode]]]:
-    load_dataset_node = AnalyticalPatternNode(labels=["Analytical_Pattern"],
-                                              properties={
-                                                  "Description": "Analytical Pattern to load a dataset",
-                                                  "Name": "Load Dataset AP",
-                                                  "Process": "load",
-                                                  "PublishedDate": "2025-06-30",
-                                                  "StartTime": "10:00:00"
-                                              })
-    load_operator_node = AnalyticalPatternNode(labels=["DataModelManagement_Operator"], properties={
-        "Description": "An operator to load a dataset into s3/dataset",
-        "Name": "Load Operator",
-        "Parameters": {"command": "update"},
-        "PublishedDate": "2025-06-30",
-        "Software": {},
-        "StartTime": "10:00:00",
-        "Step": 1
+    payload = AnalyticalPatternParser().gen_load_dataset({
+        "analytical_pattern_node_id": uuid.uuid4(),
+        "dmm_operator_node_id": uuid.uuid4(),
+        "published_date": utc_now.strftime("%d-%m-%Y"),
+        "start_time": utc_now.strftime("%H:%M:%S"),
+        "dataset_archived_at": data_locations[0].url,
+        "dataset_node_id": dag_context["params"]["id"],
+        "dataset_cite_as": "",  # TODO
+        "dataset_conforms_to": "",  # TODO
+        "dataset_country": dag_context["params"]["countries"][0],
+        "dataset_date_published": dag_context["params"]["date_published"],
+        "dataset_description": dag_context["params"]["description"],
+        "dataset_fields_of_science": dag_context["params"]["fields_of_science"],
+        "dataset_headline": dag_context["params"]["headline"],
+        "dataset_languages": dag_context["params"]["languages"],
+        "dataset_keywords": dag_context["params"]["keywords"],
+        "dataset_license": dag_context["params"]["license"],
+        "dataset_name": dag_context["params"]["name"],
+        "dataset_url": dag_context["params"]["publishedUrl"],
+        "dataset_version": dag_context["params"]["version"],
+        "user_node_id": uuid.uuid4(),
+        "UserId": dag_context["params"]["userId"],
+        "task_node_id": uuid.uuid4()
     })
-    data_node = AnalyticalPatternNode(labels=["sc:Dataset"], properties={
-        "@type": "sc:Dataset",
-        "archivedAt": data_locations[0].url,
-        "citeAs": "",
-        "conformsTo": "",
-        "country": dag_context["params"]["countries"][0],
-        "datePublished": dag_context["params"]["date_published"],
-        "description": dag_context["params"]["description"],
-        "fieldOfScience": dag_context["params"]["fields_of_science"],
-        "headline": dag_context["params"]["headline"],
-        "inLanguage": dag_context["params"]["languages"],
-        "keywords": dag_context["params"]["keywords"],
-        "license": dag_context["params"]["license"],
-        "name": dag_context["params"]["name"],
-        "url": dag_context["params"]["publishedUrl"],
-        "version": ""
-    })
-    user_node = AnalyticalPatternNode(labels=["User"],
-                                      properties={
-                                          "UserId": dag_context["params"]["userId"]
-                                      })
-    dataset_loading_node = AnalyticalPatternNode(labels=["Task"],
-                                                 properties={
-                                                     "Description": "Task to change storage location of a dataset",
-                                                     "Name": "Dataset Loading Task"
-                                                 })
-
-    consist_of_edge = AnalyticalPatternEdge.from_nodes(frm=load_dataset_node, to=load_operator_node,
-                                                       labels=["consist_of"])
-    input_edge = AnalyticalPatternEdge.from_nodes(frm=load_operator_node, to=data_node, labels=["input"])
-    intervene_edge = AnalyticalPatternEdge.from_nodes(frm=load_operator_node, to=user_node, labels=["intervene"])
-    request_edge = AnalyticalPatternEdge.from_nodes(frm=load_operator_node, to=dataset_loading_node,
-                                                    labels=["request"])
-    accomplished_edge = AnalyticalPatternEdge.from_nodes(frm=dataset_loading_node, to=load_dataset_node,
-                                                         labels=["is_accomplished"])
-
-    payload = AnalyticalPatternGraph(
-        nodes=[load_dataset_node, load_operator_node, data_node, user_node, dataset_loading_node],
-        edges=[consist_of_edge, input_edge, intervene_edge, request_edge, accomplished_edge]
-    ).to_dict()
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.load
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
