@@ -71,33 +71,30 @@ def dataset_onboarding():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=REGISTER_DATASET_ID, doc_md=REGISTER_DATASET_DOC)
-    def register_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
+    def register_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> datetime:
         log = Logger()
         utc_now = datetime.now(timezone.utc)
         url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          utc_now)
-        log.warning(payload)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(response)
-        return response
+        return utc_now
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC)
-    def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
+    def load_dataset(raw_data_locations: list[dict[str, int | str | None]], utc_now: datetime) -> Any:
         log = Logger()
         url, headers, payload = load_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
-                                                     [DataLocation.from_dict(d) for d in raw_data_locations])
+                                                     [DataLocation.from_dict(d) for d in raw_data_locations], utc_now)
         response = http_put(url=url, headers=headers, data=payload)
         log.info(response)
         return response
 
     staged_files_response = stage_dataset_files()
-    registered_dataset_response = register_dataset(staged_files_response)
-    loaded_dataset_response = load_dataset(staged_files_response)
-
-    registered_dataset_response >> loaded_dataset_response
+    register_date = register_dataset(staged_files_response)
+    _ = load_dataset(staged_files_response, register_date)
 
 
 dataset_onboarding()
