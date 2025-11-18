@@ -4,6 +4,7 @@ from typing import Any
 
 from airflow.sdk import Context, Param
 
+from common.extensions.file_extensions import extract_directory_path
 from common.types.analytical_pattern_edge import AnalyticalPatternEdge
 from common.types.analytical_pattern_node import AnalyticalPatternNode
 from common.types.data_location import DataLocation
@@ -30,7 +31,7 @@ DAG_PARAMS = {
     "version": Param(type="string"),
     "mime_type": Param(type="string"),
     "date_published": Param(f"{date.today()}", type="string", format="date"),
-    "userId": Param(type="string")
+    "userId": Param("", type="string")
 }
 
 DAG_TAGS = ["DatasetOnboarding", ]
@@ -68,7 +69,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dataset_archived_at": data_locations[0].url,
+        "dataset_archived_at": extract_directory_path(data_locations[0].url),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_cite_as": "",  # TODO
         "dataset_conforms_to": "",  # TODO
@@ -100,7 +101,7 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dataset_archived_at": data_locations[0].url,
+        "dataset_archived_at": extract_directory_path(data_locations[0].url),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_cite_as": "",  # TODO
         "dataset_conforms_to": "",  # TODO

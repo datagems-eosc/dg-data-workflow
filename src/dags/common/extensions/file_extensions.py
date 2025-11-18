@@ -36,3 +36,6 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
     except Exception as e:
         log.error(str(e))
         return False
+
+def extract_directory_path(full_file_path: str):
+    return os.path.dirname(full_file_path)
