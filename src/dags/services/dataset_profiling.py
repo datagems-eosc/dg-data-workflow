@@ -1,13 +1,14 @@
-import datetime
+import uuid
+from datetime import datetime, date
 from typing import Any
 
 from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
-from common.enum.connector_type import ConnectorType
-from configurations.cross_dataset_discovery_indexing_config import DatasetDiscoveryConfig
-from configurations.dwo_gateway_config import GatewayConfig
-from configurations.workflows_dataset_profiler_config import ProfilerConfig
+from common.enum import ConnectorType
+from common.extensions.file_extensions import extract_directory_path, extract_file_name
+from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
+from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
 DAG_ID = "DATASET_PROFILING"
 DAG_PARAMS = {
@@ -19,14 +20,17 @@ DAG_PARAMS = {
     "mime_type": Param("", type="string"),
     "size": Param(0, type="integer", minimum=0),
     "url": Param("", type="string", format="uri"),
-    "version": Param(type="string"),
+    "version": Param("", type="string"),
     "headline": Param("", type="string"),
     "keywords": Param([], type="array"),
     "fields_of_science": Param([], type="array"),
     "languages": Param([], type="array"),
     "countries": Param([], type="array"),
-    "date_published": Param(f"{datetime.date.today()}", type="string", format="date"),
+    "date_published": Param(f"{date.today()}", type="string", format="date"),
     "dataset_file_path": Param("", type="string"),
+    "userId": Param("", type="string"),
+    "citeAs": Param("", type="string"),
+    "conformsTo": Param("", type="string"),
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
@@ -54,8 +58,8 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "languages": dag_context["params"]["languages"],
                 "country": dag_context["params"]["countries"][0],
                 "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%m-%d-%Y"),
-                "cite_as": "foo",  # TODO: get it from backend
-                "uploaded_by": "ADMIN",  # TODO: get it from backend
+                "cite_as": dag_context["params"]["citeAs"],
+                "uploaded_by": dag_context["params"]["userId"],
                 "data_connectors": [
                     {
                         "type": ConnectorType.RawDataPath.value,
@@ -95,6 +99,47 @@ def update_data_management_builder(auth_token: str, dag_context: Context, config
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers, stringified_profile_data
+
+
+def update_data_model_management_builder(access_token: str, dag_context: Context,
+                                         dmm_config: DataModelManagementConfig, data_locations,
+                                         utc_now: datetime) -> tuple[str, dict[str, str], dict[str, Any]]:
+    payload = AnalyticalPatternParser().gen_update_dataset({
+        "analytical_pattern_node_id": uuid.uuid4(),
+        "published_date": utc_now.strftime("%d-%m-%Y"),
+        "start_time": utc_now.strftime("%H:%M:%S"),
+        "dmm_operator_node_id": uuid.uuid4(),
+        "dataset_node_id": dag_context["params"]["id"],
+        "dataset_archived_at": extract_directory_path(data_locations[0].url),
+        "dataset_archived_by": dag_context["params"]["userId"],  # TODO: this is probs the onboarding action's user
+        "dataset_cite_as": dag_context["params"]["citeAs"],
+        "dataset_conforms": dag_context["params"]["conformsTo"],
+        "dataset_country": dag_context["params"]["countries"][0],
+        "dataset_date_published": dag_context["params"]["date_published"],
+        "dataset_description": dag_context["params"]["description"],
+        "dataset_fieldOfScience": dag_context["params"]["fields_of_science"],
+        "dataset_headline": dag_context["params"]["headline"],
+        "dataset_inLanguage": dag_context["params"]["languages"],
+        "dataset_keywords": dag_context["params"]["keywords"],
+        "dataset_license": dag_context["params"]["license"],
+        "dataset_name": dag_context["params"]["name"],
+        "dataset_url": dag_context["params"]["url"],
+        "dataset_version": dag_context["params"]["version"],
+        "file_object_node_id": uuid.uuid4(),
+        "file_object_content_size": 0,  # TODO: how to get file metadata
+        "file_object_content_url": extract_directory_path(data_locations[0].url),
+        "file_object_description": "",  # TODO: how to get file metadata
+        "file_object_encoding_format": "",  # TODO: how to get file metadata
+        "file_object_name": extract_file_name(data_locations[0].url),
+        "file_object_sha256": "",  # TODO: how to get file metadata
+        "user_node_id": uuid.uuid4(),
+        "user_user_id": dag_context["params"]["userId"],
+        "task_node_id": uuid.uuid4()
+    })
+    url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
+               "Connection": "keep-alive"}
+    return url, headers, payload
 
 
 def pass_index_files_builder(auth_token: str, dag_context: Context, config: DatasetDiscoveryConfig,

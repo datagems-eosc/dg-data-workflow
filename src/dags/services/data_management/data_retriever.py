@@ -3,14 +3,14 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-from common.enum.data_location_kind import DataLocationKind
+from common.enum import DataLocationKind
 from common.extensions.http_requests import http_get_raw
-from common.types.data_location import DataLocation
-from common.types.retrieved_file import RetrievedFile
+from common.types import DataLocation, RetrievedFile
 from services.logging.logger import Logger
 
 DEFAULT_FILE_NAME = "downloaded_file"
 MAX_FILE_NAME_LENGTH = 255
+
 
 class DataRetriever:
     """

@@ -10,11 +10,10 @@ from common.extensions.callbacks import on_execute_callback, on_success_callback
     on_retry_callback, on_failure_callback
 from common.extensions.file_extensions import process_location
 from common.extensions.http_requests import http_post
-from common.types.data_location import DataLocation
+from common.types import DataLocation
 from documentations.dataset_onboarding import DAG_DESCRIPTION, STAGE_DATASET_FILES_DOC, \
     STAGE_DATASET_FILES_ID, REQUEST_ONBOARDING_ID, REQUEST_ONBOARDING_DOC, DAG_DISPLAY_NAME
-from configurations.dwo_gateway_config import GatewayConfig
-from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
+from configurations import GatewayConfig, DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
 from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, \

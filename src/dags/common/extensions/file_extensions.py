@@ -39,3 +39,6 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
 
 def extract_directory_path(full_file_path: str):
     return os.path.dirname(full_file_path)
+
+def extract_file_name(full_file_path: str):
+    return os.path.basename(full_file_path)

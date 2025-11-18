@@ -7,13 +7,11 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.discovery_auth import DiscoveryAuthService
 from authorization.dwo_gateway_auth import DwoGatewayAuthService
 from authorization.profiler_auth import ProfilerAuthService
-from common.enum.profile_status import ProfileStatus
+from common.enum import ProfileStatus
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get
-from configurations.cross_dataset_discovery_indexing_config import DatasetDiscoveryConfig
-from configurations.dwo_gateway_config import GatewayConfig
-from configurations.workflows_dataset_profiler_config import ProfilerConfig
+from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
     UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC

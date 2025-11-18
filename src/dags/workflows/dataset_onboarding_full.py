@@ -11,9 +11,8 @@ from common.extensions.callbacks import on_execute_callback, on_success_callback
     on_retry_callback, on_failure_callback
 from common.extensions.file_extensions import process_location
 from common.extensions.http_requests import http_post, http_put
-from common.types.data_location import DataLocation
-from configurations.data_model_management_config import DataModelManagementConfig
-from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
+from common.types import DataLocation
+from configurations import DataModelManagementConfig, DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
     STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
 from services.data_management.data_retriever import DataRetriever

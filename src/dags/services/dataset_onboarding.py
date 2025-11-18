@@ -5,10 +5,8 @@ from typing import Any
 from airflow.sdk import Context, Param
 
 from common.extensions.file_extensions import extract_directory_path
-from common.types.analytical_pattern_edge import AnalyticalPatternEdge
-from common.types.analytical_pattern_node import AnalyticalPatternNode
-from common.types.data_location import DataLocation
-from configurations.dwo_gateway_config import GatewayConfig
+from common.types import AnalyticalPatternEdge, AnalyticalPatternNode, DataLocation
+from configurations import GatewayConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
 DAG_ID = "DATASET_ONBOARDING"
@@ -25,6 +23,7 @@ DAG_PARAMS = {
     "publishedUrl": Param(type="string", format="uri"),
     "doi": Param(type="string", format="uri"),
     "citeAs": Param("", type="string"),
+    "conformsTo": Param("", type="string"),
     "license": Param(type="string"),
     "size": Param(type="integer", minimum=0),
     "dataLocations": Param([], type="string"),
@@ -71,8 +70,8 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "start_time": utc_now.strftime("%H:%M:%S"),
         "dataset_archived_at": extract_directory_path(data_locations[0].url),
         "dataset_node_id": dag_context["params"]["id"],
-        "dataset_cite_as": "",  # TODO
-        "dataset_conforms_to": "",  # TODO
+        "dataset_cite_as": dag_context["params"]["citeAs"],
+        "dataset_conforms_to": dag_context["params"]["conformsTo"],
         "dataset_country": dag_context["params"]["countries"][0],
         "dataset_date_published": dag_context["params"]["date_published"],
         "dataset_description": dag_context["params"]["description"],
@@ -103,8 +102,8 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "start_time": utc_now.strftime("%H:%M:%S"),
         "dataset_archived_at": extract_directory_path(data_locations[0].url),
         "dataset_node_id": dag_context["params"]["id"],
-        "dataset_cite_as": "",  # TODO
-        "dataset_conforms_to": "",  # TODO
+        "dataset_cite_as": dag_context["params"]["citeAs"],
+        "dataset_conforms_to": dag_context["params"]["conformsTo"],
         "dataset_country": dag_context["params"]["countries"][0],
         "dataset_date_published": dag_context["params"]["date_published"],
         "dataset_description": dag_context["params"]["description"],

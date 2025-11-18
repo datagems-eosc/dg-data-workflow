@@ -1,4 +1,4 @@
-from common.enum.data_location_kind import DataLocationKind
+from common.enum import DataLocationKind
 
 
 class DataLocation:
