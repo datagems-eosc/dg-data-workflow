@@ -72,12 +72,9 @@ def dataset_onboarding():
           on_skipped_callback=on_skipped_callback, task_id=REGISTER_DATASET_ID, doc_md=REGISTER_DATASET_DOC)
     def register_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
-        dag_context = get_current_context()
-        log.info(dag_context["params"])
-        url, headers, payload = register_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config,
+        url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          datetime.now(timezone.utc))
-        log.info(payload)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(response)
         return response
