@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from typing import Any
 from uuid import UUID, uuid4
 
 
+@dataclass
 class AnalyticalPatternNode:
-    def __init__(self, labels: list[str], properties: dict[str, Any]):
-        self.id: UUID = uuid4()
-        self.labels = labels
-        self.properties = properties
+    labels: list[str]
+    properties: dict[str, Any]
+    id: UUID = uuid4()
 
     def to_dict(self):
         return {

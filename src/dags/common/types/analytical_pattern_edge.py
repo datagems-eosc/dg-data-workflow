@@ -1,13 +1,14 @@
+from dataclasses import dataclass
 from uuid import UUID
 
 from common.types.analytical_pattern_node import AnalyticalPatternNode
 
 
+@dataclass
 class AnalyticalPatternEdge:
-    def __init__(self, frm: UUID, labels: list[str], to: UUID):
-        self.frm = frm
-        self.labels = labels
-        self.to = to
+    frm: UUID
+    labels: list[str]
+    to: UUID
 
     @classmethod
     def from_nodes(cls, frm: AnalyticalPatternNode, labels: list[str], to: AnalyticalPatternNode):

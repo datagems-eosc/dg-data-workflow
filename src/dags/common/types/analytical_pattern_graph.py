@@ -1,11 +1,13 @@
+from dataclasses import dataclass
+
 from common.types.analytical_pattern_edge import AnalyticalPatternEdge
 from common.types.analytical_pattern_node import AnalyticalPatternNode
 
 
+@dataclass
 class AnalyticalPatternGraph:
-    def __init__(self, nodes: list[AnalyticalPatternNode], edges: list[AnalyticalPatternEdge]):
-        self.nodes = nodes
-        self.edges = edges
+    nodes: list[AnalyticalPatternNode]
+    edges: list[AnalyticalPatternEdge]
 
     def to_dict(self):
         return {

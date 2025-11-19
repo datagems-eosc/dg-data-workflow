@@ -1,5 +1,6 @@
 import json
 from typing import Any
+from datetime import timezone, datetime
 
 from airflow.exceptions import AirflowFailException
 from airflow.sdk import dag, task, get_current_context
@@ -11,13 +12,13 @@ from common.enum import ProfileStatus
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get
-from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig
+from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
     UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
-    WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder
+    WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, update_data_model_management_builder
 from services.logging.logger import Logger
 
 
@@ -30,6 +31,7 @@ def dataset_profiling():
     profiler_config = ProfilerConfig()
     gateway_config = GatewayConfig()
     discovery_config = DatasetDiscoveryConfig()
+    dmm_config = DataModelManagementConfig()
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -80,9 +82,9 @@ def dataset_profiling():
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
     def update_data_management(stringified_profile_data: str) -> Any:
         log = Logger()
-        url, headers, payload = update_data_management_builder(gateway_auth_service.get_token(), get_current_context(),
-                                                               gateway_config,
-                                                               stringified_profile_data)
+        url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(), get_current_context(),
+                                                               dmm_config,
+                                                               stringified_profile_data, datetime.now(timezone.utc))
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response

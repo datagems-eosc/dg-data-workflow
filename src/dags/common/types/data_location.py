@@ -1,10 +1,11 @@
+from dataclasses import dataclass
+
 from common.enum import DataLocationKind
 
-
+@dataclass
 class DataLocation:
-    def __init__(self, kind: DataLocationKind = DataLocationKind.File, url: str | None = None):
-        self.kind = kind
-        self.url = url
+    kind : DataLocationKind = DataLocationKind.File
+    url: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict):

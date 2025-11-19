@@ -102,7 +102,7 @@ def update_data_management_builder(auth_token: str, dag_context: Context, config
 
 
 def update_data_model_management_builder(access_token: str, dag_context: Context,
-                                         dmm_config: DataModelManagementConfig, data_locations,
+                                         dmm_config: DataModelManagementConfig, stringified_profile_data: str,
                                          utc_now: datetime) -> tuple[str, dict[str, str], dict[str, Any]]:
     payload = AnalyticalPatternParser().gen_update_dataset({
         "analytical_pattern_node_id": uuid.uuid4(),
