@@ -56,14 +56,5 @@ def normalize_s3_path(full_path: str):
     return full_path
 
 
-def infer_s3_path(full_path: str) -> str:
-    if not full_path:
-        return full_path
-    p = Path(full_path)
-    parts = p.parts
-    if "s3" in parts:
-        idx = parts.index("s3")
-        result = Path(*parts[idx:])
-    else:
-        result = Path()
-    return "/" + str(result)
+def get_staged_path(guid: str) -> str:
+    return str(Path(DatasetOnboardingConfig().local_staging_path) / guid)
