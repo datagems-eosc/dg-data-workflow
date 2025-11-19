@@ -75,20 +75,7 @@ LOAD_DATASET_TEMPLATE = """
       ],
       "properties": {
         "@type": "sc:Dataset",
-        "archivedAt": "{{ dataset_archived_at }}",
-        "citeAs": "{{ dataset_cite_as }}",
-        "conformsTo": "{{ dataset_conforms_to }}",
-        "country": "{{ dataset_country }}",
-        "datePublished": "{{ dataset_date_published }}",
-        "description": "{{ dataset_description }}",
-        "fieldOfScience": {{ dataset_fields_of_science }},
-        "headline": "{{ dataset_headline }}",
-        "inLanguage": {{ dataset_languages }},
-        "keywords": {{ dataset_keywords }},
-        "license": "{{ dataset_license }}",
-        "name": "{{ dataset_name }}",
-        "url": "{{ dataset_url }}",
-        "version": "{{ dataset_version }}"
+        "archivedAt": "{{ dataset_archived_at }}"
       }
     },
     {

@@ -12,7 +12,7 @@ STAGE_DATASET_FILES_DOC = """
 Does something
 """
 
-REQUEST_ONBOARDING_ID = "onboarding_request"
+REQUEST_ONBOARDING_ID = "send_dataset_info_to_gateway"
 
 REQUEST_ONBOARDING_DOC = """
 # Onboarding Request
