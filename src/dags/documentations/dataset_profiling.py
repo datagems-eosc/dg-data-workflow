@@ -8,7 +8,7 @@ TRIGGER_PROFILE_DOC = """
 Does something
 """
 
-WAIT_FOR_COMPLETION_ID = "wait_for_completion"
+WAIT_FOR_COMPLETION_ID = "wait_to_complete_profiling"
 
 WAIT_FOR_COMPLETION_DOC = """
 # Wait for Completion
@@ -16,7 +16,7 @@ WAIT_FOR_COMPLETION_DOC = """
 Does something
 """
 
-FETCH_PROFILE_ID = "fetch_profile"
+FETCH_PROFILE_ID = "fetch_ready_profile"
 
 FETCH_PROFILE_DOC = """
 # Fetch Profile
@@ -24,7 +24,7 @@ FETCH_PROFILE_DOC = """
 Does something
 """
 
-UPDATE_DATA_MANAGEMENT_ID = "update_data_management"
+UPDATE_DATA_MANAGEMENT_ID = "update_data_management_with_fetched_profile"
 
 UPDATE_DATA_MANAGEMENT_DOC = """
 # Update Data Model Management

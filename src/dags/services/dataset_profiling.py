@@ -34,7 +34,7 @@ DAG_PARAMS = {
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
-DAG_DISPLAY_NAME = "Dataset Profiling"
+
 WAIT_FOR_COMPLETION_POKE_INTERVAL = ProfilerConfig().options.profiler.poke_interval
 
 
