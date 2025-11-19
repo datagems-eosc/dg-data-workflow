@@ -4,7 +4,7 @@ from typing import Any
 
 from airflow.sdk import Context, Param
 
-from common.extensions.file_extensions import extract_directory_path, normalize_s3_path
+from common.extensions.file_extensions import extract_directory_path, normalize_s3_path, infer_s3_path
 from common.types import AnalyticalPatternEdge, AnalyticalPatternNode, DataLocation
 from configurations import GatewayConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
@@ -68,7 +68,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dataset_archived_at": normalize_s3_path(extract_directory_path(data_locations[0].url)),
+        "dataset_archived_at": normalize_s3_path(extract_directory_path(infer_s3_path(data_locations[0].url))),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_cite_as": dag_context["params"]["citeAs"],
         "dataset_conforms_to": dag_context["params"]["conformsTo"],
@@ -84,7 +84,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dataset_url": dag_context["params"]["publishedUrl"],
         "dataset_version": dag_context["params"]["version"],
         "user_node_id": uuid.uuid4(),
-        "UserId": dag_context["params"]["userId"],
+        "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4()
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.register
@@ -101,9 +101,9 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dataset_archived_at": normalize_s3_path(extract_directory_path(data_locations[0].url)),
+        "dataset_archived_at": normalize_s3_path(extract_directory_path(infer_s3_path(data_locations[0].url))),
         "user_node_id": uuid.uuid4(),
-        "UserId": dag_context["params"]["userId"],
+        "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4()
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.load

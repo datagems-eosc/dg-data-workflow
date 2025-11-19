@@ -54,3 +54,16 @@ def normalize_s3_path(full_path: str):
     if full_path.startswith(prefix):
         return "s3://" + full_path[len(prefix):]
     return full_path
+
+
+def infer_s3_path(full_path: str) -> str:
+    if not full_path:
+        return full_path
+    p = Path(full_path)
+    parts = p.parts
+    if "s3" in parts:
+        idx = parts.index("s3")
+        result = Path(*parts[idx:])
+    else:
+        result = Path()
+    return "/" + str(result)
