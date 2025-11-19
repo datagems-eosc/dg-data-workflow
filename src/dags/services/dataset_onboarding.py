@@ -96,6 +96,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
 def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, utc_now) -> tuple[
     str, dict[str, str], dict[str, list[AnalyticalPatternEdge] | list[AnalyticalPatternNode]]]:
     payload = AnalyticalPatternParser().gen_load_dataset({
+        "dataset_node_id": dag_context["params"]["id"],
         "analytical_pattern_node_id": uuid.uuid4(),
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
