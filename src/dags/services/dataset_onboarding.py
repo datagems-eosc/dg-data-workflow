@@ -68,7 +68,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dmm_operator_node_id": uuid.uuid4(),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dataset_archived_at": extract_directory_path(data_locations[0].url),
+        "dataset_archived_at": normalize_s3_path(extract_directory_path(data_locations[0].url)),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_cite_as": dag_context["params"]["citeAs"],
         "dataset_conforms_to": dag_context["params"]["conformsTo"],
