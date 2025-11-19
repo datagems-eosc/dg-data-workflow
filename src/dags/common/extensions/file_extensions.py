@@ -19,6 +19,7 @@ def build_file_path(directory: str, guid: str, name: str, extension: str | None 
 
     return Path(directory) / guid / filename
 
+
 def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
                      stage_service: DataStagingService, log: Logger,
                      config: DatasetOnboardingConfig) -> DataLocation | bool:
@@ -37,8 +38,19 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
         log.error(str(e))
         return False
 
+
 def extract_directory_path(full_file_path: str):
     return os.path.dirname(full_file_path)
 
+
 def extract_file_name(full_file_path: str):
     return os.path.basename(full_file_path)
+
+
+def normalize_s3_path(full_path: str):
+    if not full_path:
+        return full_path
+    prefix = "/s3/"
+    if full_path.startswith(prefix):
+        return "s3://" + full_path[len(prefix):]
+    return full_path
