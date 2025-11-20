@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import datetime, date
 from typing import Any
@@ -6,7 +7,6 @@ from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
 from common.enum import ConnectorType
-from common.extensions.file_extensions import extract_directory_path, extract_file_name
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
@@ -109,29 +109,13 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
         "dmm_operator_node_id": uuid.uuid4(),
+        "payload": json.loads(stringified_profile_data),
         "dataset_node_id": dag_context["params"]["id"],
-        "dataset_archived_at": extract_directory_path(data_locations[0].url),
+        "dataset_archived_at": "",
         "dataset_archived_by": dag_context["params"]["userId"],  # TODO: this is probs the onboarding action's user
         "dataset_cite_as": dag_context["params"]["citeAs"],
         "dataset_conforms": dag_context["params"]["conformsTo"],
-        "dataset_country": dag_context["params"]["countries"][0],
-        "dataset_date_published": dag_context["params"]["date_published"],
-        "dataset_description": dag_context["params"]["description"],
-        "dataset_fieldOfScience": dag_context["params"]["fields_of_science"],
-        "dataset_headline": dag_context["params"]["headline"],
-        "dataset_inLanguage": dag_context["params"]["languages"],
-        "dataset_keywords": dag_context["params"]["keywords"],
-        "dataset_license": dag_context["params"]["license"],
-        "dataset_name": dag_context["params"]["name"],
-        "dataset_url": dag_context["params"]["url"],
-        "dataset_version": dag_context["params"]["version"],
         "file_object_node_id": uuid.uuid4(),
-        "file_object_content_size": 0,  # TODO: how to get file metadata
-        "file_object_content_url": extract_directory_path(data_locations[0].url),
-        "file_object_description": "",  # TODO: how to get file metadata
-        "file_object_encoding_format": "",  # TODO: how to get file metadata
-        "file_object_name": extract_file_name(data_locations[0].url),
-        "file_object_sha256": "",  # TODO: how to get file metadata
         "user_node_id": uuid.uuid4(),
         "user_user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4()

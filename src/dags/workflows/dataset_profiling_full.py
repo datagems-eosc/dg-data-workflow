@@ -1,6 +1,6 @@
 import json
-from typing import Any
 from datetime import timezone, datetime
+from typing import Any
 
 from airflow.exceptions import AirflowFailException
 from airflow.sdk import dag, task, get_current_context
@@ -17,8 +17,8 @@ from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_I
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
     UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
-    wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
-    WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, update_data_model_management_builder
+    wait_for_completion_builder, fetch_profile_builder, WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, \
+    update_data_model_management_builder
 from services.logging.logger import Logger
 
 
@@ -39,9 +39,7 @@ def dataset_profiling():
     def trigger_profile(is_light: bool) -> Any:
         log = Logger()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
-            profiler_auth_service.get_token(),
-            get_current_context(),
-            profiler_config, is_light)
+            profiler_auth_service.get_token(), get_current_context(), profiler_config, is_light)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
         log.info(f"Server responded with {trigger_response}")
@@ -82,9 +80,10 @@ def dataset_profiling():
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
     def update_data_management(stringified_profile_data: str) -> Any:
         log = Logger()
-        url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(), get_current_context(),
-                                                               dmm_config,
-                                                               stringified_profile_data, datetime.now(timezone.utc))
+        url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
+                                                                     get_current_context(), dmm_config,
+                                                                     stringified_profile_data,
+                                                                     datetime.now(timezone.utc))
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response
@@ -107,8 +106,7 @@ def dataset_profiling():
     def profile_cleanup(profile_id: str) -> Any:
         log = Logger()
         url, headers, payload = profile_cleanup_builder(profiler_auth_service.get_token(), get_current_context(),
-                                                        profiler_config,
-                                                        profile_id)
+                                                        profiler_config, profile_id)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response
