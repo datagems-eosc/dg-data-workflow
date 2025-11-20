@@ -10,19 +10,57 @@ UPDATE_DATASET_TEMPLATE = """
       "to": "{{ dmm_operator_node_id }}"
     },
     {
-      "from": "{{ dmm_operator_node_id }}",
-      "labels": [
-        "input"
-      ],
-      "to": "{{ dataset_node_id }}"
-    },
-    {
       "from": "{{ user_node_id }}",
       "labels": [
         "intervene"
       ],
       "to": "{{ dmm_operator_node_id }}"
     },
+    
+    {# =============================================================== #}
+    {# 1) OPERATOR → DATASET (input edge)                              #}
+    {# =============================================================== #}
+    {
+      "from": "{{ dmm_operator_node_id }}",
+      "labels": ["input"],
+      "to": "{{ payload.id }}"
+    },
+
+    {# =============================================================== #}
+    {# 2) DATASET → DISTRIBUTION                                       #}
+    {# =============================================================== #}
+    {% for dist in payload.distribution %}
+    {
+      "from": "{{ payload.id }}",
+      "labels": ["distribution"],
+      "to": "{{ dist['@id'] }}"
+    },
+    {% endfor %},
+
+    {# =============================================================== #}
+    {# 3) DATASET → RECORDSET                                         #}
+    {# =============================================================== #}
+    {% for rs in payload.recordSet %}
+    {
+      "from": "{{ payload.id }}",
+      "labels": ["recordSet"],
+      "to": "{{ rs['@id'] }}"
+    },
+    {% endfor %}
+
+    {# =============================================================== #}
+    {# 4) RECORDSET → FIELD                                           #}
+    {# =============================================================== #}
+    {% for rs in payload.recordSet %}
+        {% for field in rs.field %}
+        {
+          "from": "{{ rs['@id'] }}",
+          "labels": ["field"],
+          "to": "{{ field['@id'] }}"
+        },
+        {% endfor %}
+    {% endfor %}
+    
     {
       "from": "{{ task_node_id }}",
       "labels": [
@@ -36,13 +74,6 @@ UPDATE_DATASET_TEMPLATE = """
         "request"
       ],
       "to": "{{ task_node_id }}"
-    },
-    {
-      "from": "{{ dataset_node_id }}",
-      "labels": [
-        "distribution"
-      ],
-      "to": "{{ file_object_node_id }}"
     }
   ],
   "nodes": [
@@ -77,7 +108,7 @@ UPDATE_DATASET_TEMPLATE = """
       }
     },
     {
-      "@id": "{{ dataset_node_id }}",
+      "@id": "{{ payload.id }}",
       "labels": [
         "sc:Dataset"
       ],

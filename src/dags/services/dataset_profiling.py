@@ -7,6 +7,7 @@ from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
 from common.enum import ConnectorType
+from common.extensions.file_extensions import get_staged_path
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
@@ -111,7 +112,7 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
         "dmm_operator_node_id": uuid.uuid4(),
         "payload": json.loads(stringified_profile_data),
         "dataset_node_id": dag_context["params"]["id"],
-        "dataset_archived_at": "",
+        "dataset_archived_at": get_staged_path(dag_context["params"]["id"]),
         "dataset_archived_by": dag_context["params"]["userId"],  # TODO: this is probs the onboarding action's user
         "dataset_cite_as": dag_context["params"]["citeAs"],
         "dataset_conforms": dag_context["params"]["conformsTo"],

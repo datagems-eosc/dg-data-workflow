@@ -84,6 +84,7 @@ def dataset_profiling():
                                                                      get_current_context(), dmm_config,
                                                                      stringified_profile_data,
                                                                      datetime.now(timezone.utc))
+        log.info(payload)
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response
