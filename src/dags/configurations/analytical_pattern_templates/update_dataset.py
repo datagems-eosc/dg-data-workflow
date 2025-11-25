@@ -35,7 +35,7 @@ UPDATE_DATASET_TEMPLATE = """
       "labels": ["distribution"],
       "to": "{{ dist['@id'] }}"
     },
-    {% endfor %},
+    {% endfor %}
 
     {# =============================================================== #}
     {# 3) DATASET → RECORDSET                                         #}
@@ -121,14 +121,14 @@ UPDATE_DATASET_TEMPLATE = """
         "country": "{{ payload.country }}",
         "datePublished": "{{ payload.datePublished }}",
         "description": "{{ payload.description }}",
-        "fieldOfScience": {{ payload.fieldOfScience }},
+        "fieldOfScience": {{ payload.fieldOfScience | tojson }},
         "headline": "{{ payload.headline }}",
-        "inLanguage": {{ payload.inLanguage }},
-        "keywords": {{ payload.keywords }},
+        "inLanguage": {{ payload.inLanguage | tojson }},
+        "keywords": {{ payload.keywords | tojson }},
         "license": "{{ payload.license }}",
         "name": "{{ payload.name }}",
         "url": "{{ payload.url }}",
-        "version": "{{ payload.version }}",
+        "version": "{{ payload.version }}"
       }
     },
     {% for dist in payload.distribution %}
@@ -147,7 +147,7 @@ UPDATE_DATASET_TEMPLATE = """
         "User"
       ],
       "properties": {
-        "UserId": "{{ user_user_id }}",
+        "UserId": "{{ user_user_id }}"
       }
     },
     {
