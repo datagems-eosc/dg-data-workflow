@@ -106,20 +106,20 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
                                          dmm_config: DataModelManagementConfig, stringified_profile_data: str,
                                          utc_now: datetime) -> tuple[str, dict[str, str], dict[str, Any]]:
     payload = AnalyticalPatternParser().gen_update_dataset({
-        "analytical_pattern_node_id": uuid.uuid4(),
+        "analytical_pattern_node_id": str(uuid.uuid4()),
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
-        "dmm_operator_node_id": uuid.uuid4(),
+        "dmm_operator_node_id": str(uuid.uuid4()),
         "payload": json.loads(stringified_profile_data),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_archived_at": get_staged_path(dag_context["params"]["id"]),
         "dataset_archived_by": dag_context["params"]["userId"],  # TODO: this is probs the onboarding action's user
         "dataset_cite_as": dag_context["params"]["citeAs"],
         "dataset_conforms": dag_context["params"]["conformsTo"],
-        "file_object_node_id": uuid.uuid4(),
-        "user_node_id": uuid.uuid4(),
+        "file_object_node_id": str(uuid.uuid4()),
+        "user_node_id": str(uuid.uuid4()),
         "user_user_id": dag_context["params"]["userId"],
-        "task_node_id": uuid.uuid4()
+        "task_node_id": str(uuid.uuid4())
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
