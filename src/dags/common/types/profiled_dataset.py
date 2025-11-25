@@ -39,8 +39,6 @@ class Field(LDModel):
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    name: Optional[str] = None
-    description: Optional[str] = None
     dataType: Optional[str] = None
     source: Optional[FieldSource] = None
     sample: Optional[List[Any]] = None
@@ -54,8 +52,6 @@ class RecordSet(LDModel):
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    name: Optional[str] = None
-    description: Optional[str] = None
     field: Optional[List[Field]] = None
 
 
@@ -67,13 +63,6 @@ class DistributionItem(LDModel):
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    name: Optional[str] = None
-    description: Optional[str] = None
-    contentSize: Optional[str] = None
-    contentUrl: Optional[str] = None
-    encodingFormat: Optional[str] = None
-    includes: Optional[str] = None
-    sha256: Optional[str] = None
 
 
 @dataclass
@@ -85,21 +74,8 @@ class DatasetResponse(LDModel):
     context: Dict[str, Any] = PyField(None, alias="@context")
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    name: Optional[str] = None
-    description: Optional[str] = None
-    conformsTo: Optional[str] = None
-    citeAs: Optional[str] = None
-    license: Optional[str] = None
-    url: Optional[str] = None
-    doi: Optional[str] = None
-    version: Optional[str] = None
-    headline: Optional[str] = None
     keywords: Optional[List[str]] = None
     fieldOfScience: Optional[List[str]] = None
     inLanguage: Optional[List[str]] = None
-    country: Optional[str] = None
-    datePublished: Optional[str] = None
-    access: Optional[str] = None
-    uploadedBy: Optional[str] = None
     distribution: Optional[List[DistributionItem]] = None
     recordSet: Optional[List[RecordSet]] = None

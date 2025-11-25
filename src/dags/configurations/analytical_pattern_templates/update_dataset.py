@@ -33,7 +33,7 @@ UPDATE_DATASET_TEMPLATE = """
     {
       "from": "{{ payload.id }}",
       "labels": ["distribution"],
-      "to": "{{ dist['@id'] }}"
+      "to": "{{ dist.id }}"
     },
     {% endfor %}
 
@@ -44,7 +44,7 @@ UPDATE_DATASET_TEMPLATE = """
     {
       "from": "{{ payload.id }}",
       "labels": ["recordSet"],
-      "to": "{{ rs['@id'] }}"
+      "to": "{{ rs.id }}"
     },
     {% endfor %}
 
@@ -56,7 +56,7 @@ UPDATE_DATASET_TEMPLATE = """
         {
           "from": "{{ rs['@id'] }}",
           "labels": ["field"],
-          "to": "{{ field['@id'] }}"
+          "to": "{{ field.id }}"
         },
         {% endfor %}
     {% endfor %}
