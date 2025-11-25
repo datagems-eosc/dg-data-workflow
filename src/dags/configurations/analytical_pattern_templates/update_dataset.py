@@ -132,13 +132,25 @@ UPDATE_DATASET_TEMPLATE = """
       }
     },
     {% for dist in payload.distribution %}
-    {{ dist | tojson }},
+    {
+        "@id": "{{ dist.id }}",
+        "labels": [ "{{ dist.type }}" ],
+        "properties": {{ dist | tojson }}
+    },
     {% endfor %}
     
     {% for rs in payload.recordSet %}
-        {{ rs | tojson }},
+        {
+            "@id": "{{ rs.id }}",
+            "labels": ["{{ rs.type }}"],
+            "properties": {{ rs | tojson }}
+        },
         {% for f in rs.field %}
-            {{ f | tojson }},
+            {
+                "@id": "{{ f.id }}",
+                "labels": ["{{ f.type }}"],
+                "properties": {{ f | tojson }}
+            },
         {% endfor %}
     {% endfor %}
     {

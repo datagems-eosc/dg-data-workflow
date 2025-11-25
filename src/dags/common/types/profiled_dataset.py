@@ -1,80 +1,105 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from typing import Dict, Any, List, Optional
 
-from common.extensions.utils import normalize_keys
+from pydantic import BaseModel, Field as PyField
+
+
+class LDModel(BaseModel):
+    model_config = {
+        "populate_by_name": True,
+        "validate_assignment": True,
+        "arbitrary_types_allowed": True
+    }
 
 
 @dataclass
-class FieldSourceExtract:
-    column: str
+class FieldSourceExtract(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    column: Optional[str] = None
 
 
 @dataclass
-class FieldSource:
-    fileObject: Dict[str, str]
-    extract: FieldSourceExtract
+class FieldSource(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    fileObject: Optional[Dict[str, str]] = None
+    extract: Optional[FieldSourceExtract] = None
 
 
 @dataclass
-class Field:
-    type: str
-    id: str
-    name: str
-    description: str
-    dataType: str
-    source: FieldSource
-    sample: List[Any]
+class Field(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    dataType: Optional[str] = None
+    source: Optional[FieldSource] = None
+    sample: Optional[List[Any]] = None
 
 
 @dataclass
-class RecordSet:
-    type: str
-    id: str
-    name: str
-    description: str
-    field: List[Field]
+class RecordSet(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    field: Optional[List[Field]] = None
 
 
 @dataclass
-class DistributionItem:
-    type: str
-    id: str
-    name: str
-    description: str
-    contentSize: str
-    contentUrl: str
-    encodingFormat: str
+class DistributionItem(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    contentSize: Optional[str] = None
+    contentUrl: Optional[str] = None
+    encodingFormat: Optional[str] = None
     includes: Optional[str] = None
     sha256: Optional[str] = None
 
 
 @dataclass
-class DatasetResponse:
-    context: Dict[str, Any]
-    type: str
-    id: str
-    name: str
-    description: str
-    conformsTo: str
-    citeAs: str
-    license: str
-    url: str
-    doi: str
-    version: str
-    headline: str
-    keywords: List[str]
-    fieldOfScience: List[str]
-    inLanguage: List[str]
-    country: str
-    datePublished: str
-    access: str
-    uploadedBy: str
-    distribution: List[DistributionItem]
-    recordSet: List[RecordSet]
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]):
-        d = normalize_keys(data)
-        allowed = {f.name for f in fields(cls)}
-        filtered = {k: v for k, v in d.items() if k in allowed}
-        return cls(**filtered)
+class DatasetResponse(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"  # optional, but useful for JSON-LD
+    }
+    context: Dict[str, Any] = PyField(None, alias="@context")
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    name: Optional[str] = None
+    description: Optional[str] = None
+    conformsTo: Optional[str] = None
+    citeAs: Optional[str] = None
+    license: Optional[str] = None
+    url: Optional[str] = None
+    doi: Optional[str] = None
+    version: Optional[str] = None
+    headline: Optional[str] = None
+    keywords: Optional[List[str]] = None
+    fieldOfScience: Optional[List[str]] = None
+    inLanguage: Optional[List[str]] = None
+    country: Optional[str] = None
+    datePublished: Optional[str] = None
+    access: Optional[str] = None
+    uploadedBy: Optional[str] = None
+    distribution: Optional[List[DistributionItem]] = None
+    recordSet: Optional[List[RecordSet]] = None
