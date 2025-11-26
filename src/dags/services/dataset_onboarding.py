@@ -5,7 +5,7 @@ from typing import Any
 from airflow.sdk import Context, Param
 
 from common.extensions.file_extensions import get_staged_path
-from common.types import AnalyticalPatternEdge, AnalyticalPatternNode, DataLocation
+from common.types import DataLocation
 from configurations import GatewayConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
@@ -94,7 +94,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
 
 
 def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, utc_now) -> tuple[
-    str, dict[str, str], dict[str, list[AnalyticalPatternEdge] | list[AnalyticalPatternNode]]]:
+    str, dict[str, str], dict[str, Any]]:
     payload = AnalyticalPatternParser().gen_load_dataset({
         "dataset_node_id": dag_context["params"]["id"],
         "analytical_pattern_node_id": uuid.uuid4(),
