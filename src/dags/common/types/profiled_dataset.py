@@ -74,8 +74,5 @@ class DatasetResponse(LDModel):
     context: Dict[str, Any] = PyField(None, alias="@context")
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    keywords: Optional[List[str]] = None
-    fieldOfScience: Optional[List[str]] = None
-    inLanguage: Optional[List[str]] = None
     distribution: Optional[List[DistributionItem]] = None
     recordSet: Optional[List[RecordSet]] = None

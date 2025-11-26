@@ -1,10 +1,13 @@
 import ast
+import uuid
+from datetime import datetime
 from typing import Any
 
 from jinja2 import Template
 
-from configurations.analytical_pattern_templates import REGISTER_DATASET_TEMPLATE, LOAD_DATASET_TEMPLATE, \
-    UPDATE_DATASET_TEMPLATE
+from common.types import AnalyticalPatternNode, AnalyticalPatternGraph, AnalyticalPatternEdge
+from common.types.profiled_dataset import DatasetResponse
+from configurations.analytical_pattern_templates import REGISTER_DATASET_TEMPLATE, LOAD_DATASET_TEMPLATE
 
 
 class AnalyticalPatternParser:
@@ -19,6 +22,55 @@ class AnalyticalPatternParser:
         template = Template(LOAD_DATASET_TEMPLATE)
         return ast.literal_eval(template.render(**values))
 
-    def gen_update_dataset(self, values: dict[str, Any]) -> dict[str, Any]:
-        template = Template(UPDATE_DATASET_TEMPLATE)
-        return ast.literal_eval(template.render(**values))
+    def gen_update_dataset(self, values: DatasetResponse, date: datetime) -> dict[str, Any]:
+        ap_node = AnalyticalPatternNode(labels=["Analytical_Pattern"], properties={
+            "Description": "Analytical Pattern to update a dataset",
+            "Name": "Update Dataset AP",
+            "Process": "update",
+            "PublishedDate": date.strftime("%d-%m-%Y"),
+            "StartTime": date.strftime("%H:%M:%S")
+        })
+        operator_node = AnalyticalPatternNode(labels=["DataModelManagement_Operator"], properties={
+            "Description": "An operator to update a dataset into DataGEMS",
+            "Name": "Update Operator",
+            "Parameters": {
+                "command": "update"
+            },
+            "PublishedDate": date.strftime("%d-%m-%Y"),
+            "Software": {},
+            "StartTime": date.strftime("%H:%M:%S"),
+            "Step": 1
+        })
+        user_node = AnalyticalPatternNode(labels=["User"], properties={
+            "UserId": values.uploadedBy
+        })
+        task_node = AnalyticalPatternNode(labels=["Task"], properties={
+            "Description": "Task to update a dataset",
+            "Name": "Dataset Updating Task"
+        })
+        dataset_node = AnalyticalPatternNode(labels=[values.type], properties=values.model_dump(),
+                                             id=uuid.UUID(values.id))
+        graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node, dataset_node], edges=[
+            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consists_of"]),
+            AnalyticalPatternEdge.from_nodes(frm=operator_node, to=dataset_node, labels=["input"]),
+            AnalyticalPatternEdge.from_nodes(frm=user_node, to=operator_node, labels=["intervene"]),
+            AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
+            AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["is_achieved"])
+        ])
+
+        for i in values.distribution:
+            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(),
+                                           id=uuid.UUID(i.id))
+            graph.nodes.append(i_node)
+            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["distribution"]))
+
+        for i in values.recordSet:
+            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id))
+            graph.nodes.append(i_node)
+            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
+            for j in i.field:
+                j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id))
+                graph.nodes.append(j_node)
+                graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
+
+        return graph.to_dict()

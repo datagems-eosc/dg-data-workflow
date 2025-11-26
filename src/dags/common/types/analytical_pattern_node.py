@@ -10,8 +10,11 @@ class AnalyticalPatternNode:
     id: UUID = uuid4()
 
     def to_dict(self):
-        return {
+        val = {
             "@id": str(self.id),
             "labels": self.labels,
             "properties": self.properties
         }
+        if val["properties"].get("type"):
+            val["properties"]["@type"] = val["properties"]["type"]
+        return val
