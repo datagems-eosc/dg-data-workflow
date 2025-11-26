@@ -29,7 +29,7 @@ class AnalyticalPatternParser:
             "Process": "update",
             "PublishedDate": date.strftime("%d-%m-%Y"),
             "StartTime": date.strftime("%H:%M:%S")
-        })
+        }, excluded_properties=[])
         operator_node = AnalyticalPatternNode(labels=["DataModelManagement_Operator"], properties={
             "Description": "An operator to update a dataset into DataGEMS",
             "Name": "Update Operator",
@@ -40,16 +40,16 @@ class AnalyticalPatternParser:
             "Software": {},
             "StartTime": date.strftime("%H:%M:%S"),
             "Step": 1
-        })
+        }, excluded_properties=[])
         user_node = AnalyticalPatternNode(labels=["User"], properties={
             "UserId": values.uploadedBy
-        })
+        }, excluded_properties=[])
         task_node = AnalyticalPatternNode(labels=["Task"], properties={
             "Description": "Task to update a dataset",
             "Name": "Dataset Updating Task"
-        })
+        }, excluded_properties=[])
         dataset_node = AnalyticalPatternNode(labels=[values.type], properties=values.model_dump(),
-                                             id=uuid.UUID(values.id))
+                                             id=uuid.UUID(values.id), excluded_properties=["context", "id", "distribution", "recordSet"])
         graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node, dataset_node], edges=[
             AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consists_of"]),
             AnalyticalPatternEdge.from_nodes(frm=operator_node, to=dataset_node, labels=["input"]),
@@ -60,16 +60,16 @@ class AnalyticalPatternParser:
 
         for i in values.distribution:
             i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(),
-                                           id=uuid.UUID(i.id))
+                                           id=uuid.UUID(i.id), excluded_properties=["id"])
             graph.nodes.append(i_node)
             graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["distribution"]))
 
         for i in values.recordSet:
-            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id))
+            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id), excluded_properties=["id", "field"])
             graph.nodes.append(i_node)
             graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
             for j in i.field:
-                j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id))
+                j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id"])
                 graph.nodes.append(j_node)
                 graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
 

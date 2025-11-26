@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 class AnalyticalPatternNode:
     labels: list[str]
     properties: dict[str, Any]
+    excluded_properties: list[str]
     id: UUID = uuid4()
 
     def to_dict(self):
@@ -17,4 +18,7 @@ class AnalyticalPatternNode:
         }
         if val["properties"].get("type"):
             val["properties"]["@type"] = val["properties"]["type"]
+            val["properties"].pop("type")
+        for prop in self.excluded_properties:
+            val["properties"].pop(prop, None)
         return val
