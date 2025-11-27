@@ -57,4 +57,4 @@ def normalize_s3_path(full_path: str):
 
 
 def get_staged_path(guid: str) -> str:
-    return str(Path(DatasetOnboardingConfig().local_staging_path) / guid)
+    return str(Path(DatasetOnboardingConfig().local_dataset_path) / guid)
