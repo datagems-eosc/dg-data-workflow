@@ -7,3 +7,4 @@ class ProfileStatus(Enum):
     LIGHT_PROFILE_READY = "light_profile_ready"
     HEAVY_PROFILES_READY = "heavy_profile_ready"
     CLEANED_UP = "cleaned_up"
+    FAILED = "failed"

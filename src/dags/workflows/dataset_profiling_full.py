@@ -60,6 +60,10 @@ def dataset_profiling():
             error_message = f"Profile {profile_id} is cleaned up"
             log.error(error_message)
             raise AirflowFailException(error_message)
+        elif profile_status is ProfileStatus.FAILED:
+            error_message = f"Profile {profile_id} has failed"
+            log.error(error_message)
+            raise AirflowFailException(error_message)
         else:
             log.info(f"Profile {profile_id} status is {profile_status}")
         return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
