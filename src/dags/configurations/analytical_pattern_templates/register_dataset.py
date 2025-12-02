@@ -59,7 +59,9 @@ REGISTER_DATASET_TEMPLATE = """
       "properties": {
         "Description": "An operator to register a dataset into DataGEMS",
         "Name": "Register Operator",
-        "command": "create",
+        "Parameters": {
+          "command": "create"
+        },
         "PublishedDate": "{{ published_date }}",
         "StartTime": "{{ start_time }}",
         "Step": 1
@@ -85,15 +87,17 @@ REGISTER_DATASET_TEMPLATE = """
         "license": "{{ dataset_license }}",
         "name": "{{ dataset_name }}",
         "url": "{{ dataset_url }}",
-        "version": "{{ dataset_version }}",
-        "status": "staged"
+        "version": "{{ dataset_version }}"
       }
     },
     {
       "@id": "{{ user_node_id }}",
       "labels": [
         "User"
-      ]
+      ],
+      "properties": {
+        "UserId": "{{ user_id }}"
+      }
     },
     {
       "@id": "{{ task_node_id }}",

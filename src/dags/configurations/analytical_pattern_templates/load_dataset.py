@@ -59,7 +59,9 @@ LOAD_DATASET_TEMPLATE = """
       "properties": {
         "Description": "An operator to load a dataset into s3/dataset",
         "Name": "Load Operator",
-        "command": "update",
+        "Parameters": {
+          "command": "update"
+        },
         "PublishedDate": "{{ published_date }}",
         "Software": {},
         "StartTime": "{{ start_time }}",
@@ -72,6 +74,7 @@ LOAD_DATASET_TEMPLATE = """
         "sc:Dataset"
       ],
       "properties": {
+        "@type": "sc:Dataset",
         "archivedAt": "{{ dataset_archived_at }}"
       }
     },
@@ -79,7 +82,10 @@ LOAD_DATASET_TEMPLATE = """
       "@id": "{{ user_node_id }}",
       "labels": [
         "User"
-      ]
+      ],
+      "properties": {
+        "UserId": "{{ user_id }}"
+      }
     },
     {
       "@id": "{{ task_node_id }}",
