@@ -23,7 +23,7 @@ def build_file_path(directory: str, guid: str, name: str, extension: str | None 
 def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
                      stage_service: DataStagingService, log: Logger,
                      config: DatasetOnboardingConfig) -> DataLocation | bool:
-    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote:
+    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote or location.kind == DataLocationKind.Staged or location.kind == DataLocationKind.DatabaseFile:
         return location
     try:
         with stream_service.retrieve(location) as retrieved_file:

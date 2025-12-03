@@ -31,6 +31,7 @@ DAG_PARAMS = {
     "userId": Param("", type="string"),
     "citeAs": Param("", type="string"),
     "conformsTo": Param("", type="string"),
+    "connector": Param(ConnectorType.RawDataPath.value, type="string", enum=[c.value for c in ConnectorType])
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
@@ -43,7 +44,6 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
             str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
     profiler_url: str = config.options.base_url + \
                         config.options.profiler.trigger_profile
-
     payload = {
         "profile_specification":
             {
@@ -62,7 +62,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "uploaded_by": dag_context["params"]["userId"],
                 "data_connectors": [
                     {
-                        "type": ConnectorType.RawDataPath.value,
+                        "type": dag_context["params"]["connector"],
                         "dataset_id": dag_context["params"]["id"]
                     }
                 ]

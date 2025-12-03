@@ -6,3 +6,5 @@ class DataLocationKind(Enum):
     Http = 1
     Ftp = 2
     Remote = 3
+    Staged = 4
+    DatabaseFile = 5
