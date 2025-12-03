@@ -89,7 +89,7 @@ class DataRetriever:
                 result = self.retrieve_http(data_location.url)
             case DataLocationKind.Ftp:
                 result = self.retrieve_ftp(data_location.url)
-            case DataLocationKind.File | DataLocationKind.Remote | DataLocationKind.DatabaseFile:
+            case DataLocationKind.File | DataLocationKind.Remote | DataLocationKind.Database:
                 result = self.retrieve_file(data_location.url)
             case _:
                 raise ValueError(f"Unsupported dataLocation.kind: {data_location.kind}")

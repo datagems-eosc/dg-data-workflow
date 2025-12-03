@@ -2,7 +2,7 @@ import os
 import uuid
 from pathlib import Path
 
-from common.enum.data_location_kind import DataLocationKind
+from common.enum.data_store_kind import DataLocationKind
 from common.types.data_location import DataLocation
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
@@ -23,7 +23,7 @@ def build_file_path(directory: str, guid: str, name: str, extension: str | None 
 def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
                      stage_service: DataStagingService, log: Logger,
                      config: DatasetOnboardingConfig) -> DataLocation | bool:
-    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote or location.kind == DataLocationKind.Staged or location.kind == DataLocationKind.DatabaseFile:
+    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote or location.kind == DataLocationKind.Staged or location.kind == DataLocationKind.Database:
         return location
     try:
         with stream_service.retrieve(location) as retrieved_file:

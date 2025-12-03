@@ -7,4 +7,4 @@ class DataLocationKind(Enum):
     Ftp = 2
     Remote = 3
     Staged = 4
-    DatabaseFile = 5
+    Database = 5
