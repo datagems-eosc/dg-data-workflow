@@ -5,7 +5,7 @@ from typing import Any
 from airflow.sdk import Context, Param
 from dateutil import parser as date_parser
 
-from common.enum import ConnectorType
+from common.enum import ConnectorType, DataStoreKind
 from common.types.profiled_dataset import DatasetResponse
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
@@ -31,7 +31,7 @@ DAG_PARAMS = {
     "userId": Param("", type="string"),
     "citeAs": Param("", type="string"),
     "conformsTo": Param("", type="string"),
-    "connector": Param(ConnectorType.RawDataPath.value, type="string", enum=[c.value for c in ConnectorType])
+    "data_store_kind": Param(DataStoreKind.FileSystem.value, type="string", enum=[c.value for c in DataStoreKind]),
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
@@ -44,6 +44,9 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
             str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
     profiler_url: str = config.options.base_url + \
                         config.options.profiler.trigger_profile
+    connector = ConnectorType.RawDataPath.value
+    if dag_context["params"]["data_store_kind"] is DataStoreKind.RelationalDatabase.value:
+        connector = ConnectorType.DatabaseConnection.value
     payload = {
         "profile_specification":
             {
@@ -62,7 +65,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "uploaded_by": dag_context["params"]["userId"],
                 "data_connectors": [
                     {
-                        "type": dag_context["params"]["connector"],
+                        "type": connector,
                         "dataset_id": dag_context["params"]["id"]
                     }
                 ]
