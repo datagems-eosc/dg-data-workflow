@@ -31,7 +31,7 @@ DAG_PARAMS = {
     "userId": Param("", type="string"),
     "citeAs": Param("", type="string"),
     "conformsTo": Param("", type="string"),
-    "data_store_kind": Param(DataStoreKind.FileSystem.value, type="string", enum=[c.value for c in DataStoreKind]),
+    "data_store_kind": Param(DataStoreKind.FileSystem.value, type="integer", enum=[c.value for c in DataStoreKind]),
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
@@ -65,7 +65,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "uploaded_by": dag_context["params"]["userId"],
                 "data_connectors": [
                     {
-                        "type": connector,
+                        "type": DataStoreKind(dag_context["params"]["data_store_kind"]).to_connector_type().value,
                         "dataset_id": dag_context["params"]["id"]
                     }
                 ]

@@ -75,9 +75,10 @@ def dataset_onboarding():
         access_token = gateway_auth_service.get_token()
         gateway_url, headers, payload = request_onboarding_builder(access_token, dag_context, gateway_config,
                                                                    data_locations)
+        log.info(f"Payload:\n{payload}\n")
         response = http_post(url=gateway_url, data=payload,
                              headers=headers)
-        log.info(f"Server responded with {response}")
+        log.info(f"Server responded with\n{response}\n")
         return response
 
     stage_dataset_files_response = stage_dataset_files()

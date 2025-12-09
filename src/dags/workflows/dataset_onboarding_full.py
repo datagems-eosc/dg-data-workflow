@@ -76,7 +76,7 @@ def dataset_onboarding():
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          datetime.now(timezone.utc))
         response = http_post(url=url, headers=headers, data=payload)
-        log.info(response)
+        log.info(f"\n{response}\n")
         return response
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -87,7 +87,7 @@ def dataset_onboarding():
         url, headers, payload = load_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                      [DataLocation.from_dict(d) for d in raw_data_locations],
                                                      datetime.now(timezone.utc))
-        log.info(payload)
+        log.info(f"Payload:\n{payload}\n")
         response = http_put(url=url, headers=headers, data=payload)
         log.info(response)
         return response

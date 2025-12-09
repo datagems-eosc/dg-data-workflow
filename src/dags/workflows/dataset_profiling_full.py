@@ -40,6 +40,7 @@ def dataset_profiling():
         log = Logger()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
             profiler_auth_service.get_token(), get_current_context(), profiler_config, is_light)
+        log.info(f"Payload:\n{trigger_profile_payload}\n")
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
         log.info(f"Server responded with {trigger_response}")
@@ -88,7 +89,7 @@ def dataset_profiling():
                                                                      get_current_context(), dmm_config,
                                                                      stringified_profile_data,
                                                                      datetime.now(timezone.utc))
-        log.info(payload)
+        log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response
@@ -101,6 +102,7 @@ def dataset_profiling():
     #     url, headers, payload = pass_index_files_builder(discovery_auth_service.get_token(), get_current_context(),
     #                                                      discovery_config,
     #                                                      stringified_profile_data)
+    #     log.info(f"Payload:\n{payload}\n")
     #     response = http_post(url=url, headers=headers, data=payload)
     #     log.info(f"Server responded with {response}")
     #     return response
@@ -112,6 +114,7 @@ def dataset_profiling():
         log = Logger()
         url, headers, payload = profile_cleanup_builder(profiler_auth_service.get_token(), get_current_context(),
                                                         profiler_config, profile_id)
+        log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response

@@ -40,9 +40,10 @@ def dataset_profiling():
                                                                                                         dag_context,
                                                                                                         config,
                                                                                                         is_light)
+        log.info(f"Payload:\n{trigger_profile_payload}\n")
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
-        log.info(f"Server responded with {trigger_response}")
+        log.info(f"Server responded with\n{trigger_response}\n")
         return trigger_response["job_id"]
 
     @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
@@ -67,7 +68,7 @@ def dataset_profiling():
             log.error(error_message)
             raise AirflowFailException(error_message)
         else:
-            log.info(f"Profile {profile_id} status is {profile_status}")
+            log.info(f"Profile {profile_id} status is {profile_status}\n")
         return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -80,7 +81,7 @@ def dataset_profiling():
         access_token = gateway_auth_service.get_token()
         url, headers = fetch_profile_builder(access_token, dag_context, config, profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
-        log.info(f"Server responded with {fetch_profile_response}")
+        log.info(f"Server responded with\n{fetch_profile_response}\n")
         return json.dumps(fetch_profile_response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -92,8 +93,9 @@ def dataset_profiling():
         access_token = gateway_auth_service.get_token()
         url, headers, payload = update_data_management_builder(access_token, dag_context, gateway_config,
                                                                stringified_profile_data)
+        log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
-        log.info(f"Server responded with {response}")
+        log.info(f"Server responded with\n{response}\n")
         return response
 
     light_fetched_id = trigger_profile(True)
