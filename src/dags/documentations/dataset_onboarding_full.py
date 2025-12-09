@@ -20,6 +20,15 @@ REGISTER_DATASET_DOC = """
 Does something
 """
 
+BRANCH_LOAD_DATASET_ID = "choose_if_the_dataset_will_be_loaded"
+
+BRANCH_LOAD_DATASET_DOC = """
+# Choose if the dataset will be loaded
+
+If the Dataset is stored in a relational database alone, the workflow ends here.
+Otherwise, the flow continues downstream. 
+"""
+
 LOAD_DATASET_ID = "load_dataset"
 
 LOAD_DATASET_DOC = """

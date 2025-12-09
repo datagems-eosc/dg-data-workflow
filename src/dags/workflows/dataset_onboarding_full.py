@@ -7,6 +7,7 @@ from airflow.exceptions import AirflowException
 from airflow.sdk import dag, task, get_current_context
 
 from authorization.data_model_management_auth import DataModelManagementAuthService
+from common.enum import DataLocationKind
 from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
     on_retry_callback, on_failure_callback
 from common.extensions.file_extensions import process_location
@@ -14,11 +15,11 @@ from common.extensions.http_requests import http_post, http_put
 from common.types import DataLocation
 from configurations import DataModelManagementConfig, DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
-    STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
+    STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC, \
+    BRANCH_LOAD_DATASET_ID, BRANCH_LOAD_DATASET_DOC
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_TAGS, DAG_PARAMS, \
-    register_dataset_builder, load_dataset_builder
+from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, register_dataset_builder, load_dataset_builder
 from services.logging.logger import Logger
 
 
@@ -79,6 +80,19 @@ def dataset_onboarding():
         log.info(f"\n{response}\n")
         return response
 
+    @task.branch(
+        on_execute_callback=on_execute_callback,
+        on_retry_callback=on_retry_callback,
+        on_success_callback=on_success_callback,
+        on_failure_callback=on_failure_callback,
+        on_skipped_callback=on_skipped_callback,
+        task_id=BRANCH_LOAD_DATASET_ID,
+        doc_md=BRANCH_LOAD_DATASET_DOC)
+    def branch_load_dataset(raw_data_locations: list[dict[str, int | str | None]]):
+        locations = [DataLocation.from_dict(d) for d in raw_data_locations]
+        should_load = any(loc.kind is not DataLocationKind.Database for loc in locations)
+        return LOAD_DATASET_ID if should_load else None  # GOTCHA: if some other downstream is added and is addressed to Database type as well, 'None' should be swapped for the Empty Operator
+
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC)
@@ -94,9 +108,10 @@ def dataset_onboarding():
 
     staged_files_response = stage_dataset_files()
     register_response = register_dataset(staged_files_response)
+    branch_id = branch_load_dataset(staged_files_response)
     load_response = load_dataset(staged_files_response)
 
-    register_response >> load_response
+    register_response >> branch_id >> load_response
 
 
 dataset_onboarding()

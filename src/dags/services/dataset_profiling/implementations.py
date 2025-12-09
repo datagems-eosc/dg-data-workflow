@@ -1,8 +1,8 @@
 import json
-from datetime import datetime, date
+from datetime import datetime
 from typing import Any
 
-from airflow.sdk import Context, Param
+from airflow.sdk import Context
 from dateutil import parser as date_parser
 
 from common.enum import ConnectorType, DataStoreKind
@@ -10,43 +10,12 @@ from common.types.profiled_dataset import DatasetResponse
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
 from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
 
-DAG_ID = "DATASET_PROFILING"
-DAG_PARAMS = {
-    "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
-    "code": Param("", type="string"),
-    "name": Param("", type="string"),
-    "description": Param("", type="string"),
-    "license": Param("", type="string"),
-    "mime_type": Param("", type="string"),
-    "size": Param(0, type="integer", minimum=0),
-    "url": Param("", type="string", format="uri"),
-    "version": Param("", type="string"),
-    "headline": Param("", type="string"),
-    "keywords": Param([], type="array"),
-    "fields_of_science": Param([], type="array"),
-    "languages": Param([], type="array"),
-    "countries": Param([], type="array"),
-    "date_published": Param(f"{date.today()}", type="string", format="date"),
-    "dataset_file_path": Param("", type="string"),
-    "userId": Param("", type="string"),
-    "citeAs": Param("", type="string"),
-    "conformsTo": Param("", type="string"),
-    "data_store_kind": Param(DataStoreKind.FileSystem.value, type="integer", enum=[c.value for c in DataStoreKind]),
-}
-
-DAG_TAGS = ["DatasetProfiling", ]
-
-WAIT_FOR_COMPLETION_POKE_INTERVAL = ProfilerConfig().options.profiler.poke_interval
-
 
 def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, is_light_profile: bool) -> \
         tuple[
             str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
     profiler_url: str = config.options.base_url + \
                         config.options.profiler.trigger_profile
-    connector = ConnectorType.RawDataPath.value
-    if dag_context["params"]["data_store_kind"] is DataStoreKind.RelationalDatabase.value:
-        connector = ConnectorType.DatabaseConnection.value
     payload = {
         "profile_specification":
             {

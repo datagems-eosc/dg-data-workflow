@@ -16,8 +16,7 @@ from documentations.dataset_onboarding import DAG_DESCRIPTION, STAGE_DATASET_FIL
 from configurations import GatewayConfig, DatasetOnboardingConfig
 from services.data_management.data_retriever import DataRetriever
 from services.data_management.data_staging import DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, \
-    request_onboarding_builder
+from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, request_onboarding_builder
 from services.logging.logger import Logger
 
 
