@@ -6,7 +6,7 @@ from airflow.sdk import Context
 from common.extensions.file_extensions import get_staged_path, normalize_s3_path
 from common.types import DataLocation
 from configurations import GatewayConfig
-from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
+from services.graphs import AnalyticalPatternParser
 
 
 def request_onboarding_builder(auth_token: str, dag_context: Context, config: GatewayConfig,

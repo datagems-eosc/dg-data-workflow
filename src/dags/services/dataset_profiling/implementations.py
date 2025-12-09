@@ -8,7 +8,7 @@ from dateutil import parser as date_parser
 from common.enum import ConnectorType, DataStoreKind
 from common.types.profiled_dataset import DatasetResponse
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig
-from services.graphs.analytical_pattern_parser import AnalyticalPatternParser
+from services.graphs import AnalyticalPatternParser
 
 
 def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, is_light_profile: bool) -> \

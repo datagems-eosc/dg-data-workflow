@@ -18,7 +18,7 @@ from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_I
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, update_data_management_builder, \
     WAIT_FOR_COMPLETION_POKE_INTERVAL
-from services.logging.logger import Logger
+from services.logging import Logger
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)

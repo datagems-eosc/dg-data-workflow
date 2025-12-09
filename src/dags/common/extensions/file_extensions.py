@@ -5,9 +5,8 @@ from pathlib import Path
 from common.enum.data_store_kind import DataLocationKind
 from common.types.data_location import DataLocation
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
-from services.data_management.data_retriever import DataRetriever
-from services.data_management.data_staging import DataStagingService
-from services.logging.logger import Logger
+from services.data_management import DataRetriever, DataStagingService
+from services.logging import Logger
 
 
 def build_file_path(directory: str, guid: str, name: str, extension: str | None = None) -> Path:

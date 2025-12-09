@@ -19,7 +19,7 @@ from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_I
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, \
     update_data_model_management_builder
-from services.logging.logger import Logger
+from services.logging import Logger
 
 
 @dag(DAG_ID + "FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],

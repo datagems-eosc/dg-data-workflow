@@ -17,10 +17,9 @@ from configurations import DataModelManagementConfig, DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
     STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC, \
     BRANCH_LOAD_DATASET_ID, BRANCH_LOAD_DATASET_DOC
-from services.data_management.data_retriever import DataRetriever
-from services.data_management.data_staging import DataStagingService
+from services.data_management import DataRetriever, DataStagingService
 from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, register_dataset_builder, load_dataset_builder
-from services.logging.logger import Logger
+from services.logging import Logger
 
 
 @dag(DAG_ID + "_FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],

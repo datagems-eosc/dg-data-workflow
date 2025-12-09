@@ -1,7 +1,5 @@
 import time
 
-from services.logging.logger import Logger
-
 
 class BaseAuthService:
     def __init__(self, client_id, client_secret, url, scope):

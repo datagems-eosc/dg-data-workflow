@@ -1,4 +1,4 @@
-from services.logging.logger import Logger
+from services.logging import Logger
 
 
 def on_execute_callback(context) -> None:

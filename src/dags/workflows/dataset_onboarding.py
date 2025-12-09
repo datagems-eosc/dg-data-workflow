@@ -14,10 +14,9 @@ from common.types import DataLocation
 from documentations.dataset_onboarding import DAG_DESCRIPTION, STAGE_DATASET_FILES_DOC, \
     STAGE_DATASET_FILES_ID, REQUEST_ONBOARDING_ID, REQUEST_ONBOARDING_DOC, DAG_DISPLAY_NAME
 from configurations import GatewayConfig, DatasetOnboardingConfig
-from services.data_management.data_retriever import DataRetriever
-from services.data_management.data_staging import DataStagingService
+from services.data_management import DataRetriever, DataStagingService
 from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, request_onboarding_builder
-from services.logging.logger import Logger
+from services.logging import Logger
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME, description=DAG_DESCRIPTION)
