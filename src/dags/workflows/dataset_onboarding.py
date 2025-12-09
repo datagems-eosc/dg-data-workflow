@@ -55,13 +55,13 @@ def dataset_onboarding():
                     else:
                         failed_locations.append(loc)
                 except Exception as e:
-                    log.error(f"Unexpected error processing {loc.get('url')}: {e}")
+                    log.error(f"Unexpected error processing {loc.get('location')}: {e}")
                     failed_locations.append(loc)
 
         if failed_locations:
             raise AirflowException(
                 f"Failed to process dataset locations: "
-                f"{[l.get('url') for l in failed_locations]}"
+                f"{[l.get('location') for l in failed_locations]}"
             )
         return [res.to_dict() for res in results]
 

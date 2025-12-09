@@ -5,7 +5,7 @@ from common.enum import DataLocationKind
 @dataclass
 class DataLocation:
     kind : DataLocationKind = DataLocationKind.File
-    url: str | None = None
+    location: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict):
@@ -16,10 +16,10 @@ class DataLocation:
             kind = DataLocationKind[kind_value]
         else:
             raise ValueError(f"Invalid kind value: {kind_value}")
-        return cls(kind=kind, url=data.get("url"))
+        return cls(kind=kind, location=data.get("location"))
 
     def to_dict(self) -> dict[str, int | str | None]:
         return {
             "kind": self.kind.value,  # convert Enum to int
-            "url": self.url,
+            "location": self.location,
         }
