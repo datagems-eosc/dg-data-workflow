@@ -75,6 +75,7 @@ def dataset_onboarding():
         url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          datetime.now(timezone.utc))
+        log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"\n{response}\n")
         return response
