@@ -73,7 +73,7 @@ LOAD_DATASET_TEMPLATE = """
       ],
       "properties": {
         "archivedAt": "{{ dataset_archived_at }}",
-        "status": {{ analytical_pattern_node_status }},
+        "status": "{{ analytical_pattern_node_status }}",
       }
     },
     {
