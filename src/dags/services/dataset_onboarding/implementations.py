@@ -60,7 +60,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4(),
-        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED
+        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED.value
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.register
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
@@ -80,7 +80,7 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4(),
-        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED
+        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED.value
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.load
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
