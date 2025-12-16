@@ -3,6 +3,7 @@ from typing import Any
 
 from airflow.sdk import Context
 
+from common.enum import AnalyticalPatternNodeStatus
 from common.extensions.file_extensions import get_staged_path, normalize_s3_path
 from common.types import DataLocation
 from configurations import GatewayConfig
@@ -58,7 +59,8 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dataset_version": dag_context["params"]["version"],
         "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
-        "task_node_id": uuid.uuid4()
+        "task_node_id": uuid.uuid4(),
+        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.register
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
@@ -77,7 +79,8 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "dataset_archived_at": normalize_s3_path(get_staged_path(dag_context["params"]["id"])),
         "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
-        "task_node_id": uuid.uuid4()
+        "task_node_id": uuid.uuid4(),
+        "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED
     })
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.load
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
