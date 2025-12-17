@@ -13,13 +13,6 @@ MAX_FILE_NAME_LENGTH = 255
 
 
 class DataRetriever:
-    """
-    DataRetriever: a streaming-safe retriever service for large datasets.
-
-    - All methods return file-like *binary* streams.
-    - No method buffers the full file in memory.
-    - Access token is injected externally (no authorization handled here).
-    """
 
     def __init__(self, access_token: str | None = None, *, http_timeout: int = 60):
         self.access_token = access_token
@@ -27,12 +20,6 @@ class DataRetriever:
         self.logger = Logger()
 
     def retrieve_http(self, url: str) -> RetrievedFile:
-        """
-        Stream a remote HTTP(S) file.
-
-        Returns:
-            urllib3.response.HTTPResponse (file-like stream)
-        """
         headers = {}
         if self.access_token:
             headers["Authorization"] = f"Bearer {self.access_token}"
@@ -45,10 +32,6 @@ class DataRetriever:
         return RetrievedFile(response, file_name, file_extension)
 
     def retrieve_ftp(self, url: str) -> RetrievedFile:
-        """
-        Stream a file from an FTP server using a temporary on-disk file.
-        Avoids buffering entire content in memory.
-        """
         parsed = urlparse(url)
         if parsed.scheme != "ftp":
             raise ValueError(f"Invalid FTP URL: {url}")
@@ -68,9 +51,6 @@ class DataRetriever:
         return RetrievedFile(temp_file, file_name, file_extension)
 
     def retrieve_file(self, path: str) -> RetrievedFile:
-        """
-        Open a local file or S3 object and return a streaming handle.
-        """
         file_path = Path(path)
         if not file_path.exists():
             raise FileNotFoundError(f"File not found: {path}")
@@ -80,9 +60,6 @@ class DataRetriever:
         return RetrievedFile(stream, file_name, file_extension)
 
     def retrieve(self, data_location: DataLocation) -> RetrievedFile | None:
-        """
-        Convenience wrapper that picks the right retriever.
-        """
         result = None
         match data_location.kind:
             case DataLocationKind.Http:
