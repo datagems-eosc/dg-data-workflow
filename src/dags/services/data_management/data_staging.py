@@ -11,7 +11,7 @@ class DataStagingService:
     def __init__(self):
         pass
 
-    def store(self, stream: IOBase, destination_path: str) -> str:
+    def store(self, stream: IOBase, destination_path: str, decode: bool = False) -> str:
         """
         Stores a binary file stream to a local file path.
 
@@ -21,5 +21,5 @@ class DataStagingService:
         """
         os.makedirs(os.path.dirname(destination_path), exist_ok=True)
         with open(destination_path, "wb") as f:
-            f.write(stream.read())
+            f.write(stream.read(decode_content=decode))
         return os.path.abspath(destination_path)
