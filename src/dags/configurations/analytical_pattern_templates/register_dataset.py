@@ -39,7 +39,7 @@ REGISTER_DATASET_TEMPLATE = """
   ],
   "nodes": [
     {
-      "@id": "{{ analytical_pattern_node_id }}",
+      "id": "{{ analytical_pattern_node_id }}",
       "labels": [
         "Analytical_Pattern"
       ],
@@ -52,7 +52,7 @@ REGISTER_DATASET_TEMPLATE = """
       }
     },
     {
-      "@id": "{{ dmm_operator_node_id }}",
+      "id": "{{ dmm_operator_node_id }}",
       "labels": [
         "DataModelManagement_Operator"
       ],
@@ -66,7 +66,7 @@ REGISTER_DATASET_TEMPLATE = """
       }
     },
     {
-      "@id": "{{ dataset_node_id }}",
+      "id": "{{ dataset_node_id }}",
       "labels": [
         "sc:Dataset"
       ],
@@ -90,7 +90,7 @@ REGISTER_DATASET_TEMPLATE = """
       }
     },
     {
-      "@id": "{{ user_node_id }}",
+      "id": "{{ user_node_id }}",
       "labels": [
         "User"
       ],
@@ -99,7 +99,7 @@ REGISTER_DATASET_TEMPLATE = """
       }
     },
     {
-      "@id": "{{ task_node_id }}",
+      "id": "{{ task_node_id }}",
       "labels": [
         "Task"
       ],

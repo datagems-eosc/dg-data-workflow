@@ -30,6 +30,8 @@ def request_onboarding_builder(auth_token: str, dag_context: Context, config: Ga
         "Version": dag_context["params"]["version"],
         "MimeType": dag_context["params"]["mime_type"],
         "DatePublished": dag_context["params"]["date_published"],
+        "ConformsTo": dag_context["params"]["conformsTo"],
+        "CiteAs": dag_context["params"]["citeAs"]
     }
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
     return gateway_url, headers, payload

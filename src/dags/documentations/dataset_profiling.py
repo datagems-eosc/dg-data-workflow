@@ -5,7 +5,7 @@ TRIGGER_PROFILE_ID = "trigger_profile"
 TRIGGER_PROFILE_DOC = """
 # Trigger Profile
 
-Does something
+Submits a new profiling job to the Profiler service
 """
 
 WAIT_FOR_COMPLETION_ID = "wait_to_complete_profiling"
@@ -13,7 +13,7 @@ WAIT_FOR_COMPLETION_ID = "wait_to_complete_profiling"
 WAIT_FOR_COMPLETION_DOC = """
 # Wait for Completion
 
-Does something
+Repeatedly asks the Profiler the status of the submitted profiling job. If it returns failed status, terminates with error.
 """
 
 FETCH_PROFILE_ID = "fetch_ready_profile"
@@ -21,7 +21,7 @@ FETCH_PROFILE_ID = "fetch_ready_profile"
 FETCH_PROFILE_DOC = """
 # Fetch Profile
 
-Does something
+Retrieves the generated profile for a completed job.
 """
 
 UPDATE_DATA_MANAGEMENT_ID = "update_data_management_with_fetched_profile"
@@ -29,7 +29,7 @@ UPDATE_DATA_MANAGEMENT_ID = "update_data_management_with_fetched_profile"
 UPDATE_DATA_MANAGEMENT_DOC = """
 # Update Data Model Management
 
-Does something
+Updates the data model management API with the generated information from 
 """
 
 PASS_INDEX_FILES_ID = "pass_index_files"

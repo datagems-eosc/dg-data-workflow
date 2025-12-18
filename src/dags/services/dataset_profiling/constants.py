@@ -27,6 +27,7 @@ DAG_PARAMS = {
     "citeAs": Param("", type="string"),
     "conformsTo": Param("", type="string"),
     "data_store_kind": Param(DataStoreKind.FileSystem.value, type="integer", enum=[c.value for c in DataStoreKind]),
+    "archivedAt": Param("", type="string"),
 }
 
 DAG_TAGS = ["DatasetProfiling", ]
