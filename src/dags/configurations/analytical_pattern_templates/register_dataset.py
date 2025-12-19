@@ -71,32 +71,64 @@ REGISTER_DATASET_TEMPLATE = """
         "sc:Dataset"
       ],
       "properties": {
-        "@type": "sc:Dataset",
-        "archivedAt": "{{ dataset_archived_at }}",
-        "citeAs": "{{ dataset_cite_as }}",
-        "conformsTo": "{{ dataset_conforms_to }}",
-        "country": "{{ dataset_country }}",
-        "datePublished": "{{ dataset_date_published }}",
-        "description": "{{ dataset_description }}",
-        "fieldOfScience": {{ dataset_fields_of_science }},
-        "headline": "{{ dataset_headline }}",
-        "inLanguage": {{ dataset_languages }},
-        "keywords": {{ dataset_keywords }},
-        "license": "{{ dataset_license }}",
-        "name": "{{ dataset_name }}",
-        "status": "{{ analytical_pattern_node_status }}",
-        "url": "{{ dataset_url }}",
-        "version": "{{ dataset_version }}"
+        "@type": "sc:Dataset"
+        {% if dataset_archived_at %}
+            ,"archivedAt": "{{ dataset_archived_at }}"
+        {% endif %}
+        {% if dataset_cite_as %}
+            ,"citeAs": "{{ dataset_cite_as }}"
+        {% endif %}
+        {% if dataset_conforms_to %}
+            ,"conformsTo": "{{ dataset_conforms_to }}"
+        {% endif %}
+        {% if dataset_country %}
+            ,"country": "{{ dataset_country }}"
+        {% endif %}
+        {% if dataset_date_published %}
+            ,"datePublished": "{{ dataset_date_published }}"
+        {% endif %}
+        {% if dataset_description %}
+            ,"description": "{{ dataset_description }}"
+        {% endif %}
+        {% if dataset_fields_of_science %}
+            ,"fieldOfScience": {{ dataset_fields_of_science }}
+        {% endif %}
+        {% if dataset_headline %}
+            ,"headline": "{{ dataset_headline }}"
+        {% endif %}
+        {% if dataset_languages %}
+            ,"inLanguage": {{ dataset_languages }}
+        {% endif %}
+        {% if dataset_keywords %}
+            ,"keywords": {{ dataset_keywords }}
+        {% endif %}
+        {% if dataset_license %}
+            ,"license": "{{ dataset_license }}"
+        {% endif %}
+        {% if dataset_name %}
+            ,"name": "{{ dataset_name }}"
+        {% endif %}
+        {% if analytical_pattern_node_status %}
+            ,"status": "{{ analytical_pattern_node_status }}"
+        {% endif %}
+        {% if dataset_url %}
+            ,"url": "{{ dataset_url }}"
+        {% endif %}
+        {% if dataset_version %}
+            ,"version": "{{ dataset_version }}
+        {% endif %}
       }
     },
     {
       "id": "{{ user_node_id }}",
       "labels": [
         "User"
-      ],
-      "properties": {
-        "UserId": "{{ user_id }}"
-      }
+      ]
+      {% if user_id %}
+          ,"properties": {
+            "UserId": "{{ user_id }}"
+          }
+      {% endif %}
     },
     {
       "id": "{{ task_node_id }}",
