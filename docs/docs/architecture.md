@@ -8,7 +8,11 @@ Apache Airflow was selected as the orchestration layer for this solution because
 
 ### Explicit Workflow Orchestration
 
-In Airflow, workflows are defined declaratively using _"Directed Acyclic Graphs"_, in short __DAGs__. Inside a DAG, dependencies between execution steps are explicit, deterministic and inspectable.
+In Airflow, workflows are defined declaratively using _"Directed Acyclic Graphs"_, in short __DAGs__. Inside a DAG, dependencies between execution steps are explicit, deterministic and inspectable. These individual execution pieces of work are called Tasks, arranged with dependencies and data flows taken into account.
+
+![alt text](images/example_operators.png)
+
+A Dag specifies the dependencies between tasks, which defines the order in which to execute the tasks. Tasks describe what to do, be it fetching data, running analysis, triggering other systems, or more.
 
 ### Workflows as code
 
@@ -40,3 +44,5 @@ Airflow exposes execution state as part of its core model. DAGs and their tasks 
 Also, the historical audit trail of all workflow executions is kept.
 
 These features provide immediate insight into system behavior and even controlled manual intervention when required.
+
+![alt text](images/example_airflow_ui.png)
