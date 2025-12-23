@@ -8,7 +8,7 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.discovery_auth import DiscoveryAuthService
 from authorization.dwo_gateway_auth import DwoGatewayAuthService
 from authorization.profiler_auth import ProfilerAuthService
-from common.enum import ProfileStatus
+from common.enum import ProfileStatus, MomaProfileType
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get, http_put
@@ -128,8 +128,8 @@ def dataset_profiling():
     fetched_light_profile = fetch_profile(light_fetched_id)
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
-    data_management_heavy_id = update_data_management(fetched_heavy_profile, "moma_profile_heavy")
-    data_management_light_id = update_data_management(fetched_light_profile, "moma_profile_light")
+    data_management_heavy_id = update_data_management(fetched_heavy_profile, MomaProfileType.HEAVY.value)
+    data_management_light_id = update_data_management(fetched_light_profile, MomaProfileType.LIGHT.value)
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
