@@ -42,7 +42,7 @@ class AnalyticalPatternParser:
             "Step": 1
         }, excluded_properties=[])
         user_node = AnalyticalPatternNode(labels=["User"], properties={
-            "UserId": values.uploadedBy
+            "UserId": values.uploadedBy if values.uploadedBy else ""
         }, excluded_properties=[])
         task_node = AnalyticalPatternNode(labels=["Task"], properties={
             "Description": "Task to update a dataset",
