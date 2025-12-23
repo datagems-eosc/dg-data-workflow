@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Any
 
 
@@ -13,3 +14,6 @@ def normalize_keys(obj: Any):
         return [normalize_keys(x) for x in obj]
     else:
         return obj
+
+def is_iterable(obj: Any):
+    return isinstance(obj, Iterable)

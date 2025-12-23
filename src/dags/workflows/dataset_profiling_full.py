@@ -11,7 +11,7 @@ from authorization.profiler_auth import ProfilerAuthService
 from common.enum import ProfileStatus
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
-from common.extensions.http_requests import http_post, http_get
+from common.extensions.http_requests import http_post, http_get, http_put
 from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
@@ -90,7 +90,7 @@ def dataset_profiling():
                                                                      stringified_profile_data,
                                                                      datetime.now(timezone.utc), profile_type)
         log.info(f"Payload:\n{payload}\n")
-        response = http_post(url=url, headers=headers, data=payload)
+        response = http_put(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return response
 
@@ -128,8 +128,8 @@ def dataset_profiling():
     fetched_light_profile = fetch_profile(light_fetched_id)
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
-    data_management_heavy_id = update_data_management(fetched_heavy_profile, "moma_profile_light")
-    data_management_light_id = update_data_management(fetched_light_profile, "moma_profile_heavy")
+    data_management_heavy_id = update_data_management(fetched_heavy_profile, "moma_profile_heavy")
+    data_management_light_id = update_data_management(fetched_light_profile, "moma_profile_light")
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
