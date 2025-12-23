@@ -9,7 +9,8 @@ nav:
     - Architecture: architecture.md
     - Datastores: datastore.md
   - Workflows:
-    - Overview: workflow-overview.md
+    - Dataset Onboarding: workflow-dataset-onboarding.md
+    - Dataset Profiling: workflow-dataset-profiling.md
   - Setup & Monitoring:
     - Automations: automations.md
     - Deployment: deployment.md
