@@ -115,7 +115,7 @@ REGISTER_DATASET_TEMPLATE = """
             ,"url": "{{ dataset_url }}"
         {% endif %}
         {% if dataset_version %}
-            ,"version": "{{ dataset_version }}
+            ,"version": "{{ dataset_version }}"
         {% endif %}
       }
     },

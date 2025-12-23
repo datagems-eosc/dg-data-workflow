@@ -38,7 +38,7 @@ class Field(LDModel):
         "extra": "allow"  # optional, but useful for JSON-LD
     }
     type: str = PyField(None, alias="@type")
-    id: str = PyField(None, alias="@id")
+    id: str = PyField(None, alias="id")
     dataType: Optional[str] = None
     source: Optional[FieldSource] = None
     sample: Optional[List[Any]] = None
@@ -51,7 +51,7 @@ class RecordSet(LDModel):
         "extra": "allow"  # optional, but useful for JSON-LD
     }
     type: str = PyField(None, alias="@type")
-    id: str = PyField(None, alias="@id")
+    id: str = PyField(None, alias="id")
     field: Optional[List[Field]] = None
 
 
@@ -62,7 +62,7 @@ class DistributionItem(LDModel):
         "extra": "allow"  # optional, but useful for JSON-LD
     }
     type: str = PyField(None, alias="@type")
-    id: str = PyField(None, alias="@id")
+    id: str = PyField(None, alias="id")
 
 
 @dataclass
@@ -73,6 +73,6 @@ class DatasetResponse(LDModel):
     }
     context: Dict[str, Any] = PyField(None, alias="@context")
     type: str = PyField(None, alias="@type")
-    id: str = PyField(None, alias="@id")
+    id: str = PyField(None, alias="id")
     distribution: Optional[List[DistributionItem]] = None
     recordSet: Optional[List[RecordSet]] = None
