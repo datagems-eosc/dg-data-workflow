@@ -13,7 +13,7 @@ DAG_PARAMS = {
     "description": Param(None, type=["null","string"]),
     "license": Param(None, type=["null","string"]),
     "mime_type": Param(None, type=["null","string"]),
-    "size": Param(0, type="integer", minimum=0),
+    "size": Param(None, type=["null","integer"], minimum=0),
     "url": Param(None, type=["null","string"], format="uri"),
     "version": Param(None, type=["null","string"]),
     "headline": Param(None, type=["null","string"]),
