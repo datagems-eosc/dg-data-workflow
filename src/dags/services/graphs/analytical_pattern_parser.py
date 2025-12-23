@@ -57,20 +57,21 @@ class AnalyticalPatternParser:
             AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
             AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["is_achieved"])
         ])
-
-        for i in values.distribution:
-            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(),
-                                           id=uuid.UUID(i.id), excluded_properties=["id"])
-            graph.nodes.append(i_node)
-            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["distribution"]))
-
-        for i in values.recordSet:
-            i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id), excluded_properties=["id", "field"])
-            graph.nodes.append(i_node)
-            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
-            for j in i.field:
-                j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id"])
-                graph.nodes.append(j_node)
-                graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
+        if hasattr(values, "distribution"):
+            for i in values.distribution:
+                i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(),
+                                               id=uuid.UUID(i.id), excluded_properties=["id"])
+                graph.nodes.append(i_node)
+                graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["distribution"]))
+        if hasattr(values, "recordSet"):
+            for i in values.recordSet:
+                i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id), excluded_properties=["id", "field"])
+                graph.nodes.append(i_node)
+                graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
+                if hasattr(i, "field"):
+                    for j in i.field:
+                        j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id"])
+                        graph.nodes.append(j_node)
+                        graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
 
         return graph.to_dict()

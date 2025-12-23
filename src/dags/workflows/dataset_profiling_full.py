@@ -83,12 +83,12 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
-    def update_data_management(stringified_profile_data: str) -> Any:
+    def update_data_management(stringified_profile_data: str, profile_type: str) -> Any:
         log = Logger()
         url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
                                                                      get_current_context(), dmm_config,
                                                                      stringified_profile_data,
-                                                                     datetime.now(timezone.utc))
+                                                                     datetime.now(timezone.utc), profile_type)
         log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
@@ -128,8 +128,8 @@ def dataset_profiling():
     fetched_light_profile = fetch_profile(light_fetched_id)
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
-    data_management_heavy_id = update_data_management(fetched_heavy_profile)
-    data_management_light_id = update_data_management(fetched_light_profile)
+    data_management_heavy_id = update_data_management(fetched_heavy_profile, "moma_profile_light")
+    data_management_light_id = update_data_management(fetched_light_profile, "moma_profile_heavy")
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
