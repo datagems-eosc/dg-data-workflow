@@ -4,28 +4,28 @@
 
 Initially, the workflow is provided with the following information:
 
-| Parameter | Type | Special Format | Mandatory |
-|---|---|---|---|
-| id | string | uuid | yes |
-| code | string |  | no |
-| name | string |  | no |
-| description | string |  | no |
-| headline | string |  | no |
-| fields_of_science | array of strings |  | no |
-| languages | array of strings |  | no |
-| keywords | string |  | no |
-| countries | array of strings |  | no |
-| publishedUrl | string | uri | no |
-| citeAs | string |  | no |
-| conformsTo | string |  | no |
-| license | string |  | no |
-| size | number | integer | no |
-| version | string |  | no |
-| mime_type | string |  | no |
-| date_published | string | date | no |
-| userId | string |  | no |
-| data_store_kind | 0 or 1 | | yes |
-| archivedAt | string | path | yes |
+| Parameter         | Type             | Special Format | Mandatory |
+| ----------------- | ---------------- | -------------- | --------- |
+| id                | string           | uuid           | yes       |
+| code              | string           |                | no        |
+| name              | string           |                | no        |
+| description       | string           |                | no        |
+| headline          | string           |                | no        |
+| fields_of_science | array of strings |                | no        |
+| languages         | array of strings |                | no        |
+| keywords          | string           |                | no        |
+| countries         | array of strings |                | no        |
+| publishedUrl      | string           | uri            | no        |
+| citeAs            | string           |                | no        |
+| conformsTo        | string           |                | no        |
+| license           | string           |                | no        |
+| size              | number           | integer        | no        |
+| version           | string           |                | no        |
+| mime_type         | string           |                | no        |
+| date_published    | string           | date           | no        |
+| userId            | string           |                | no        |
+| data_store_kind   | 0 or 1           |                | yes       |
+| archivedAt        | string           | path           | yes       |
 
 ## Tasks
 
