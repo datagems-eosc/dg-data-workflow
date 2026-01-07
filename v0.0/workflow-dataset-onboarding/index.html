@@ -1267,19 +1267,36 @@
 <li>Ftp: The dataset is stored inside an FTP server. The location should be an FTP URI.</li>
 <li>Remote: TODO</li>
 <li>Staged: The dataset is already staged.</li>
-<li>Database: TODO</li>
+<li>Database: The dataset is stored inside a relational database.</li>
 </ul>
 <h2 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link">&para;</a></h2>
 <p>This workdlow follows the diagram that will be explained below:</p>
 <p><img alt="alt text" src="../images/onboarding_flow.png" /></p>
 <h4 id="stage-dataset-files">Stage Dataset Files<a class="headerlink" href="#stage-dataset-files" title="Permanent link">&para;</a></h4>
-<p>The files corresponding to the Dataset are collected and staged in a predetermined location. File (0), Remote (3) and Staged (4) locations are omitted.</p>
+<p>This task ensures that all dataset files are available in a controlled, local staging area before the dataset is registered or loaded.
+Because datasets may originate from heterogeneous storage systems, this step acts as a normalization phase: regardless of where the data comes from, downstream tasks interact with a consistent file-based representation whenever applicable.
+The task iterates over all declared dataset locations and applies the appropriate handling strategy for each one.</p>
+<p>If the dataset is already available on the local filesystem, already staged by a previous process, stored in a relational database, or referenced by a location type that does not require materialization, then no action is performed and the location is passed through unchanged.</p>
+<p>If the dataset is hosted externally (for example via HTTP or FTP), the dataset files are retrieved from the remote source, stored in a predefined staging directory associated with the dataset and assigned unique filenames to avoid collisions or ambiguity.</p>
+<p>The task produces a normalized list of dataset locations that reflects the effective access points for the dataset:</p>
+<ul>
+<li>unchanged locations for sources that do not require staging,</li>
+<li>staged file locations for externally retrieved datasets.</li>
+</ul>
+<p>This output is used by subsequent tasks to register the dataset metadata and decide whether the dataset should be physically loaded or only registered.</p>
+<p>If any dataset location cannot be accessed, retrieved, or staged successfully, the workflow fails at this step.
+This prevents partial or inconsistent dataset onboarding.</p>
 <h4 id="register-dataset">Register Dataset<a class="headerlink" href="#register-dataset" title="Permanent link">&para;</a></h4>
-<p>The task gets the corresponding authorization token and communicates with the Data Model Management service to register the dataset.</p>
+<p>This task registers the dataset and its metadata in the central Data Model Management system, making the dataset discoverable, traceable, and addressable within the platform. The task uses the metadata provided at workflow start, together with the effective dataset locations produced by the staging step, to create a canonical dataset representation.
+The task returns the response from the Data Model Management system, which is primarily informational; downstream control flow is determined by the dataset location types rather than this response.</p>
+<p>If the registration request fails, the workflow terminates immediately. No dataset loading is attempted unless the dataset has been successfully registered.</p>
 <h4 id="choose-if-the-dataset-will-be-loaded">Choose if the Dataset will be loaded<a class="headerlink" href="#choose-if-the-dataset-will-be-loaded" title="Permanent link">&para;</a></h4>
-<p>In case the dataset is stored inside a relational database, the execution ends here. Otherwise, it continues downstream.</p>
+<p>This step determines whether the workflow should proceed with physically loading the dataset or stop after registration. The decision is based on the types of dataset locations associated with the dataset: If the dataset is stored in a relational database, the workflow ends after registration. Otherwise, the workflow continues to the loading step.
+By explicitly separating registration from loading, the workflow supports multiple dataset lifecycle patterns while maintaining a consistent onboarding process.</p>
 <h4 id="load-dataset">Load Dataset<a class="headerlink" href="#load-dataset" title="Permanent link">&para;</a></h4>
-<p>The task gets the corresponding authorization token and communicates with the Data Model Management service to load the dataset. The execution ends here.</p>
+<p>This task performs the physical ingestion of the dataset into downstream systems after it has been successfully registered. Loading is only executed for datasets that require file-based processing. Database-resident datasets and other non-loadable sources are explicitly excluded by the preceding decision step. This operation does not redefine dataset metadata; it acts upon the dataset entity created during registration.</p>
+<p>The task returns the response from the Data Model Management system which is primarily informational and does not affect further workflow execution.</p>
+<p>If loading fails, the workflow fails at this stage. The dataset remains registered but is not marked as loaded, allowing the issue to be diagnosed and retried without re-registration.</p>
 
 
 
