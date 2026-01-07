@@ -31,22 +31,7 @@ Initially, the workflow is provided with the following information:
 
 This workdlow follows the diagram that will be explained below:
 
-```mermaid
-flowchart LR
-    Y[Trigger Light Profile] --> A{Is the light profile complete?}
-	A --> |No| A
-	A --> |Yes| B[Fetch Light Profile]
-	B --> F[Update Data Management with Light Profile]
-
-	Z[Trigger Heavy Profile] --> C{Is the heavy profile complete?}
-	C --> |No| C
-	C --> |Yes| D[Fetch Heavy Profile]
-	D --> G[Update Data Management with Heavy Profile]
-
-	F --> E[Profile Cleanup] --> O((End))
-	G --> E
-
-```
+![alt text](images/profiling_flow.png)
 
 #### Trigger Profiles
 
