@@ -1,5 +1,8 @@
 # Dataset Onboarding Workflow
 
+The Dataset Onboarding Workflow provides a unified and controlled process for registering and ingesting datasets into the platform, regardless of their original storage location.
+The workflow accepts dataset metadata together with one or more dataset locations and guides the dataset through a well-defined lifecycle that separates physical data handling from logical dataset management.
+
 ## Input
 
 In in the initial step, the workflow is provided with the following information:
@@ -37,7 +40,7 @@ All the fields except dataLocations contain metadata information. The dataLocati
 
 ## Tasks
 
-This workdlow follows the diagram that will be explained below:
+This workflow follows the diagram that will be explained below:
 
 ![alt text](images/onboarding_flow.png)
 
