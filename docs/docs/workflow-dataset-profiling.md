@@ -1,7 +1,7 @@
 # Dataset Profiling Workflow
 
 This workflow orchestrates the profiling lifecycle of a dataset, from profile generation to metadata integration and cleanup.
-It produces two complementary profiles—light and heavy—and ensures that both are correctly persisted before releasing profiling resources.
+It produces two complementary profiles— light and heavy— and ensures that both are correctly persisted before releasing profiling resources.
 
 ## Input
 
@@ -38,7 +38,7 @@ The workflow follows the diagram below, which illustrates parallel execution, sy
 
 #### Trigger Profiles
 
-The execution is plit in two parallel task instance queues, one for light profiling and one for heavy, as shown in the diagram. The first level of tasks ran in parallel get the corresponding authorization token and communicate with the Profiler service to trigger the generation of the profile.
+The execution is split in two parallel task instance queues, one for light profiling and one for heavy, as shown in the diagram. The first level of tasks ran in parallel get the corresponding authorization token and communicate with the Profiler service to trigger the generation of the profile.
 This parallelization allows lightweight metadata extraction and more intensive analysis to proceed independently and efficiently.
 
 #### Check if the Profiles are ready
