@@ -8,25 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://datagems-eosc.github.io/dg-data-workflow/v0.0/workflow-overview/">
+        <link rel="canonical" href="https://datagems-eosc.github.io/dg-data-workflow/v0.0/workflow-dataset-onboarding/">
       
       
         <link rel="prev" href="../datastore/">
       
       
-        <link rel="next" href="../automations/">
+        <link rel="next" href="../workflow-dataset-profiling/">
+      
+      
+        
       
       
       <link rel="icon" href="../images/favicon.jpg">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>Overview - DataGEMS Data Workflow Orchestrator Docs</title>
+        <title>Dataset Onboarding - DataGEMS Data Workflow Orchestrator Docs</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
       
 
@@ -55,7 +58,6 @@
 
     
     
-    
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -71,7 +73,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#workflow-overview" class="md-skip">
+        <a href="#dataset-onboarding-workflow" class="md-skip">
           Skip to content
         </a>
       
@@ -125,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Dataset Onboarding
             
           </span>
         </div>
@@ -249,9 +251,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Overview
+  
+
     
   </span>
+  
   
 
       </a>
@@ -282,9 +289,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     System
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -293,7 +305,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            System
+            
+  
+    System
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -309,9 +325,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Architecture
+  
+
     
   </span>
+  
   
 
       </a>
@@ -332,9 +353,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Datastores
+  
+
     
   </span>
+  
   
 
       </a>
@@ -375,9 +401,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Workflows
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -386,7 +417,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Workflows
+            
+  
+    Workflows
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -411,9 +446,14 @@
   
   
   <span class="md-ellipsis">
-    Overview
+    
+  
+    Dataset Onboarding
+  
+
     
   </span>
+  
   
 
           <span class="md-nav__icon md-icon"></span>
@@ -424,9 +464,14 @@
   
   
   <span class="md-ellipsis">
-    Overview
+    
+  
+    Dataset Onboarding
+  
+
     
   </span>
+  
   
 
       </a>
@@ -447,46 +492,67 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dataset-onboarding" class="md-nav__link">
+  <a href="#input" class="md-nav__link">
     <span class="md-ellipsis">
-      Dataset Onboarding
+      
+        Input
+      
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#dataset-profiling" class="md-nav__link">
+  <a href="#tasks" class="md-nav__link">
     <span class="md-ellipsis">
-      Dataset Profiling
-    </span>
-  </a>
-  
-</li>
       
-        <li class="md-nav__item">
-  <a href="#other-aspects-of-workflow-execution" class="md-nav__link">
-    <span class="md-ellipsis">
-      Other Aspects of workflow execution
+        Tasks
+      
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Other Aspects of workflow execution">
+    <nav class="md-nav" aria-label="Tasks">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#retries" class="md-nav__link">
+  <a href="#stage-dataset-files" class="md-nav__link">
     <span class="md-ellipsis">
-      Retries
+      
+        Stage Dataset Files
+      
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flow-resume" class="md-nav__link">
+  <a href="#register-dataset" class="md-nav__link">
     <span class="md-ellipsis">
-      Flow Resume
+      
+        Register Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choose-if-the-dataset-will-be-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose if the Dataset will be loaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load Dataset
+      
     </span>
   </a>
   
@@ -501,6 +567,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflow-dataset-profiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataset Profiling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -536,9 +630,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Setup & Monitoring
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -547,7 +646,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Setup & Monitoring
+            
+  
+    Setup & Monitoring
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -563,9 +666,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Automations
+  
+
     
   </span>
+  
   
 
       </a>
@@ -586,9 +694,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Deployment
+  
+
     
   </span>
+  
   
 
       </a>
@@ -609,9 +722,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Configuration
+  
+
     
   </span>
+  
   
 
       </a>
@@ -632,9 +750,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Maintenance
+  
+
     
   </span>
+  
   
 
       </a>
@@ -673,9 +796,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Material
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -684,7 +812,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Material
+            
+  
+    Material
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -700,9 +832,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Onboarding
+  
+
     
   </span>
+  
   
 
       </a>
@@ -723,9 +860,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Quality Assurance
+  
+
     
   </span>
+  
   
 
       </a>
@@ -746,9 +888,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     FAQ & Known Issues
+  
+
     
   </span>
+  
   
 
       </a>
@@ -776,9 +923,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     License
+  
+
     
   </span>
+  
   
 
       </a>
@@ -798,9 +950,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -835,46 +992,67 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dataset-onboarding" class="md-nav__link">
+  <a href="#input" class="md-nav__link">
     <span class="md-ellipsis">
-      Dataset Onboarding
+      
+        Input
+      
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#dataset-profiling" class="md-nav__link">
+  <a href="#tasks" class="md-nav__link">
     <span class="md-ellipsis">
-      Dataset Profiling
-    </span>
-  </a>
-  
-</li>
       
-        <li class="md-nav__item">
-  <a href="#other-aspects-of-workflow-execution" class="md-nav__link">
-    <span class="md-ellipsis">
-      Other Aspects of workflow execution
+        Tasks
+      
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Other Aspects of workflow execution">
+    <nav class="md-nav" aria-label="Tasks">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#retries" class="md-nav__link">
+  <a href="#stage-dataset-files" class="md-nav__link">
     <span class="md-ellipsis">
-      Retries
+      
+        Stage Dataset Files
+      
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flow-resume" class="md-nav__link">
+  <a href="#register-dataset" class="md-nav__link">
     <span class="md-ellipsis">
-      Flow Resume
+      
+        Register Dataset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choose-if-the-dataset-will-be-loaded" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose if the Dataset will be loaded
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Load Dataset
+      
     </span>
   </a>
   
@@ -895,6 +1073,55 @@
           
           
             <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Workflows
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
               <article class="md-content__inner md-typeset">
                 
                   
@@ -904,16 +1131,79 @@
   
 
 
-<h1 id="workflow-overview">Workflow Overview<a class="headerlink" href="#workflow-overview" title="Permanent link">&para;</a></h1>
-<h2 id="dataset-onboarding">Dataset Onboarding<a class="headerlink" href="#dataset-onboarding" title="Permanent link">&para;</a></h2>
-<p><strong>TODO: Provide information</strong></p>
-<h2 id="dataset-profiling">Dataset Profiling<a class="headerlink" href="#dataset-profiling" title="Permanent link">&para;</a></h2>
-<p><strong>TODO: Provide information</strong></p>
-<h2 id="other-aspects-of-workflow-execution">Other Aspects of workflow execution<a class="headerlink" href="#other-aspects-of-workflow-execution" title="Permanent link">&para;</a></h2>
-<h3 id="retries">Retries<a class="headerlink" href="#retries" title="Permanent link">&para;</a></h3>
-<p><strong>TODO: Provide information</strong></p>
-<h3 id="flow-resume">Flow Resume<a class="headerlink" href="#flow-resume" title="Permanent link">&para;</a></h3>
-<p><strong>TODO: Provide information</strong></p>
+<h1 id="dataset-onboarding-workflow">Dataset Onboarding Workflow<a class="headerlink" href="#dataset-onboarding-workflow" title="Permanent link">&para;</a></h1>
+<h2 id="input">Input<a class="headerlink" href="#input" title="Permanent link">&para;</a></h2>
+<p>In in the initial step, the workflow is provided with the following information:
+| Parameter | Type | Special Format | Mandatory |
+|---|---|---|---|
+| id | string | uuid | yes |
+| code | string | | no |
+| name | string | | no |
+| description | string | | no |
+| headline | string | | no |
+| fields_of_science | array of strings | | no |
+| languages | array of strings | | no |
+| keywords | string | | no |
+| countries | array of strings | | no |
+| publishedUrl | string | uri | no |
+| citeAs | string | | no |
+| conformsTo | string | | no |
+| license | string | | no |
+| size | number | integer | no |
+| dataLocations | array of objects {Kind: string, location: string} | | yes |
+| version | string | | no |
+| mime_type | string | | no |
+| date_published | string | date | no |
+| userId | string | | no |</p>
+<p>All the fields except dataLocations contain metadata information. The dataLocations contains the information where the Dataset is located. The following locations are supported:</p>
+<ul>
+<li>
+<ol>
+<li>File: The dataset is stored inside a file somewhere in the mounted filesystem.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Http: The dataset can be accessed via a URI.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Ftp: The dataset is stored inside an FTP server. The location should be an FTP URI.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Remote: TODO</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Staged: The dataset is already staged.</li>
+</ol>
+</li>
+<li>
+<ol>
+<li>Database: TODO</li>
+</ol>
+</li>
+</ul>
+<h2 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link">&para;</a></h2>
+<p>This workdlow follows the diagram that will be explained below:</p>
+<div class="highlight"><pre><span></span><code>flowchart LR
+    A[Stage Dataset Files] --&gt; B[Register Dataset]
+    B --&gt; C{Will the Dataset be loaded?}
+    C --&gt; |Yes| D[Load Dataset] --&gt; E
+    C --&gt; |No| E((Finish))
+</code></pre></div>
+<h4 id="stage-dataset-files">Stage Dataset Files<a class="headerlink" href="#stage-dataset-files" title="Permanent link">&para;</a></h4>
+<p>The files corresponding to the Dataset are collected and staged in a predetermined location. File (0), Remote (3) and Staged (4) locations are omitted.</p>
+<h4 id="register-dataset">Register Dataset<a class="headerlink" href="#register-dataset" title="Permanent link">&para;</a></h4>
+<p>The task gets the corresponding authorization token and communicates with the Data Model Management service to register the dataset.</p>
+<h4 id="choose-if-the-dataset-will-be-loaded">Choose if the Dataset will be loaded<a class="headerlink" href="#choose-if-the-dataset-will-be-loaded" title="Permanent link">&para;</a></h4>
+<p>In case the dataset is stored inside a relational database, the execution ends here. Otherwise, it continues downstream.</p>
+<h4 id="load-dataset">Load Dataset<a class="headerlink" href="#load-dataset" title="Permanent link">&para;</a></h4>
+<p>The task gets the corresponding authorization token and communicates with the Data Model Management service to load the dataset. The execution ends here.</p>
 
 
 
@@ -999,10 +1289,11 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.path", "navigation.top"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "latest", "provider": "mike"}}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.path", "navigation.top"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"alias": true, "default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -2,50 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/architecture/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/automations/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/configuration/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/datastore/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/deployment/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/faq/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/license/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/maintenance/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/onboarding/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
          <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/qa/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <lastmod>2026-01-07</lastmod>
     </url>
     <url>
-         <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/workflow-overview/</loc>
-         <lastmod>2025-10-23</lastmod>
+         <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/workflow-dataset-onboarding/</loc>
+         <lastmod>2026-01-07</lastmod>
+    </url>
+    <url>
+         <loc>https://datagems-eosc.github.io/dg-data-workflow/v0.0/workflow-dataset-profiling/</loc>
+         <lastmod>2026-01-07</lastmod>
     </url>
 </urlset>
