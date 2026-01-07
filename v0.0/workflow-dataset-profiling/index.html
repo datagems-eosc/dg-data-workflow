@@ -1290,20 +1290,7 @@
 </table>
 <h2 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link">&para;</a></h2>
 <p>This workdlow follows the diagram that will be explained below:</p>
-<div class="highlight"><pre><span></span><code>flowchart LR
-    Y[Trigger Light Profile] --&gt; A{Is the light profile complete?}
-    A --&gt; |No| A
-    A --&gt; |Yes| B[Fetch Light Profile]
-    B --&gt; F[Update Data Management with Light Profile]
-
-    Z[Trigger Heavy Profile] --&gt; C{Is the heavy profile complete?}
-    C --&gt; |No| C
-    C --&gt; |Yes| D[Fetch Heavy Profile]
-    D --&gt; G[Update Data Management with Heavy Profile]
-
-    F --&gt; E[Profile Cleanup] --&gt; O((End))
-    G --&gt; E
-</code></pre></div>
+<p><img alt="alt text" src="../images/profiling_flow.png" /></p>
 <h4 id="trigger-profiles">Trigger Profiles<a class="headerlink" href="#trigger-profiles" title="Permanent link">&para;</a></h4>
 <p>The execution is plit in two parallel task instance queues, one for light profiling and one for heavy, as shown in the diagram. The first level of tasks ran in parallel get the corresponding authorization token and communicate with the Profiler service to trigger the generation of the profile.</p>
 <h4 id="check-if-the-profiles-are-ready">Check if the Profiles are ready<a class="headerlink" href="#check-if-the-profiles-are-ready" title="Permanent link">&para;</a></h4>

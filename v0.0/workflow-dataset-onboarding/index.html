@@ -1133,69 +1133,145 @@
 
 <h1 id="dataset-onboarding-workflow">Dataset Onboarding Workflow<a class="headerlink" href="#dataset-onboarding-workflow" title="Permanent link">&para;</a></h1>
 <h2 id="input">Input<a class="headerlink" href="#input" title="Permanent link">&para;</a></h2>
-<p>In in the initial step, the workflow is provided with the following information:
-| Parameter | Type | Special Format | Mandatory |
-|---|---|---|---|
-| id | string | uuid | yes |
-| code | string | | no |
-| name | string | | no |
-| description | string | | no |
-| headline | string | | no |
-| fields_of_science | array of strings | | no |
-| languages | array of strings | | no |
-| keywords | string | | no |
-| countries | array of strings | | no |
-| publishedUrl | string | uri | no |
-| citeAs | string | | no |
-| conformsTo | string | | no |
-| license | string | | no |
-| size | number | integer | no |
-| dataLocations | array of objects {Kind: string, location: string} | | yes |
-| version | string | | no |
-| mime_type | string | | no |
-| date_published | string | date | no |
-| userId | string | | no |</p>
+<p>In in the initial step, the workflow is provided with the following information:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Special Format</th>
+<th>Mandatory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>string</td>
+<td>uuid</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>code</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>headline</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>fields_of_science</td>
+<td>array of strings</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>languages</td>
+<td>array of strings</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>keywords</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>countries</td>
+<td>array of strings</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>publishedUrl</td>
+<td>string</td>
+<td>uri</td>
+<td>no</td>
+</tr>
+<tr>
+<td>citeAs</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>conformsTo</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>license</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>size</td>
+<td>number</td>
+<td>integer</td>
+<td>no</td>
+</tr>
+<tr>
+<td>dataLocations</td>
+<td>array of objects {Kind: string, location: string}</td>
+<td></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>version</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+<tr>
+<td>date_published</td>
+<td>string</td>
+<td>date</td>
+<td>no</td>
+</tr>
+<tr>
+<td>userId</td>
+<td>string</td>
+<td></td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
 <p>All the fields except dataLocations contain metadata information. The dataLocations contains the information where the Dataset is located. The following locations are supported:</p>
 <ul>
-<li>
-<ol>
 <li>File: The dataset is stored inside a file somewhere in the mounted filesystem.</li>
-</ol>
-</li>
-<li>
-<ol>
 <li>Http: The dataset can be accessed via a URI.</li>
-</ol>
-</li>
-<li>
-<ol>
 <li>Ftp: The dataset is stored inside an FTP server. The location should be an FTP URI.</li>
-</ol>
-</li>
-<li>
-<ol>
 <li>Remote: TODO</li>
-</ol>
-</li>
-<li>
-<ol>
 <li>Staged: The dataset is already staged.</li>
-</ol>
-</li>
-<li>
-<ol>
 <li>Database: TODO</li>
-</ol>
-</li>
 </ul>
 <h2 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link">&para;</a></h2>
 <p>This workdlow follows the diagram that will be explained below:</p>
-<div class="highlight"><pre><span></span><code>flowchart LR
-    A[Stage Dataset Files] --&gt; B[Register Dataset]
-    B --&gt; C{Will the Dataset be loaded?}
-    C --&gt; |Yes| D[Load Dataset] --&gt; E
-    C --&gt; |No| E((Finish))
-</code></pre></div>
+<p><img alt="alt text" src="../images/onboarding_flow.png" /></p>
 <h4 id="stage-dataset-files">Stage Dataset Files<a class="headerlink" href="#stage-dataset-files" title="Permanent link">&para;</a></h4>
 <p>The files corresponding to the Dataset are collected and staged in a predetermined location. File (0), Remote (3) and Staged (4) locations are omitted.</p>
 <h4 id="register-dataset">Register Dataset<a class="headerlink" href="#register-dataset" title="Permanent link">&para;</a></h4>
