@@ -7,28 +7,28 @@ It produces two complementary profiles— light and heavy— and ensures that bo
 
 Initially, the workflow is provided with the following information:
 
-| Parameter         | Type             | Special Format | Mandatory |
-| ----------------- | ---------------- | -------------- | --------- |
-| id                | string           | uuid           | yes       |
-| code              | string           |                | no        |
-| name              | string           |                | no        |
-| description       | string           |                | no        |
-| headline          | string           |                | no        |
-| fields_of_science | array of strings |                | no        |
-| languages         | array of strings |                | no        |
-| keywords          | string           |                | no        |
-| countries         | array of strings |                | no        |
-| publishedUrl      | string           | uri            | no        |
-| citeAs            | string           |                | no        |
-| conformsTo        | string           |                | no        |
-| license           | string           |                | no        |
-| size              | number           | integer        | no        |
-| version           | string           |                | no        |
-| mime_type         | string           |                | no        |
-| date_published    | string           | date           | no        |
-| userId            | string           |                | no        |
-| data_store_kind   | 0 or 1           |                | yes       |
-| archivedAt        | string           | path           | yes       |
+| Parameter         | Type             | Special Format | Mandatory | Description                                                                                                                                                                                          |
+| ----------------- | ---------------- | -------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                | string           | uuid           | yes       | A globally unique identifier of the dataset to be profiled. This identifier links profiling results to the correct dataset entity in downstream systems.                                             |
+| code              | string           |                | no        | An optional short or human-friendly code used to reference the dataset. Primarily intended for cataloging or internal identification.                                                                |
+| name              | string           |                | no        | The human-readable name of the dataset. Used for identification and traceability throughout the profiling lifecycle.                                                                                 |
+| description       | string           |                | no        | A detailed textual description of the dataset. Provides contextual information that may be associated with profiling results.                                                                        |
+| headline          | string           |                | no        | A concise, high-level summary of the dataset. Typically used for display purposes in user interfaces.                                                                                                |
+| fields_of_science | array of strings |                | no        | A list of scientific or domain classifications associated with the dataset. Used for categorization and analytical context.                                                                          |
+| languages         | array of strings |                | no        | The languages represented in the dataset content. Relevant for interpreting profiling metrics, especially for textual data.                                                                          |
+| keywords          | string           |                | no        | Free-form keywords associated with the dataset. Support discoverability and semantic interpretation of profiling results.                                                                            |
+| countries         | array of strings |                | no        | A list of countries relevant to the dataset. May indicate geographic coverage, origin, or regulatory context.                                                                                        |
+| publishedUrl      | string           | uri            | no        | A public or external URL where the dataset is described or published. May reference documentation, landing pages, or external repositories.                                                          |
+| citeAs            | string           |                | no        | A recommended citation string for the dataset. Used to support attribution and reuse in publications.                                                                                                |
+| conformsTo        | string           |                | no        | A reference to a standard, schema, or specification that the dataset adheres to. Provides structural or semantic context for profiling outputs.                                                      |
+| license           | string           |                | no        | The license under which the dataset is distributed. Defines legal and usage constraints relevant to downstream consumers.                                                                            |
+| size              | number           | integer        | no        | An approximate size indicator for the dataset. May represent file size, record count, or another agreed-upon metric.                                                                                 |
+| version           | string           |                | no        | The version identifier of the dataset. Used to distinguish profiling results across different dataset revisions.                                                                                     |
+| mime_type         | string           |                | no        | The MIME type describing the dataset's format (e.g. text/csv, application/json). Helps the profiling system select appropriate analysis strategies.                                                  |
+| date_published    | string           | date           | no        | The publication date of the dataset. Used for provenance tracking and temporal context.                                                                                                              |
+| userId            | string           |                | no        | An identifier representing the user or actor who initiated the profiling workflow. Used for attribution, auditing, and traceability.                                                                 |
+| data_store_kind   | 0 or 1           |                | yes       | An indicator of how the dataset is physically stored. This value determines how the profiler accesses the dataset (e.g. file-based vs. database-backed) and influences profiling execution behavior. |
+| archivedAt        | string           | path           | yes       | The path or location where the dataset is archived and accessed for profiling. This serves as the authoritative source from which profiling jobs read the dataset.                                   |
 
 ## Tasks
 
