@@ -1143,6 +1143,7 @@ The workflow accepts dataset metadata together with one or more dataset location
 <th>Type</th>
 <th>Special Format</th>
 <th>Mandatory</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
@@ -1151,114 +1152,133 @@ The workflow accepts dataset metadata together with one or more dataset location
 <td>string</td>
 <td>uuid</td>
 <td>yes</td>
+<td>A globally unique identifier for the dataset. This identifier is used consistently throughout the workflow to associate metadata, staged files, and lifecycle events with the same dataset entity.</td>
 </tr>
 <tr>
 <td>code</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>An optional short or human-friendly code used to reference the dataset. This may correspond to an internal catalog code or business identifier.</td>
 </tr>
 <tr>
 <td>name</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>The human-readable name of the dataset. Used for display, discovery, and identification purposes.</td>
 </tr>
 <tr>
 <td>description</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>A detailed textual description of the dataset contents, scope, and purpose. Helps users understand what the dataset represents and how it can be used.</td>
 </tr>
 <tr>
 <td>headline</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>A short, high-level summary or tagline describing the dataset. Typically used in user interfaces or dataset listings.</td>
 </tr>
 <tr>
 <td>fields_of_science</td>
 <td>array of strings</td>
 <td></td>
 <td>no</td>
+<td>A list of scientific or domain classifications associated with the dataset. Used for categorization, filtering, and discovery.</td>
 </tr>
 <tr>
 <td>languages</td>
 <td>array of strings</td>
 <td></td>
 <td>no</td>
+<td>The languages represented in the dataset content. This may refer to the language of textual data or metadata.</td>
 </tr>
 <tr>
 <td>keywords</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>Free-form keywords associated with the dataset. Used to improve searchability and discoverability.</td>
 </tr>
 <tr>
 <td>countries</td>
 <td>array of strings</td>
 <td></td>
 <td>no</td>
+<td></td>
 </tr>
 <tr>
 <td>publishedUrl</td>
 <td>string</td>
 <td>uri</td>
 <td>no</td>
+<td>A public or external URL where the dataset is published or described. This may point to documentation, landing pages, or external repositories.</td>
 </tr>
 <tr>
 <td>citeAs</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>A recommended citation string for referencing the dataset in publications. Used to support proper attribution and academic reuse.</td>
 </tr>
 <tr>
 <td>conformsTo</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>A reference to a standard, schema, or specification that the dataset conforms to. This may include formal data models or community standards.</td>
 </tr>
 <tr>
 <td>license</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>The license under which the dataset is distributed. Defines usage rights, redistribution terms, and legal constraints.</td>
 </tr>
 <tr>
 <td>size</td>
 <td>number</td>
 <td>integer</td>
 <td>no</td>
+<td></td>
 </tr>
 <tr>
 <td>dataLocations</td>
 <td>array of objects {Kind: string, location: string}</td>
 <td></td>
 <td>yes</td>
+<td>A list of locations describing where the dataset is physically stored or accessed. Each entry specifies the type of location (e.g. file system, remote service, database), and the corresponding access reference (path, URI, connection, etc.). This parameter is mandatory and drives staging, branching, and loading behavior in the workflow.</td>
 </tr>
 <tr>
 <td>version</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>The version identifier of the dataset. Used to distinguish between different releases or revisions of the same dataset.</td>
 </tr>
 <tr>
 <td>mime_type</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>The MIME type representing the datase's format (e.g. text/csv, application/json). Helps downstream systems interpret and process the data correctly.</td>
 </tr>
 <tr>
 <td>date_published</td>
 <td>string</td>
 <td>date</td>
 <td>no</td>
+<td>The publication date of the dataset. Used for provenance tracking and lifecycle management.</td>
 </tr>
 <tr>
 <td>userId</td>
 <td>string</td>
 <td></td>
 <td>no</td>
+<td>An identifier representing the user or actor initiating the onboarding process. Used for attribution, auditing, and ownership tracking.</td>
 </tr>
 </tbody>
 </table>
