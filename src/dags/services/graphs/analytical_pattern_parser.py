@@ -50,9 +50,8 @@ class AnalyticalPatternParser:
         dataset_node = AnalyticalPatternNode(labels=[values.type], properties=values.model_dump(),
                                              id=uuid.UUID(values.id), excluded_properties=["context", "id", "distribution", "recordSet"])
         graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node, dataset_node], edges=[
-            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consists_of"]),
-            AnalyticalPatternEdge.from_nodes(frm=operator_node, to=dataset_node, labels=["input"]),
-            AnalyticalPatternEdge.from_nodes(frm=user_node, to=operator_node, labels=["intervene"]),
+            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consist_of"]),
+            AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=operator_node, labels=["input"]),
             AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
             AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["is_achieved"])
         ])
