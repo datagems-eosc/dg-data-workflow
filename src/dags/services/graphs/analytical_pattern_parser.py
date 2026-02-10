@@ -68,7 +68,7 @@ class AnalyticalPatternParser:
                 graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
                 if hasattr(i, "field") and i.field and is_iterable(i.field):
                     for j in i.field:
-                        j_node = AnalyticalPatternNode(labels=[j.name, j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id"])
+                        j_node = AnalyticalPatternNode(labels=[j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id"])
                         graph.nodes.append(j_node)
                         graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
 
