@@ -51,7 +51,7 @@ class FieldStatistics(LDModel):
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    histogram: list[StatisticsHistogram] = PyField(None, alias="dg:histogram")
+    histogram: Optional[list[StatisticsHistogram]] = PyField(None, alias="dg:histogram")
     fileObject: Optional[Dict[str, str]] = None
     extract: Optional[FieldSourceExtract] = None
 
