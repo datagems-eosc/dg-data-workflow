@@ -56,13 +56,13 @@ class AnalyticalPatternParser:
             AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["isAchieved"])
         ])
 
-        log.info("recordSet:", values.recordSet is not None, len(values.recordSet or []))
+        log.info(f"recordSet: {values.recordSet is not None, len(values.recordSet or [])}")
         if values.recordSet:
             rs0 = values.recordSet[0]
-            log.info("fields:", len(rs0.field or []))
+            log.info(f"fields: {len(rs0.field or [])}")
             if rs0.field:
-                log.info("field0 has stats:", rs0.field[0].statistics is not None)
-                log.info("field0 stats raw:", rs0.field[0].statistics)
+                log.info(f"field0 has stats: {rs0.field[0].statistics is not None}")
+                log.info(f"field0 stats raw: {rs0.field[0].statistics}")
 
         if hasattr(values, "distribution") and values.distribution and is_iterable(values.distribution):
             for i in values.distribution:
