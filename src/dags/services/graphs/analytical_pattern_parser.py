@@ -57,13 +57,13 @@ class AnalyticalPatternParser:
         ])
         if hasattr(values, "distribution") and values.distribution and is_iterable(values.distribution):
             for i in values.distribution:
-                i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(),
+                i_node = AnalyticalPatternNode(labels=[i.type], properties=i.model_dump(),
                                                id=uuid.UUID(i.id), excluded_properties=["id"])
                 graph.nodes.append(i_node)
                 graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["distribution"]))
         if hasattr(values, "recordSet") and values.recordSet and is_iterable(values.recordSet):
             for i in values.recordSet:
-                i_node = AnalyticalPatternNode(labels=[i.name, i.type], properties=i.model_dump(), id=uuid.UUID(i.id), excluded_properties=["id", "field"])
+                i_node = AnalyticalPatternNode(labels=[i.type], properties=i.model_dump(), id=uuid.UUID(i.id), excluded_properties=["id", "field"])
                 graph.nodes.append(i_node)
                 graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=i_node, labels=["recordSet"]))
                 if hasattr(i, "field") and i.field and is_iterable(i.field):
