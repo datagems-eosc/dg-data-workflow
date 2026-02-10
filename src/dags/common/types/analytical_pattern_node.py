@@ -12,14 +12,11 @@ class AnalyticalPatternNode:
     id: UUID = field(default_factory=uuid.uuid4)
 
     def to_dict(self):
-        val = {
+        props = dict(self.properties)
+        for prop in self.excluded_properties:
+            props.pop(prop, None)
+        return {
             "id": str(self.id),
             "labels": self.labels,
-            "properties": self.properties
+            "properties": props,
         }
-        # if val["properties"].get("type"):
-        #     val["properties"]["@type"] = val["properties"]["type"]
-        #     val["properties"].pop("type")
-        # for prop in self.excluded_properties:
-        #     val["properties"].pop(prop, None)
-        return val
