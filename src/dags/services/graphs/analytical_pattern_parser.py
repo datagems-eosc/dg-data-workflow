@@ -50,10 +50,10 @@ class AnalyticalPatternParser:
         dataset_node = AnalyticalPatternNode(labels=[values.type], properties=values.model_dump(),
                                              id=uuid.UUID(values.id), excluded_properties=["context", "id", "distribution", "recordSet"])
         graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node, dataset_node], edges=[
-            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consist_of"]),
+            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consistOf"]),
             AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=operator_node, labels=["input"]),
             AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
-            AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["is_achieved"])
+            AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["isAchieved"])
         ])
         if hasattr(values, "distribution") and values.distribution and is_iterable(values.distribution):
             for i in values.distribution:
@@ -71,5 +71,11 @@ class AnalyticalPatternParser:
                         j_node = AnalyticalPatternNode(labels=[j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id", "source", "statistics"])
                         graph.nodes.append(j_node)
                         graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
+                        if hasattr(j, "statistics") and j.statistics:
+                            statistics_node = AnalyticalPatternNode(labels=[j.statistics.type], properties=j.statistics.model_dump(), id=uuid.UUID(j.statistics.id), excluded_properties=["histogram"])
+                            graph.nodes.append(statistics_node)
+                            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=statistics_node, to=j_node, labels=["statistics"]))
+                        if hasattr(j, "source") and j.source:
+                            graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=j_node, to=dataset_node, labels=["source/fileObject"]))
 
         return graph.to_dict()

@@ -16,7 +16,7 @@ class LDModel(BaseModel):
 class FieldSourceExtract(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
     column: Optional[str] = None
 
@@ -25,8 +25,33 @@ class FieldSourceExtract(LDModel):
 class FieldSource(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    fileObject: Optional[Dict[str, str]] = None
+    extract: Optional[FieldSourceExtract] = None
+
+
+@dataclass
+class StatisticsHistogram(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"
+    }
+    count: Optional[int] = None
+    binRange: Optional[list[float]] = None
+
+
+@dataclass
+class FieldStatistics(LDModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "allow"
+    }
+    type: str = PyField(None, alias="@type")
+    id: str = PyField(None, alias="@id")
+    histogram: list[StatisticsHistogram] = PyField(None, alias="dg:histogram")
     fileObject: Optional[Dict[str, str]] = None
     extract: Optional[FieldSourceExtract] = None
 
@@ -35,12 +60,13 @@ class FieldSource(LDModel):
 class Field(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
     dataType: Optional[str] = None
     source: Optional[FieldSource] = None
+    statistics: Optional[FieldStatistics] = None
     sample: Optional[List[Any]] = None
 
 
@@ -48,7 +74,7 @@ class Field(LDModel):
 class RecordSet(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
@@ -59,7 +85,7 @@ class RecordSet(LDModel):
 class DistributionItem(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
@@ -69,7 +95,7 @@ class DistributionItem(LDModel):
 class DatasetResponse(LDModel):
     model_config = {
         "populate_by_name": True,
-        "extra": "allow"  # optional, but useful for JSON-LD
+        "extra": "allow"
     }
     context: Dict[str, Any] = PyField(None, alias="@context")
     type: str = PyField(None, alias="@type")
