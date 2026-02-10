@@ -23,7 +23,7 @@ class AnalyticalPatternParser:
         template = Template(LOAD_DATASET_TEMPLATE)
         return ast.literal_eval(template.render(**values))
 
-    def gen_update_dataset(self, values: DatasetResponse, date: datetime) -> dict[str, Any]:
+    def gen_update_dataset(self, values: DatasetResponse, date: datetime, log) -> dict[str, Any]:
         ap_node = AnalyticalPatternNode(labels=["Analytical_Pattern"], properties={
             "Description": "Analytical Pattern to update a dataset",
             "Name": "Update Dataset AP",
@@ -55,6 +55,15 @@ class AnalyticalPatternParser:
             AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
             AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["isAchieved"])
         ])
+
+        log.info("recordSet:", values.recordSet is not None, len(values.recordSet or []))
+        if values.recordSet:
+            rs0 = values.recordSet[0]
+            log.info("fields:", len(rs0.field or []))
+            if rs0.field:
+                log.info("field0 has stats:", rs0.field[0].statistics is not None)
+                log.info("field0 stats raw:", rs0.field[0].statistics)
+
         if hasattr(values, "distribution") and values.distribution and is_iterable(values.distribution):
             for i in values.distribution:
                 i_node = AnalyticalPatternNode(labels=[i.type], properties=i.model_dump(),

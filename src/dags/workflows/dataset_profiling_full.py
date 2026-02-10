@@ -88,7 +88,7 @@ def dataset_profiling():
         url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
                                                                      get_current_context(), dmm_config,
                                                                      stringified_profile_data,
-                                                                     datetime.now(timezone.utc), profile_type)
+                                                                     datetime.now(timezone.utc), profile_type, log)
         log.info(f"Payload:\n{payload}\n")
         response = http_put(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")

@@ -76,9 +76,9 @@ def update_data_management_builder(auth_token: str, dag_context: Context, config
 
 def update_data_model_management_builder(access_token: str, dag_context: Context,
                                          dmm_config: DataModelManagementConfig, stringified_profile_data: str,
-                                         utc_now: datetime, type: str) -> tuple[str, dict[str, str], dict[str, Any]]:
+                                         utc_now: datetime, type: str, log) -> tuple[str, dict[str, str], dict[str, Any]]:
     obj = DatasetResponse.model_validate(json.loads(stringified_profile_data)[type])
-    payload = AnalyticalPatternParser().gen_update_dataset(obj, utc_now)
+    payload = AnalyticalPatternParser().gen_update_dataset(obj, utc_now, log)
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
