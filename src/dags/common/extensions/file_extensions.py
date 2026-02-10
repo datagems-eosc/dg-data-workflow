@@ -28,7 +28,7 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
         with stream_service.retrieve(location) as retrieved_file:
             base_name = Path(retrieved_file.file_name).stem
             extension = retrieved_file.file_extension
-            unique_name = f"{base_name}.{uuid.uuid4()}"
+            unique_name = f"{base_name}_{uuid.uuid4()}"
             full_path = os.fspath(build_file_path(config.local_staging_path, guid, unique_name, extension))
             should_decode = location.kind is DataLocationKind.Http
             stage_service.store(retrieved_file.stream, full_path, decode=should_decode)
