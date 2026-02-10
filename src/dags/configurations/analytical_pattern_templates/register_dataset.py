@@ -9,16 +9,9 @@ REGISTER_DATASET_TEMPLATE = """
       "to": "{{ dmm_operator_node_id }}"
     },
     {
-      "from": "{{ dmm_operator_node_id }}",
+      "from": "{{ dataset_node_id }}",
       "labels": [
         "input"
-      ],
-      "to": "{{ dataset_node_id }}"
-    },
-    {
-      "from": "{{ user_node_id }}",
-      "labels": [
-        "intervene"
       ],
       "to": "{{ dmm_operator_node_id }}"
     },
@@ -71,9 +64,9 @@ REGISTER_DATASET_TEMPLATE = """
         "sc:Dataset"
       ],
       "properties": {
-        "@type": "sc:Dataset"
+        "type": "sc:Dataset"
         {% if dataset_archived_at %}
-            ,"archivedAt": "{{ dataset_archived_at }}"
+            ,"sc:archivedAt": "{{ dataset_archived_at }}"
         {% endif %}
         {% if dataset_cite_as %}
             ,"citeAs": "{{ dataset_cite_as }}"
@@ -91,16 +84,16 @@ REGISTER_DATASET_TEMPLATE = """
             ,"description": "{{ dataset_description }}"
         {% endif %}
         {% if dataset_fields_of_science %}
-            ,"fieldOfScience": {{ dataset_fields_of_science }}
+            ,"dg:fieldOfScience": {{ dataset_fields_of_science }}
         {% endif %}
         {% if dataset_headline %}
-            ,"headline": "{{ dataset_headline }}"
+            ,"dg:headline": "{{ dataset_headline }}"
         {% endif %}
         {% if dataset_languages %}
             ,"inLanguage": {{ dataset_languages }}
         {% endif %}
         {% if dataset_keywords %}
-            ,"keywords": {{ dataset_keywords }}
+            ,"dg:keywords": {{ dataset_keywords }}
         {% endif %}
         {% if dataset_license %}
             ,"license": "{{ dataset_license }}"
@@ -109,7 +102,7 @@ REGISTER_DATASET_TEMPLATE = """
             ,"name": "{{ dataset_name }}"
         {% endif %}
         {% if analytical_pattern_node_status %}
-            ,"status": "{{ analytical_pattern_node_status }}"
+            ,"dg:status": "{{ analytical_pattern_node_status }}"
         {% endif %}
         {% if dataset_url %}
             ,"url": "{{ dataset_url }}"

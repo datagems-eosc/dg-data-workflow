@@ -9,16 +9,9 @@ LOAD_DATASET_TEMPLATE = """
       "to": "{{ dmm_operator_node_id }}"
     },
     {
-      "from": "{{ dmm_operator_node_id }}",
+      "from": "{{ dataset_node_id }}",
       "labels": [
         "input"
-      ],
-      "to": "{{ dataset_node_id }}"
-    },
-    {
-      "from": "{{ user_node_id }}",
-      "labels": [
-        "intervene"
       ],
       "to": "{{ dmm_operator_node_id }}"
     },
@@ -61,7 +54,6 @@ LOAD_DATASET_TEMPLATE = """
         "Name": "Load Operator",
         "command": "update",
         "PublishedDate": "{{ published_date }}",
-        "Software": {},
         "StartTime": "{{ start_time }}",
         "Step": 1
       }
@@ -72,8 +64,8 @@ LOAD_DATASET_TEMPLATE = """
         "sc:Dataset"
       ],
       "properties": {
-        "archivedAt": "{{ dataset_archived_at }}",
-        "status": "{{ analytical_pattern_node_status }}"
+        "sc:archivedAt": "{{ dataset_archived_at }}",
+        "dg:status": "{{ analytical_pattern_node_status }}"
       }
     },
     {
