@@ -92,7 +92,7 @@ def dataset_profiling():
         log.info(f"Payload:\n{payload}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
-        return response
+        return json.dumps(response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,

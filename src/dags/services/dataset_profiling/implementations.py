@@ -1,17 +1,15 @@
 import json
 from datetime import datetime
 from typing import Any
-from wsgiref import headers
 
 from airflow.sdk import Context
 from dateutil import parser as date_parser
 
-from common.enum import ConnectorType, DataStoreKind, MomaProfileType
+from common.enum import DataStoreKind, MomaProfileType
 from common.types.profiled_dataset import DatasetResponse
 from configurations import DatasetDiscoveryConfig, DataModelManagementConfig, GatewayConfig, ProfilerConfig, \
     MomaManagementConfig
 from services.graphs import AnalyticalPatternParser
-from services.logging import Logger
 
 
 def trigger_profile_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, is_light_profile: bool) -> \
@@ -75,9 +73,12 @@ def update_data_management_builder(auth_token: str, dag_context: Context, config
                "Connection": "keep-alive"}
     return url, headers, stringified_profile_data
 
+
 def convert_profiling_builder(access_token: str, dag_context: Context,
-                                                          moma_config: MomaManagementConfig, stringified_profile_data: str, profile_type: str) :
-    url: str = moma_config.options.base_url +  moma_config.options.convert.light if profile_type is MomaProfileType.LIGHT.value else moma_config.options.convert.heavy
+                              moma_config: MomaManagementConfig, stringified_profile_data: str, profile_type: str) -> \
+        tuple[str, dict[str, str], Any]:
+    url: str = moma_config.options.base_url + (
+        moma_config.options.convert.light if profile_type is MomaProfileType.LIGHT.value else moma_config.options.convert.heavy)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
     payload = json.loads(stringified_profile_data)[profile_type]
@@ -86,7 +87,8 @@ def convert_profiling_builder(access_token: str, dag_context: Context,
 
 def update_data_model_management_builder(access_token: str, dag_context: Context,
                                          dmm_config: DataModelManagementConfig, stringified_profile_data: str,
-                                         utc_now: datetime, profile_type: str) -> tuple[str, dict[str, str], dict[str, Any]]:
+                                         utc_now: datetime, profile_type: str) -> tuple[
+    str, dict[str, str], dict[str, Any]]:
     obj = DatasetResponse.model_validate(json.loads(stringified_profile_data)[profile_type])
     payload = AnalyticalPatternParser().gen_update_dataset(obj, utc_now)
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
