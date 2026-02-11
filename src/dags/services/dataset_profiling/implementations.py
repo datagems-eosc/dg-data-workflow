@@ -80,7 +80,7 @@ def convert_profiling_builder(access_token: str, dag_context: Context,
     url: str = moma_config.options.base_url +  moma_config.options.convert.light if profile_type is MomaProfileType.LIGHT.value else moma_config.options.convert.heavy
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
-    payload = DatasetResponse.model_validate(json.loads(stringified_profile_data)[profile_type])
+    payload = json.loads(stringified_profile_data)[profile_type]
     return url, headers, payload
 
 
