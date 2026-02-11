@@ -81,7 +81,8 @@ class AnalyticalPatternParser:
                                                                     properties=j.statistics.model_dump(by_alias=True,
                                                                                                        exclude_none=True),
                                                                     id=uuid.UUID(j.statistics.id),
-                                                                    excluded_properties=["dg:histogram", "@type", "@id"])
+                                                                    excluded_properties=["@type", "@id"],
+                                                                    serialized_properties=["dg:histogram"])
                             graph.nodes.append(statistics_node)
                             graph.edges.append(
                                 AnalyticalPatternEdge.from_nodes(frm=statistics_node, to=j_node, labels=["statistics"]))
