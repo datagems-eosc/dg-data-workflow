@@ -56,14 +56,6 @@ class AnalyticalPatternParser:
             AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["isAchieved"])
         ])
 
-        log.info(f"recordSet: {values.recordSet is not None, len(values.recordSet or [])}")
-        if values.recordSet:
-            rs0 = values.recordSet[0]
-            log.info(f"fields: {len(rs0.field or [])}")
-            if rs0.field:
-                log.info(f"field0 has stats: {rs0.field[0].statistics is not None}")
-                log.info(f"field0 stats raw: {rs0.field[0].statistics}")
-
         if hasattr(values, "distribution") and values.distribution and is_iterable(values.distribution):
             for i in values.distribution:
                 i_node = AnalyticalPatternNode(labels=[i.type], properties=i.model_dump(),
@@ -80,8 +72,9 @@ class AnalyticalPatternParser:
                         j_node = AnalyticalPatternNode(labels=[j.type], properties=j.model_dump(), id=uuid.UUID(j.id), excluded_properties=["id", "source", "statistics"])
                         graph.nodes.append(j_node)
                         graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=i_node, to=j_node, labels=["field"]))
+                        log.info(f"creating stats node for field={j.id} stats_id={j.statistics.id} stats_type={j.statistics.type}")
                         if hasattr(j, "statistics") and j.statistics:
-                            statistics_node = AnalyticalPatternNode(labels=[j.statistics.type], properties=j.statistics.model_dump(), id=uuid.UUID(j.statistics.id), excluded_properties=["histogram"])
+                            statistics_node = AnalyticalPatternNode(labels=[j.statistics.type], properties=j.statistics.model_dump(by_alias=True, exclude_none=True), id=uuid.UUID(j.statistics.id), excluded_properties=["histogram"])
                             graph.nodes.append(statistics_node)
                             graph.edges.append(AnalyticalPatternEdge.from_nodes(frm=statistics_node, to=j_node, labels=["statistics"]))
                         if hasattr(j, "source") and j.source:
