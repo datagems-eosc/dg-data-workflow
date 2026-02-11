@@ -24,6 +24,14 @@ FETCH_PROFILE_DOC = """
 Retrieves the generated profile for a completed job.
 """
 
+CONVERT_PROFILING_ID = "convert_Croissant_to_PG_JSON"
+
+CONVERT_PROFILING_DOC = """
+# Convert Profile
+
+Receives light profiling data in Croissant format and returns it as PG-JSON formatted according to the MoMa schema.
+"""
+
 UPDATE_DATA_MANAGEMENT_ID = "update_data_management_with_fetched_profile"
 
 UPDATE_DATA_MANAGEMENT_DOC = """

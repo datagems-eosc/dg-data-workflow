@@ -12,13 +12,14 @@ from common.enum import ProfileStatus, MomaProfileType
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get, http_put
-from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig
+from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig, \
+    MomaManagementConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
-    UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC
+    UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC, CONVERT_PROFILING_ID, CONVERT_PROFILING_DOC
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, \
-    update_data_model_management_builder
+    update_data_model_management_builder, convert_profiling_builder
 from services.logging import Logger
 
 
@@ -32,6 +33,7 @@ def dataset_profiling():
     gateway_config = GatewayConfig()
     discovery_config = DatasetDiscoveryConfig()
     dmm_config = DataModelManagementConfig()
+    moma_config = MomaManagementConfig()
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -82,13 +84,25 @@ def dataset_profiling():
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=CONVERT_PROFILING_ID, doc_md=CONVERT_PROFILING_DOC)
+    def convert_profiling(stringified_profile_data: str, profile_type: str) -> Any:
+        log = Logger()
+        url, headers, payload = convert_profiling_builder(gateway_auth_service.get_token(), get_current_context(),
+                                                          moma_config, stringified_profile_data, profile_type)
+        log.info(f"Payload:\n{payload}\n")
+        response = http_post(url=url, headers=headers, data=payload)
+        log.info(f"Server responded with {response}")
+        return response
+
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
     def update_data_management(stringified_profile_data: str, profile_type: str) -> Any:
         log = Logger()
         url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
                                                                      get_current_context(), dmm_config,
                                                                      stringified_profile_data,
-                                                                     datetime.now(timezone.utc), profile_type, log)
+                                                                     datetime.now(timezone.utc), profile_type)
         log.info(f"Payload:\n{payload}\n")
         response = http_put(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
@@ -128,15 +142,17 @@ def dataset_profiling():
     fetched_light_profile = fetch_profile(light_fetched_id)
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
-    data_management_heavy_id = update_data_management(fetched_heavy_profile, MomaProfileType.HEAVY.value)
-    data_management_light_id = update_data_management(fetched_light_profile, MomaProfileType.LIGHT.value)
+    converted_heavy = convert_profiling(fetched_heavy_profile, MomaProfileType.HEAVY.value)
+    converted_light = convert_profiling(fetched_light_profile, MomaProfileType.LIGHT.value)
+
+    data_management_heavy_id = update_data_management(converted_heavy, MomaProfileType.HEAVY.value)
+    data_management_light_id = update_data_management(converted_light, MomaProfileType.LIGHT.value)
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
     heavy_profile_cleanup_response = profile_cleanup(heavy_fetched_id)
 
     light_completed_procedure >> fetched_light_profile
-    data_management_light_id >> data_management_heavy_id >> heavy_profile_cleanup_response
     heavy_completed_procedure >> fetched_heavy_profile >> heavy_profile_cleanup_response
 
 

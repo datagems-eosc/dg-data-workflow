@@ -23,7 +23,7 @@ class AnalyticalPatternParser:
         template = Template(LOAD_DATASET_TEMPLATE)
         return ast.literal_eval(template.render(**values))
 
-    def gen_update_dataset(self, values: DatasetResponse, date: datetime, log) -> dict[str, Any]:
+    def gen_update_dataset(self, values: DatasetResponse, date: datetime) -> dict[str, Any]:
         ap_node = AnalyticalPatternNode(labels=["Analytical_Pattern"], properties={
             "Description": "Analytical Pattern to update a dataset",
             "Name": "Update Dataset AP",
