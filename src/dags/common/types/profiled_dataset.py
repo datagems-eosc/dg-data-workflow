@@ -40,7 +40,7 @@ class StatisticsHistogram(LDModel):
         "extra": "allow"
     }
     count: Optional[int] = None
-    binRange: Optional[list[float]] = None
+    binRange: Optional[List[float]] = None
 
 
 @dataclass
@@ -51,7 +51,7 @@ class FieldStatistics(LDModel):
     }
     type: str = PyField(None, alias="@type")
     id: str = PyField(None, alias="@id")
-    histogram: Optional[list[StatisticsHistogram]] = PyField(None, alias="dg:histogram")
+    histogram: Optional[List[StatisticsHistogram]] = PyField(None, alias="dg:histogram")
     fileObject: Optional[Dict[str, str]] = None
     extract: Optional[FieldSourceExtract] = None
 
