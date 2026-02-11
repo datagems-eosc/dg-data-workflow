@@ -86,11 +86,14 @@ def convert_profiling_builder(access_token: str, dag_context: Context,
 
 
 def update_data_model_management_builder(access_token: str, dag_context: Context,
-                                         dmm_config: DataModelManagementConfig, stringified_profile_data: str,
+                                         dmm_config: DataModelManagementConfig, converted_profile_json: str, original_profile: str,
                                          utc_now: datetime, profile_type: str) -> tuple[
     str, dict[str, str], dict[str, Any]]:
-    obj = DatasetResponse.model_validate(json.loads(stringified_profile_data)[profile_type])
+    obj = DatasetResponse.model_validate(json.loads(original_profile)[profile_type])
     payload = AnalyticalPatternParser().gen_update_dataset(obj, utc_now)
+    converted_profile = json.loads(converted_profile_json)
+    payload["nodes"].append(converted_profile["metadata"]["nodes"])
+    payload["edges"].append(converted_profile["metadata"]["edges"])
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}

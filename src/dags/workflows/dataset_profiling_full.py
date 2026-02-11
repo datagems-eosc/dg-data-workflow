@@ -90,7 +90,6 @@ def dataset_profiling():
         url, headers, payload = convert_profiling_builder(gateway_auth_service.get_token(), get_current_context(),
                                                           moma_config, stringified_profile_data, profile_type)
         log.info(f"Payload:\n{payload}\n")
-        log.info(f"url: {url}")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return json.dumps(response)
@@ -98,11 +97,11 @@ def dataset_profiling():
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
-    def update_data_management(stringified_profile_data: str, profile_type: str) -> Any:
+    def update_data_management(converted_profile: str, original_profile: str, profile_type: str) -> Any:
         log = Logger()
         url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
                                                                      get_current_context(), dmm_config,
-                                                                     stringified_profile_data,
+                                                                     converted_profile, original_profile,
                                                                      datetime.now(timezone.utc), profile_type)
         log.info(f"Payload:\n{payload}\n")
         response = http_put(url=url, headers=headers, data=payload)
@@ -146,8 +145,10 @@ def dataset_profiling():
     converted_heavy = convert_profiling(fetched_heavy_profile, MomaProfileType.HEAVY.value)
     converted_light = convert_profiling(fetched_light_profile, MomaProfileType.LIGHT.value)
 
-    data_management_heavy_id = update_data_management(converted_heavy, MomaProfileType.HEAVY.value)
-    data_management_light_id = update_data_management(converted_light, MomaProfileType.LIGHT.value)
+    data_management_heavy_id = update_data_management(converted_heavy, fetched_heavy_profile,
+                                                      MomaProfileType.HEAVY.value)
+    data_management_light_id = update_data_management(converted_light, fetched_light_profile,
+                                                      MomaProfileType.LIGHT.value)
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
