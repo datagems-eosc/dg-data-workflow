@@ -51,6 +51,10 @@ This step guarantees that downstream tasks only operate on fully generated and v
 
 After a profile is reported as ready, the workflow retrieves its contents from the Profiler service. For each profile (light and heavy) the complete profiling result is fetched with the data preserved in its original structured form, with no transformation or interpretation applied. This separation ensures that profiling generation and profiling consumption remain decoupled.
 
+#### Convert Profiles
+
+Between fetching a profile in Croissant format and updating it in data model management, the required transformations are applied, converting the payload into a PG-JSON format.
+
 #### Update Data Management
 
 Once profiling data has been retrieved, the workflow updates the dataset representation in the Data Model Management system. The light and heavy profiles are handled as distinct but complementary updates, allowing consumers to benefit from different levels of detail. Successful completion of this step means the dataset is now profile-aware within the platform.
