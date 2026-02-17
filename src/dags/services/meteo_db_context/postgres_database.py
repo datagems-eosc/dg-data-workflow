@@ -65,7 +65,7 @@ class PostgresDatabase(DatabaseInterface):
                                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                                         %s) ON CONFLICT DO NOTHING
                                 """, obs)
-                    count += count
+                    count += cur.rowcount
             return count
         except psycopg2.Error as e2:
             self.logger.error(f"PG Batch Error: {e2}")
