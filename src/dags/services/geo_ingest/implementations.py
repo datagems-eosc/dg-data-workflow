@@ -1,13 +1,11 @@
-from datetime import datetime, timezone
-from typing import Optional
-from zoneinfo import ZoneInfo
+from datetime import datetime
 
-import psycopg2
 from airflow.sdk import Context
-from psycopg2.extras import execute_values
 
+from common.types import FeatureCollection
 from configurations import NoaGeoConfig
-from services.geo_ingest.constants import STATION_UPSERT_SQL, OBS_UPSERT_SQL
+from services.logging import Logger
+from services.meteo_db_context import PostgresDatabase
 
 
 def fetch_weather_builder(config: NoaGeoConfig, dag_context: Context) -> tuple[str, dict[str, str]]:
@@ -16,43 +14,40 @@ def fetch_weather_builder(config: NoaGeoConfig, dag_context: Context) -> tuple[s
     return noa_url, headers
 
 
-def utc_time_from_source(ts: Optional[int], date: Optional[datetime], ) -> datetime:
-    if ts is not None:
-        return datetime.fromtimestamp(int(ts), tz=timezone.utc)
-    if date is None:
-        raise ValueError("Both properties.ts and properties.date are missing")
-    if date.tzinfo is None:
-        date = date.replace(tzinfo=ZoneInfo("Europe/Athens"))
-    return date.astimezone(timezone.utc)
-
-
-def upsert_feature_collection(conn, feature_collection) -> None:
-    stations_by_id: dict[int, dict] = {}
-    observations: list[dict] = []
-    for feat in feature_collection.features:
-        p = feat.properties
-        g = feat.geometry
-        station_id = int(p.fid)
-        lon = float(g.coordinates[0])
-        lat = float(g.coordinates[1])
-        elev = float(g.coordinates[2]) if len(g.coordinates) > 2 and g.coordinates[2] is not None else None
-        stations_by_id.setdefault(station_id, {"station_id": station_id, "station_name_gr": p.station_name_gr,
-                                               "station_name_en": p.station_name_en, "longitude": lon, "latitude": lat,
-                                               "elevation": elev, })
-        obs_time = utc_time_from_source(p.ts, p.date)
-        observations.append({"time": obs_time, "station_id": station_id, "temp_out": p.temp_out, "hi_temp": p.hi_temp,
-                             "low_temp": p.low_temp, "out_hum": int(p.out_hum) if p.out_hum is not None else None,
-                             "bar": p.bar, "rain": p.rain, "wind_speed": p.wind_speed, "wind_dir": p.wind_dir,
-                             "wind_dir_str": p.wind_dir_str, "hi_speed": p.hi_speed,
-                             "hi_dir": float(p.hi_dir) if p.hi_dir is not None else None, "hi_dir_str": p.hi_dir_str, })
-
-    station_rows = list(stations_by_id.values())
+def upsert_feature_collection(db_context: PostgresDatabase, feature_collection: FeatureCollection, logger: Logger) -> \
+tuple[bool, str]:
     try:
-        with conn.cursor() as cur:
-            for row in station_rows:
-                cur.execute(STATION_UPSERT_SQL, row)
-            psycopg2.extras.execute_batch(cur, OBS_UPSERT_SQL, observations)
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
+        features = feature_collection.features
+        if not features: return False, "No data"
+        station_info_list = []
+        observations_list = []
+
+        for feature in features:
+            props = feature.properties
+            coords = feature.geometry.coordinates
+            station_id = props.station_file if props.station_file else props.fid
+            if not station_id: continue
+            station_info_list.append({'station_id': station_id, 'station_name_en': props.station_name_en,
+                'station_name_gr': props.station_name_gr, 'latitude': coords[1], 'longitude': coords[0],
+                'elevation': coords[2] if len(coords) > 2 else None})
+
+            ts = props.ts if props.ts else 0
+            if ts > 0:
+                time_dt = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                observations_list.append(
+                    (time_dt, station_id, props.temp_out, props.hi_temp, props.low_temp, props.out_hum, props.bar,
+                     props.rain, props.wind_speed, props.wind_dir, props.wind_dir_str, props.hi_speed, props.hi_dir,
+                     props.hi_dir_str))
+
+        for info in station_info_list: db_context.insert_station(info['station_id'], info)
+        count = db_context.insert_observations_batch(observations_list)
+
+        msg = f"Stored {count} obs from {len(station_info_list)} stations"
+        logger.info(msg)
+        db_context.log_collection('SUCCESS', len(station_info_list), count, msg)
+        return True, msg
+    except Exception as e:
+        msg = f"Error: {e}"
+        logger.error(msg)
+        db_context.log_collection('ERROR', 0, 0, msg)
+        return False, msg
