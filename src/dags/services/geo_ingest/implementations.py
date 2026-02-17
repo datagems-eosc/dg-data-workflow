@@ -36,18 +36,15 @@ def upsert_feature_collection(conn, feature_collection) -> None:
         lon = float(g.coordinates[0])
         lat = float(g.coordinates[1])
         elev = float(g.coordinates[2]) if len(g.coordinates) > 2 and g.coordinates[2] is not None else None
-        stations_by_id.setdefault(station_id, {"station_id": station_id, "station_file": p.station_file,
-                                               "station_name_gr": p.station_name_gr,
+        stations_by_id.setdefault(station_id, {"station_id": station_id, "station_name_gr": p.station_name_gr,
                                                "station_name_en": p.station_name_en, "longitude": lon, "latitude": lat,
-                                               "elevation_m": elev, })
+                                               "elevation": elev, })
         obs_time = utc_time_from_source(p.ts, p.date)
-        observations.append(
-            {"time": obs_time, "station_id": station_id, "temp_out_c": p.temp_out, "hi_temp_c": p.hi_temp,
-             "low_temp_c": p.low_temp, "out_hum_pct": int(p.out_hum) if p.out_hum is not None else None,
-             "bar_hpa": p.bar, "rain_mm": p.rain, "wind_speed_ms": p.wind_speed, "wind_dir_deg": p.wind_dir,
-             "wind_dir_str": p.wind_dir_str, "hi_speed_ms": p.hi_speed,
-             "hi_dir_deg": float(p.hi_dir) if p.hi_dir is not None else None, "hi_dir_str": p.hi_dir_str,
-             "source_ts": p.ts, "source_date_text": p.date.isoformat() if p.date else None, })
+        observations.append({"time": obs_time, "station_id": station_id, "temp_out": p.temp_out, "hi_temp": p.hi_temp,
+                             "low_temp": p.low_temp, "out_hum": int(p.out_hum) if p.out_hum is not None else None,
+                             "bar": p.bar, "rain": p.rain, "wind_speed": p.wind_speed, "wind_dir": p.wind_dir,
+                             "wind_dir_str": p.wind_dir_str, "hi_speed": p.hi_speed,
+                             "hi_dir": float(p.hi_dir) if p.hi_dir is not None else None, "hi_dir_str": p.hi_dir_str, })
 
     station_rows = list(stations_by_id.values())
     try:
