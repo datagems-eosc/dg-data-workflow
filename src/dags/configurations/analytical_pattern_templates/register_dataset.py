@@ -37,11 +37,11 @@ REGISTER_DATASET_TEMPLATE = """
         "Analytical_Pattern"
       ],
       "properties": {
-        "Description": "Analytical Pattern to register a dataset",
-        "Name": "Register Dataset AP",
-        "Process": "register",
-        "PublishedDate": "{{ published_date }}",
-        "StartTime": "{{ start_time }}"
+        "description": "Analytical Pattern to register a dataset",
+        "name": "Register Dataset AP",
+        "process": "register",
+        "publishedDate": "{{ published_date }}",
+        "startTime": "{{ start_time }}"
       }
     },
     {
@@ -50,12 +50,12 @@ REGISTER_DATASET_TEMPLATE = """
         "DataModelManagement_Operator"
       ],
       "properties": {
-        "Description": "An operator to register a dataset into DataGEMS",
-        "Name": "Register Operator",
+        "description": "An operator to register a dataset into DataGEMS",
+        "name": "Register Operator",
         "command": "create",
-        "PublishedDate": "{{ published_date }}",
-        "StartTime": "{{ start_time }}",
-        "Step": 1
+        "publishedDate": "{{ published_date }}",
+        "startTime": "{{ start_time }}",
+        "step": 1
       }
     },
     {
@@ -129,8 +129,8 @@ REGISTER_DATASET_TEMPLATE = """
         "Task"
       ],
       "properties": {
-        "Description": "Task to register a dataset",
-        "Name": "Dataset Registering Task"
+        "description": "Task to register a dataset",
+        "name": "Dataset Registering Task"
       }
     }
   ]

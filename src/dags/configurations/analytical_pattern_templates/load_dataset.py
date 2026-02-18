@@ -37,11 +37,11 @@ LOAD_DATASET_TEMPLATE = """
         "Analytical_Pattern"
       ],
       "properties": {
-        "Description": "Analytical Pattern to load a dataset",
-        "Name": "Load Dataset AP",
-        "Process": "load",
-        "PublishedDate": "{{ published_date }}",
-        "StartTime": "{{ start_time }}"
+        "description": "Analytical Pattern to load a dataset",
+        "name": "Load Dataset AP",
+        "process": "load",
+        "publishedDate": "{{ published_date }}",
+        "startTime": "{{ start_time }}"
       }
     },
     {
@@ -50,12 +50,12 @@ LOAD_DATASET_TEMPLATE = """
         "DataModelManagement_Operator"
       ],
       "properties": {
-        "Description": "An operator to load a dataset into s3/dataset",
-        "Name": "Load Operator",
+        "description": "An operator to load a dataset into s3/dataset",
+        "name": "Load Operator",
         "command": "update",
-        "PublishedDate": "{{ published_date }}",
-        "StartTime": "{{ start_time }}",
-        "Step": 1
+        "publishedDate": "{{ published_date }}",
+        "startTime": "{{ start_time }}",
+        "step": 1
       }
     },
     {
@@ -83,8 +83,8 @@ LOAD_DATASET_TEMPLATE = """
         "Task"
       ],
       "properties": {
-        "Description": "Task to change storage location of a dataset",
-        "Name": "Dataset Loading Task"
+        "description": "Task to change storage location of a dataset",
+        "name": "Dataset Loading Task"
       }
     }
   ]

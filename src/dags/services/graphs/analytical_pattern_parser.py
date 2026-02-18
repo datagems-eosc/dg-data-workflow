@@ -51,10 +51,10 @@ class AnalyticalPatternParser:
                                              id=uuid.UUID(values.id),
                                              excluded_properties=["context", "id", "distribution", "recordSet"], serialized_properties=[])
         graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node, dataset_node], edges=[
-            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consistOf"]),
+            AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consist_of"]),
             AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=operator_node, labels=["input"]),
             AnalyticalPatternEdge.from_nodes(frm=user_node, to=task_node, labels=["request"]),
-            AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["isAchieved"])
+            AnalyticalPatternEdge.from_nodes(frm=task_node, to=ap_node, labels=["is_accomplished"])
         ])
 
         return graph.to_dict()
