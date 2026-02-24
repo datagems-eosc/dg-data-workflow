@@ -10,7 +10,4 @@ class AnalyticalPatternGraph:
     edges: list[AnalyticalPatternEdge]
 
     def to_dict(self):
-        return {
-            "nodes": [n.to_dict() for n in self.nodes],
-            "edges": [e.to_dict() for e in self.edges]
-        }
+        return {"ap": {"nodes": [n.to_dict() for n in self.nodes], "edges": [e.to_dict() for e in self.edges]}}

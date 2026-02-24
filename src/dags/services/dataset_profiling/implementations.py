@@ -30,7 +30,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "fields_of_science": dag_context["params"]["fields_of_science"],
                 "languages": dag_context["params"]["languages"],
                 "country": dag_context["params"]["countries"][0],
-                "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%d-%m-%Y"),
+                "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%Y-%m-%d"),
                 "cite_as": dag_context["params"]["citeAs"],
                 "uploaded_by": dag_context["params"]["userId"],
                 "data_connectors": [

@@ -1,5 +1,6 @@
 LOAD_DATASET_TEMPLATE = """
 {
+  "ap": {
   "edges": [
     {
       "from": "{{ analytical_pattern_node_id }}",
@@ -88,5 +89,6 @@ LOAD_DATASET_TEMPLATE = """
       }
     }
   ]
+  }
 }
 """

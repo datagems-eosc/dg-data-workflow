@@ -1,5 +1,6 @@
 REGISTER_DATASET_TEMPLATE = """
 {
+  "ap": {
   "edges": [
     {
       "from": "{{ analytical_pattern_node_id }}",
@@ -134,5 +135,6 @@ REGISTER_DATASET_TEMPLATE = """
       }
     }
   ]
+  }
 }
 """

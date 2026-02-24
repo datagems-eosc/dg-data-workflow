@@ -42,7 +42,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
     payload = AnalyticalPatternParser().gen_register_dataset({
         "analytical_pattern_node_id": uuid.uuid4(),
         "dmm_operator_node_id": uuid.uuid4(),
-        "published_date": utc_now.strftime("%d-%m-%Y"),
+        "published_date": utc_now.strftime("%Y-%m-%d"),
         "start_time": utc_now.strftime("%H:%M:%S"),
         "dataset_archived_at": normalize_s3_path(get_staged_path(dag_context["params"]["id"])),
         "dataset_node_id": dag_context["params"]["id"],
