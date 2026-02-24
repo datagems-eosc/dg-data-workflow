@@ -92,8 +92,8 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
     obj = DatasetResponse.model_validate(json.loads(original_profile)[profile_type])
     payload = AnalyticalPatternParser().gen_update_dataset(obj, utc_now)
     converted_profile = json.loads(converted_profile_json)
-    payload["nodes"].extend(converted_profile["metadata"]["nodes"])
-    payload["edges"].extend(converted_profile["metadata"]["edges"])
+    payload["ap"]["nodes"].extend(converted_profile["metadata"]["nodes"])
+    payload["ap"]["edges"].extend(converted_profile["metadata"]["edges"])
     url: str = dmm_config.options.base_url + dmm_config.options.dataset.update
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
