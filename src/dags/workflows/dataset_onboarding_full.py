@@ -22,8 +22,7 @@ from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, register_d
 from services.logging import Logger
 
 
-@dag(DAG_ID + "_FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],
-     dag_display_name=DAG_DISPLAY_NAME)
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     dmm_config = DataModelManagementConfig()

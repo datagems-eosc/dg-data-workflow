@@ -1,4 +1,4 @@
-DAG_DISPLAY_NAME = "Dataset Onboarding Future"
+DAG_DISPLAY_NAME = "Dataset Onboarding"
 
 DAG_DESCRIPTION = """
 The Dataset Onboarding DAG orchestrates the end-to-end process of registering a user-provided dataset into the Data Management system, optionally staging the dataset files, and ensuring authenticated, traceable, and fault-safe execution. 

@@ -23,8 +23,7 @@ from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_pro
 from services.logging import Logger
 
 
-@dag(DAG_ID + "FUTURE", params=DAG_PARAMS, tags=[d + "Future" for d in DAG_TAGS],
-     dag_display_name=DAG_DISPLAY_NAME + " Future")
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_profiling():
     profiler_auth_service = ProfilerAuthService()
     gateway_auth_service = DwoGatewayAuthService()
