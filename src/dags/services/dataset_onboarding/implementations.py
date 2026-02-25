@@ -9,34 +9,6 @@ from common.types import DataLocation
 from configurations import GatewayConfig
 from services.graphs import AnalyticalPatternParser
 
-
-def request_onboarding_builder(auth_token: str, dag_context: Context, config: GatewayConfig,
-                               data_locations: list[DataLocation]) -> tuple[str, dict[str, str], dict[str | Any, Any]]:
-    gateway_url: str = config.options.base_url + config.options.dataset.onboarding_mock
-    payload = {
-        "Id": dag_context["params"]["id"],
-        "Code": dag_context["params"]["code"],
-        "Name": dag_context["params"]["name"],
-        "Description": dag_context["params"]["description"],
-        "Headline": dag_context["params"]["headline"],
-        "FieldOfScience": dag_context["params"]["fields_of_science"],
-        "Language": dag_context["params"]["languages"],
-        "Keywords": dag_context["params"]["keywords"],
-        "Country": dag_context["params"]["countries"],
-        "Url": dag_context["params"]["publishedUrl"],
-        "License": dag_context["params"]["license"],
-        "Size": dag_context["params"]["size"],
-        "DataLocations": [loc.to_dict() for loc in data_locations],
-        "Version": dag_context["params"]["version"],
-        "MimeType": dag_context["params"]["mime_type"],
-        "DatePublished": dag_context["params"]["date_published"],
-        "ConformsTo": dag_context["params"]["conformsTo"],
-        "CiteAs": dag_context["params"]["citeAs"]
-    }
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
-    return gateway_url, headers, payload
-
-
 def register_dataset_builder(access_token, dag_context, dmm_config, data_locations, utc_now) -> tuple[
     str, dict[str, str], dict[str, Any]]:
     payload = AnalyticalPatternParser().gen_register_dataset({
@@ -59,6 +31,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dataset_name": dag_context["params"]["name"],
         "dataset_url": dag_context["params"]["publishedUrl"],
         "dataset_version": dag_context["params"]["version"],
+        "dataset_doi": dag_context["params"]["doi"],
         "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4(),

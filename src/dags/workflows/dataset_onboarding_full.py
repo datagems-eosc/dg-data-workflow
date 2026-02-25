@@ -79,18 +79,6 @@ def dataset_onboarding():
         log.info(f"\n{response}\n")
         return response
 
-    @task.branch(
-        on_execute_callback=on_execute_callback,
-        on_retry_callback=on_retry_callback,
-        on_success_callback=on_success_callback,
-        on_failure_callback=on_failure_callback,
-        on_skipped_callback=on_skipped_callback,
-        task_id=BRANCH_LOAD_DATASET_ID,
-        doc_md=BRANCH_LOAD_DATASET_DOC)
-    def branch_load_dataset(raw_data_locations: list[dict[str, int | str | None]]):
-        locations = [DataLocation.from_dict(d) for d in raw_data_locations]
-        should_load = any(loc.kind is not DataLocationKind.Database for loc in locations)
-        return LOAD_DATASET_ID if should_load else None  # GOTCHA: if some other downstream is added and is addressed to Database type as well, 'None' should be swapped for the Empty Operator
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -107,10 +95,9 @@ def dataset_onboarding():
 
     staged_files_response = stage_dataset_files()
     register_response = register_dataset(staged_files_response)
-    branch_id = branch_load_dataset(staged_files_response)
     load_response = load_dataset(staged_files_response)
 
-    register_response >> branch_id >> load_response
+    register_response >> load_response
 
 
 dataset_onboarding()

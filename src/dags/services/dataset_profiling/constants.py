@@ -28,6 +28,8 @@ DAG_PARAMS = {
     "conformsTo": Param(None, type=["null","string"]),
     "data_store_kind": Param(DataStoreKind.FileSystem.value, type="integer", enum=[c.value for c in DataStoreKind]),
     "archivedAt": Param(None, type=["null","string"]),
+    "doi": Param(None, type=["null", "string"]),
+    "database_name": Param(None, type=["null", "string"])
 }
 
 DAG_TAGS = ["DatasetProfiling", ]

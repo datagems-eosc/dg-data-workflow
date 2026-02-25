@@ -102,6 +102,9 @@ REGISTER_DATASET_TEMPLATE = """
         {% if dataset_name %}
             ,"name": "{{ dataset_name }}"
         {% endif %}
+        {% if dataset_doi %}
+            ,"dg:doi": "{{ dataset_doi }}"
+        {% endif %}
         {% if analytical_pattern_node_status %}
             ,"dg:status": "{{ analytical_pattern_node_status }}"
         {% endif %}

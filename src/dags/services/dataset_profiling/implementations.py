@@ -17,6 +17,17 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
             str, dict[str, str], dict[str, dict[str | Any, Any] | bool]]:
     profiler_url: str = config.options.base_url + \
                         config.options.profiler.trigger_profile
+    data_connectors = []
+    if DataStoreKind(dag_context["params"]["data_store_kind"]) is DataStoreKind.FileSystem:
+        data_connectors.append({
+            "type": DataStoreKind(dag_context["params"]["data_store_kind"]).to_connector_type().value,
+            "dataset_id": dag_context["params"]["id"]
+        })
+    else:
+        data_connectors.append({
+            "type": DataStoreKind(dag_context["params"]["data_store_kind"]).to_connector_type().value,
+            "database_name": dag_context["params"]["database_name"]
+        })
     payload = {
         "profile_specification":
             {
@@ -33,12 +44,7 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "date_published": date_parser.parse(dag_context["params"]["date_published"]).strftime("%Y-%m-%d"),
                 "cite_as": dag_context["params"]["citeAs"],
                 "uploaded_by": dag_context["params"]["userId"],
-                "data_connectors": [
-                    {
-                        "type": DataStoreKind(dag_context["params"]["data_store_kind"]).to_connector_type().value,
-                        "dataset_id": dag_context["params"]["id"]
-                    }
-                ]
+                "data_connectors": data_connectors
             },
         "only_light_profile": is_light_profile
     }
@@ -63,15 +69,6 @@ def fetch_profile_builder(auth_token: str, dag_context: Context, config: Profile
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
                "Connection": "keep-alive"}
     return url, headers
-
-
-def update_data_management_builder(auth_token: str, dag_context: Context, config: GatewayConfig,
-                                   stringified_profile_data: str) -> tuple[str, dict[str, str], str]:
-    url: str = config.options.base_url + config.options.dataset.profiling_mock.format(
-        id=dag_context["params"]["id"]) + "?f=Id"
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}",
-               "Connection": "keep-alive"}
-    return url, headers, stringified_profile_data
 
 
 def convert_profiling_builder(access_token: str, dag_context: Context,

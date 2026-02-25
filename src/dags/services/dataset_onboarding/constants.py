@@ -23,7 +23,8 @@ DAG_PARAMS = {
     "version": Param(None, type=["null","string"]),
     "mime_type": Param(None, type=["null","string"]),
     "date_published": Param(f"{date.today()}", type=["null","string"], format="date"),
-    "userId": Param(None, type=["null","string"])
+    "userId": Param(None, type=["null","string"]),
+    "doi": Param(None, type=["null", "string"])
 }
 
 DAG_TAGS = ["DatasetOnboarding", ]
