@@ -89,6 +89,7 @@ def dataset_profiling():
         url, headers, payload = convert_profiling_builder(gateway_auth_service.get_token(), get_current_context(),
                                                           moma_config, stringified_profile_data, profile_type)
         log.info(f"Payload:\n{payload}\n")
+        log.info(f"Url:\n{url}\n")
         response = http_post(url=url, headers=headers, data=payload)
         log.info(f"Server responded with {response}")
         return json.dumps(response)
