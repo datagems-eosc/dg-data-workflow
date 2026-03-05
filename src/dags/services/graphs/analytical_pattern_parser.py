@@ -47,10 +47,9 @@ class AnalyticalPatternParser:
             "Description": "Task to update a dataset",
             "Name": "Dataset Updating Task"
         }, excluded_properties=[], serialized_properties=[])
-        # GOTCHA: dataset node is not used, just created so its id can be provided to the "input" edge without patches to the edge creation code
         dataset_node = AnalyticalPatternNode(labels=[values.type], properties={},
                                              id=uuid.UUID(values.id),
-                                             excluded_properties=["context", "id", "distribution", "recordSet"], serialized_properties=[])
+                                             excluded_properties=[], serialized_properties=[])
         graph = AnalyticalPatternGraph(nodes=[ap_node, operator_node, user_node, task_node], edges=[
             AnalyticalPatternEdge.from_nodes(frm=ap_node, to=operator_node, labels=["consist_of"]),
             AnalyticalPatternEdge.from_nodes(frm=dataset_node, to=operator_node, labels=["input"]),
