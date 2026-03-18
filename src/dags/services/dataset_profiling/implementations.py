@@ -74,8 +74,7 @@ def fetch_profile_builder(auth_token: str, dag_context: Context, config: Profile
 def convert_profiling_builder(access_token: str, dag_context: Context,
                               moma_config: MomaManagementConfig, stringified_profile_data: str, profile_type: str) -> \
         tuple[str, dict[str, str], Any]:
-    url: str = moma_config.options.base_url + (
-        moma_config.options.convert.light if profile_type is MomaProfileType.LIGHT.value else moma_config.options.convert.heavy)
+    url: str = moma_config.options.base_url + moma_config.options.endpoints.convert
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}",
                "Connection": "keep-alive"}
     payload = json.loads(stringified_profile_data)[profile_type]

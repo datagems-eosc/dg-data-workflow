@@ -7,13 +7,12 @@ class MomaManagementConfig:
     class MomaManagementCoreConfig:
         class ConvertConfig:
             def __init__(self, data: dict):
-                self.light = data["light"]
-                self.heavy = data["heavy"]
+                self.convert = data["convert"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
             self.scope = data.get("scope")
-            self.convert = self.ConvertConfig(data.get("convert"))
+            self.endpoints = self.ConvertConfig(data.get("endpoints"))
 
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")
