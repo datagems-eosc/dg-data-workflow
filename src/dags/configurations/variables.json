@@ -1,0 +1,11 @@
+{
+  "aai": "{\"base_url\": \"https://datagems-dev.scayle.es/oauth/realms/dev/protocol/openid-connect/token\"}",
+  "data_model_management": "{\"base_url\": \"https://datagems-dev.scayle.es/dmm\", \"scope\": \"data-model-management-api\", \"dataset\": {\"register\": \"/api/v1/dataset/register\", \"load\": \"/api/v1/dataset/load\", \"update\": \"/api/v1/dataset/update\"}}",
+  "dataset_discovery": "{\"base_url\": \"\", \"scope\": \"\", \"dataset\": {\"insert\": \"\", \"remove\": \"\"}}",
+  "dataset_profiler": "{\"base_url\": \"http://dg-dataset-profiler-api-service.athenarc.svc.cluster.local:8000\", \"scope\": \"dataset-profiler\", \"profiler\": {\"poke_interval\": 15, \"trigger_profile\": \"/profiler/trigger_profile\", \"job_status\": \"/profiler/job_status/{id}\", \"get_profile\": \"/profiler/profile/{id}\", \"cleanup\": \"/profiler/clean_up\"}}",
+  "gateway": "{\"base_url\": \"https://datagems-dev.scayle.es/gw\", \"scope\": \"dg-app-api\", \"dataset\": {\"onboarding_mock\": \"/api/dataset/as/data-management/onboard\", \"profiling_mock\": \"/api/dataset/as/data-management/profile/{id}\"}}",
+  "local_dataset_path": "/s3/dataset_staging/",
+  "local_staging_path": "/s3/dataset_staging/",
+  "moma_management": "{\"base_url\": \"https://datagems-dev.scayle.es/moma\", \"scope\": \"moma-management-api\", \"endpoints\": {\"convert\": \"/convert\"}}",
+  "noa_geo": "{\"base_url\": \"https://stratus.meteo.noa.gr\", \"endpoints\": {\"geo_json\": \"/data/stations/latestValues_Datagems.geojson\"}}"
+}
