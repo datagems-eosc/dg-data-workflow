@@ -1,8 +1,7 @@
 import json
 from datetime import timedelta, datetime
 
-import psycopg2
-from airflow.sdk import task, dag, get_current_context, BaseHook, Connection
+from airflow.sdk import task, dag, get_current_context
 
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback

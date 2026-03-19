@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple
 
 import psycopg2
-from airflow.sdk import Connection, BaseHook
+from airflow.sdk import BaseHook
 
 from common.types import DatabaseInterface
 from services.logging import Logger
