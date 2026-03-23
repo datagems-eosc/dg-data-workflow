@@ -16,7 +16,7 @@ from services.meteo_db_context import PostgresDatabase
 
 
 @dag(DAG_ID, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME, description=DESCRIPTION, params=DAG_PARAMS,
-     schedule=timedelta(minutes=MINUTES_TIMEDELTA), start_date=datetime(year=2000, month=1, day=1, minute=8))
+     schedule=timedelta(minutes=MINUTES_TIMEDELTA), start_date=datetime(year=2000, month=1, day=1))
 def geo_ingest():
     noa_geo_config = NoaGeoConfig()
 
