@@ -24,11 +24,13 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
                 "dataset_id": dag_context["params"]["id"]
             })
     else:
-        match = next((x for x in db_server_registry.instances if x.name == dag_context["params"]["database_name"]),
-                     None)
+        match = next((x for x in db_server_registry.instances if (x.name == dag_context["params"]["database_name"] or (
+                    x.datasets is not None and dag_context["params"]["database_name"] in x.datasets))), None)
         if match is None:
             match = next((x for x in db_server_registry.instances if x.name == db_server_registry.default_instance),
                          None)
+        else:
+            match.name = dag_context["params"]["database_name"]
         if match is None:
             raise Exception("No database instance found and no default instance is configured.")
         data_connectors.append(
