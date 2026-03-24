@@ -13,7 +13,7 @@ from common.extensions.callbacks import on_execute_callback, on_retry_callback, 
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get, http_put
 from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig, \
-    MomaManagementConfig
+    MomaManagementConfig, DbServerRegistryConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
     UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC, CONVERT_PROFILING_ID, CONVERT_PROFILING_DOC
@@ -31,6 +31,7 @@ def dataset_profiling():
     profiler_config = ProfilerConfig()
     gateway_config = GatewayConfig()
     discovery_config = DatasetDiscoveryConfig()
+    db_server_registry = DbServerRegistryConfig()
     dmm_config = DataModelManagementConfig()
     moma_config = MomaManagementConfig()
 
@@ -40,7 +41,7 @@ def dataset_profiling():
     def trigger_profile(is_light: bool) -> Any:
         log = Logger()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
-            profiler_auth_service.get_token(), get_current_context(), profiler_config, is_light)
+            profiler_auth_service.get_token(), get_current_context(), profiler_config, db_server_registry, is_light)
         log.info(f"Payload:\n{trigger_profile_payload}\n")
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
