@@ -22,7 +22,7 @@ DAG_PARAMS = {
     "languages": Param(None, type=["null","array"]),
     "countries": Param(None, type=["null","array"]),
     "date_published": Param(f"{date.today()}", type=["null","string"], format="date"),
-    "dataset_file_path": Param("", type=["string"]),
+    "dataset_file_path": Param(None, type=["null", "string"]),
     "userId": Param(None, type=["null","string"]),
     "citeAs": Param(None, type=["null","string"]),
     "conformsTo": Param(None, type=["null","string"]),
