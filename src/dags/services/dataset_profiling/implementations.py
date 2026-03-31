@@ -30,10 +30,9 @@ def trigger_profile_builder(auth_token: str, dag_context: Context, config: Profi
         if instance_match is None:
             instance_match = next(
                 (x for x in db_server_registry.instances if x.name == db_server_registry.default_instance), None)
-        else:
-            instance_match.name = dag_context["params"]["database_name"]
         if instance_match is None:
             raise Exception("No database instance found and no default instance is configured.")
+        instance_match.name = dag_context["params"]["database_name"]
         data_connectors.append(
             {
                 "type": DataStoreKind(dag_context["params"]["data_store_kind"]).to_connector_type().value,
