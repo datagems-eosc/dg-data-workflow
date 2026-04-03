@@ -65,8 +65,8 @@ LOAD_DATASET_TEMPLATE = """
         "sc:Dataset"
       ],
       "properties": {
-        "sc:archivedAt": "{{ dataset_archived_at }}",
-        "dg:status": "{{ analytical_pattern_node_status }}"
+        "archivedAt": "{{ dataset_archived_at }}",
+        "status": "{{ analytical_pattern_node_status }}"
       }
     },
     {
