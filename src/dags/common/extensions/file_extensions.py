@@ -57,3 +57,14 @@ def normalize_s3_path(full_path: str):
 
 def get_staged_path(guid: str) -> str:
     return str(Path(DatasetOnboardingConfig().local_dataset_path) / guid)
+
+def create_folder(base_path:str, folder_name: str) -> Path:
+    full_path = Path(base_path) / folder_name
+    full_path.mkdir(parents=True, exist_ok=True)
+    return full_path
+
+def create_file(base_path: str, file_name: str) -> Path:
+    full_path = Path(base_path) / file_name
+    full_path.parent.mkdir(parents=True, exist_ok=True)
+    full_path.touch(exist_ok=True)
+    return full_path

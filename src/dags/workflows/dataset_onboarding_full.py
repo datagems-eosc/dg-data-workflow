@@ -7,9 +7,10 @@ from airflow.exceptions import AirflowException
 from airflow.sdk import dag, task, get_current_context
 
 from authorization.data_model_management_auth import DataModelManagementAuthService
+from common.enum import DataLocationKind
 from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
     on_retry_callback, on_failure_callback
-from common.extensions.file_extensions import process_location
+from common.extensions.file_extensions import process_location, get_staged_path, create_folder, create_file
 from common.extensions.http_requests import http_post, http_put
 from common.types import DataLocation
 from configurations import DataModelManagementConfig, DatasetOnboardingConfig
@@ -83,8 +84,14 @@ def dataset_onboarding():
           on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC)
     def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
-        url, headers, payload = load_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
-                                                     [DataLocation.from_dict(d) for d in raw_data_locations],
+        dag_context = get_current_context()
+        dataset_id = dag_context["params"]["id"]
+        data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
+        if data_locations and len(data_locations) == 1 and data_locations[0].kind is DataLocationKind.Database:
+            new_dir = create_folder(get_staged_path(dataset_id), dataset_id)
+            _ = create_file(new_dir.as_posix(), dataset_id)
+        url, headers, payload = load_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config,
+                                                     data_locations,
                                                      datetime.now(timezone.utc))
         log.info(f"Payload:\n{payload}\n")
         response = http_put(url=url, headers=headers, data=payload)
