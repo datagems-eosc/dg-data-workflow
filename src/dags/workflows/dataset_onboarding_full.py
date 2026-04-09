@@ -89,7 +89,6 @@ def dataset_onboarding():
         data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
         if data_locations and len(data_locations) == 1 and data_locations[0].kind is DataLocationKind.Database:
             new_dir = create_folder(get_staged_path(dataset_id))
-            log.warning(new_dir.as_posix())
             _ = create_file(new_dir.as_posix(), dataset_id)
 
         url, headers, payload = load_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config,
