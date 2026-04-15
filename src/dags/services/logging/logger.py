@@ -23,7 +23,7 @@ class Logger:
         serialized = payload
         if serialize:
             serialized = json.dumps(payload)
-        self.info(f"message\n{serialized}\n")
+        self.info(f"{message}\n{serialized}\n")
 
     def info(self, message: str) -> None:
         self.logger.info(self._format(message))
