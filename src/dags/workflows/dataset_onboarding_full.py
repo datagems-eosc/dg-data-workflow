@@ -75,7 +75,7 @@ def dataset_onboarding():
                                                          datetime.now(timezone.utc))
         log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info_payload("server response", response)
+        log.info_payload("server response", response, True)
         return response
 
 
@@ -96,7 +96,7 @@ def dataset_onboarding():
                                                      datetime.now(timezone.utc))
         log.info_payload("payload", payload, True)
         response = http_put(url=url, headers=headers, data=payload)
-        log.info_payload("server response", response)
+        log.info_payload("server response", response, True)
         return response
 
     staged_files_response = stage_dataset_files()
