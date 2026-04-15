@@ -45,7 +45,7 @@ def dataset_profiling():
         log.info_payload("payload", trigger_profile_payload, True)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
-        log.info_payload("Server response", trigger_response)
+        log.info_payload("Server response", trigger_response, True)
         return trigger_response["job_id"]
 
     @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
@@ -79,7 +79,7 @@ def dataset_profiling():
         url, headers = fetch_profile_builder(gateway_auth_service.get_token(), get_current_context(), profiler_config,
                                              profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
-        log.info_payload("server response", fetch_profile_response)
+        log.info_payload("server response", fetch_profile_response, True)
         return json.dumps(fetch_profile_response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -91,7 +91,7 @@ def dataset_profiling():
                                                           moma_config, stringified_profile_data, profile_type)
         log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info_payload("server response", response)
+        log.info_payload("server response", response, True)
         return json.dumps(response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -105,7 +105,7 @@ def dataset_profiling():
                                                                      datetime.now(timezone.utc), profile_type)
         log.info_payload("payload", payload, True)
         response = http_put(url=url, headers=headers, data=payload)
-        log.info_payload("server response", response)
+        log.info_payload("server response", response, True)
         return response
 
     # @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -130,7 +130,7 @@ def dataset_profiling():
                                                         profiler_config, profile_id)
         log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info_payload("server response", response)
+        log.info_payload("server response", response, True)
         return response
 
     light_fetched_id = trigger_profile(True)
