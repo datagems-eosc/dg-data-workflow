@@ -1,3 +1,4 @@
+import json
 import logging
 
 from airflow.sdk import get_current_context, Context
@@ -17,6 +18,12 @@ class Logger:
         self.dag_id = self.ti.dag_id
         self.task_id = self.ti.task_id
         self.logger = logging.getLogger(f"{self.dag_id}.{self.task_id}")
+
+    def info_payload(self, message: str, payload, serialize: bool = False) -> None:
+        serialized = payload
+        if serialize:
+            serialized = json.dumps(payload)
+        self.info(f"message\n{serialized}\n")
 
     def info(self, message: str) -> None:
         self.logger.info(self._format(message))

@@ -73,9 +73,9 @@ def dataset_onboarding():
         url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
                                                          [DataLocation.from_dict(d) for d in raw_data_locations],
                                                          datetime.now(timezone.utc))
-        log.info(f"Payload:\n{payload}\n")
+        log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info(f"\n{response}\n")
+        log.info_payload("server response", response)
         return response
 
 
@@ -94,9 +94,9 @@ def dataset_onboarding():
         url, headers, payload = load_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config,
                                                      data_locations,
                                                      datetime.now(timezone.utc))
-        log.info(f"Payload:\n{payload}\n")
+        log.info_payload("payload", payload, True)
         response = http_put(url=url, headers=headers, data=payload)
-        log.info(response)
+        log.info_payload("server response", response)
         return response
 
     staged_files_response = stage_dataset_files()

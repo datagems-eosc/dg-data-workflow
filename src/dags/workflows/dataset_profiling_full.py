@@ -42,10 +42,10 @@ def dataset_profiling():
         log = Logger()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
             profiler_auth_service.get_token(), get_current_context(), profiler_config, db_server_registry, is_light)
-        log.info(f"Payload:\n{trigger_profile_payload}\n")
+        log.info_payload("payload", trigger_profile_payload, True)
         trigger_response = http_post(url=trigger_profile_url, data=trigger_profile_payload,
                                      headers=trigger_profile_headers)
-        log.info(f"Server responded with {trigger_response}")
+        log.info_payload("Server response", trigger_response)
         return trigger_response["job_id"]
 
     @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
@@ -68,7 +68,7 @@ def dataset_profiling():
             log.error(error_message)
             raise AirflowFailException(error_message)
         else:
-            log.info(f"Profile {profile_id} status is {profile_status}")
+            log.info_payload(f"Profile {profile_id} status", profile_status)
         return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -79,7 +79,7 @@ def dataset_profiling():
         url, headers = fetch_profile_builder(gateway_auth_service.get_token(), get_current_context(), profiler_config,
                                              profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
-        log.info(f"Server responded with {fetch_profile_response}")
+        log.info_payload("server response", fetch_profile_response)
         return json.dumps(fetch_profile_response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -89,9 +89,9 @@ def dataset_profiling():
         log = Logger()
         url, headers, payload = convert_profiling_builder(gateway_auth_service.get_token(), get_current_context(),
                                                           moma_config, stringified_profile_data, profile_type)
-        log.info(f"Payload:\n{payload}\n")
+        log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info(f"Server responded with {response}")
+        log.info_payload("server response", response)
         return json.dumps(response)
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -103,9 +103,9 @@ def dataset_profiling():
                                                                      get_current_context(), dmm_config,
                                                                      converted_profile, original_profile,
                                                                      datetime.now(timezone.utc), profile_type)
-        log.info(f"Payload:\n{payload}\n")
+        log.info_payload("payload", payload, True)
         response = http_put(url=url, headers=headers, data=payload)
-        log.info(f"Server responded with {response}")
+        log.info_payload("server response", response)
         return response
 
     # @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -128,9 +128,9 @@ def dataset_profiling():
         log = Logger()
         url, headers, payload = profile_cleanup_builder(profiler_auth_service.get_token(), get_current_context(),
                                                         profiler_config, profile_id)
-        log.info(f"Payload:\n{payload}\n")
+        log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
-        log.info(f"Server responded with {response}")
+        log.info_payload("server response", response)
         return response
 
     light_fetched_id = trigger_profile(True)
