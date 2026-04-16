@@ -28,17 +28,6 @@ The register_dataset task is responsible for formally registering the dataset in
 This task translates user-provided metadata and workflow context into a graph-based registration payload and submits it to the Data Management API using an authenticated request.
 """
 
-BRANCH_LOAD_DATASET_ID = "choose_if_the_dataset_will_be_loaded"
-
-BRANCH_LOAD_DATASET_DOC = """
-# Choose if the dataset will be loaded
-
-The branch_load_dataset task is a branching decision point in the Dataset Onboarding DAG.
-Its role is to determine whether a dataset must be physically loaded into the system based on the nature of its data locations.
-This task does not perform any data movement or API calls; it only controls which downstream path the DAG should follow.
-If the Dataset is stored in a relational database alone, the workflow ends here.
-"""
-
 LOAD_DATASET_ID = "load_dataset"
 
 LOAD_DATASET_DOC = """
