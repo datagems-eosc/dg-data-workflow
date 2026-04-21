@@ -108,19 +108,6 @@ def dataset_profiling():
         log.info_payload("server response", response, True)
         return response
 
-    # @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-    #       on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-    #       on_skipped_callback=on_skipped_callback, task_id=PASS_INDEX_FILES_ID, doc_md=PASS_INDEX_FILES_DOC)
-    # def pass_index_files(stringified_profile_data: str) -> Any:
-    #     log = Logger()
-    #     url, headers, payload = pass_index_files_builder(discovery_auth_service.get_token(), get_current_context(),
-    #                                                      discovery_config,
-    #                                                      stringified_profile_data)
-    #     log.info(f"Payload:\n{payload}\n")
-    #     response = http_post(url=url, headers=headers, data=payload)
-    #     log.info(f"Server responded with {response}")
-    #     return response
-
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=PROFILE_CLEANUP_ID, doc_md=PROFILE_CLEANUP_DOC)
@@ -133,30 +120,23 @@ def dataset_profiling():
         log.info_payload("server response", response, True)
         return response
 
-    light_fetched_id = trigger_profile(True)
     heavy_fetched_id = trigger_profile(False)
 
-    light_completed_procedure = wait_for_completion(light_fetched_id)
     heavy_completed_procedure = wait_for_completion(heavy_fetched_id)
 
-    fetched_light_profile = fetch_profile(light_fetched_id)
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
     converted_heavy = convert_profiling(fetched_heavy_profile, MomaProfileType.HEAVY.value)
-    converted_light = convert_profiling(fetched_light_profile, MomaProfileType.LIGHT.value)
 
     data_management_heavy_id = update_data_management(converted_heavy, fetched_heavy_profile,
                                                       MomaProfileType.HEAVY.value)
-    data_management_light_id = update_data_management(converted_light, fetched_light_profile,
-                                                      MomaProfileType.LIGHT.value)
 
     # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
     heavy_profile_cleanup_response = profile_cleanup(heavy_fetched_id)
 
-    light_completed_procedure >> fetched_light_profile
     heavy_completed_procedure >> fetched_heavy_profile
-    [data_management_heavy_id, data_management_light_id] >> heavy_profile_cleanup_response
+    data_management_heavy_id >> heavy_profile_cleanup_response
 
 
 dataset_profiling()
