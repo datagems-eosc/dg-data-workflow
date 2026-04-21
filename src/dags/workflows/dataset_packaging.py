@@ -1,5 +1,6 @@
 from airflow.sdk import dag, task, get_current_context
 
+from authorization.dataset_packaging_auth import DatasetPackagingAuthService
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post
@@ -12,6 +13,7 @@ from services.logging import Logger
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_packaging():
     dataset_packaging_config = DatasetPackagingConfig()
+    dataset_packaging_auth = DatasetPackagingAuthService()
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -19,12 +21,12 @@ def dataset_packaging():
     def import_dataset() -> bool:
         log = Logger()
         context = get_current_context()
-
-        url, headers = dataset_packaging_builder("placeholder token", context, dataset_packaging_config)
+        
+        url, headers = dataset_packaging_builder(dataset_packaging_auth.get_token(), context, dataset_packaging_config)
         response = http_post(url=url, headers=headers)
         log.info_payload("Server response", response, True)
         return True
-    
+
     _ = import_dataset()
 
 dataset_packaging()
