@@ -24,6 +24,7 @@ def dataset_recommendation_registering():
 
         url, headers = dataset_recommendation_registering_builder(dataset_packaging_auth.get_token(), context,
                                                                   dataset_packaging_config)
+        log.info_payload("token", dataset_packaging_auth.get_token())
         response = http_post(url=url, headers=headers)
         log.info_payload("Server response", response, True)
         return True
