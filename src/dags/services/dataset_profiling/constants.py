@@ -8,14 +8,10 @@ from configurations import ProfilerConfig
 DAG_ID = "DATASET_PROFILING"
 DAG_PARAMS = {
     "id": Param("00000000-0000-0000-0000-000000000000", type=["string"], format="uuid"),
-    "code": Param(None, type=["null","string"]),
     "name": Param(None, type=["null","string"]),
     "description": Param(None, type=["null","string"]),
     "license": Param(None, type=["null","string"]),
-    "mime_type": Param(None, type=["null","string"]),
-    "size": Param(None, type=["null","integer"], minimum=0),
     "url": Param(None, type=["null","string"], format="uri"),
-    "version": Param(None, type=["null","string"]),
     "headline": Param(None, type=["null","string"]),
     "keywords": Param(None, type=["null","array"]),
     "fields_of_science": Param(None, type=["null","array"]),

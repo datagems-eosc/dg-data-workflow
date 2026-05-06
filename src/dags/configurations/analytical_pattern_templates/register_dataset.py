@@ -72,9 +72,6 @@ REGISTER_DATASET_TEMPLATE = """
         {% if dataset_cite_as %}
             ,"citeAs": "{{ dataset_cite_as }}"
         {% endif %}
-        {% if dataset_conforms_to %}
-            ,"conformsTo": "{{ dataset_conforms_to }}"
-        {% endif %}
         {% if dataset_country %}
             ,"country": "{{ dataset_country }}"
         {% endif %}
@@ -110,9 +107,6 @@ REGISTER_DATASET_TEMPLATE = """
         {% endif %}
         {% if dataset_url %}
             ,"url": "{{ dataset_url }}"
-        {% endif %}
-        {% if dataset_version %}
-            ,"version": "{{ dataset_version }}"
         {% endif %}
       }
     },
