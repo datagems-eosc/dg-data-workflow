@@ -69,7 +69,7 @@ def dataset_profiling():
             raise AirflowFailException(error_message)
         else:
             log.info_payload(f"Profile {profile_id} status", profile_status)
-        return profile_status is ProfileStatus.HEAVY_PROFILES_READY or profile_status is ProfileStatus.LIGHT_PROFILE_READY
+        return profile_status is ProfileStatus.HEAVY_PROFILES_READY
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
