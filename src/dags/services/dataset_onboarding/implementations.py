@@ -19,7 +19,7 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dataset_archived_at": normalize_s3_path(get_staged_path(dag_context["params"]["id"])),
         "dataset_node_id": dag_context["params"]["id"],
         "dataset_cite_as": dag_context["params"]["citeAs"],
-        "dataset_country": dag_context["params"]["countries"][0],
+        "dataset_country": dag_context["params"]["countries"][0] if dag_context["params"]["countries"] else None,
         "dataset_date_published": dag_context["params"]["date_published"],
         "dataset_description": dag_context["params"]["description"],
         "dataset_fields_of_science": dag_context["params"]["fields_of_science"],
