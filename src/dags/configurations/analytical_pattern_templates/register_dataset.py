@@ -72,7 +72,7 @@ REGISTER_DATASET_TEMPLATE = """
         {% if dataset_cite_as %}
             ,"citeAs": "{{ dataset_cite_as }}"
         {% endif %}
-        {% if dataset_country %}
+        {% if dataset_country is not none %}
             ,"country": "{{ dataset_country }}"
         {% endif %}
         {% if dataset_date_published %}
