@@ -16,10 +16,11 @@ from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig
     MomaManagementConfig, DbServerRegistryConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
-    UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC, CONVERT_PROFILING_ID, CONVERT_PROFILING_DOC
+    UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC, CONVERT_PROFILING_ID, CONVERT_PROFILING_DOC, \
+    INGEST_CDD_ID, INGEST_CDD_DOC
 from services.dataset_profiling import DAG_ID, DAG_TAGS, DAG_PARAMS, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, \
-    update_data_model_management_builder, convert_profiling_builder
+    update_data_model_management_builder, convert_profiling_builder, ingest_cdd_builder
 from services.logging import Logger
 
 
@@ -34,6 +35,7 @@ def dataset_profiling():
     db_server_registry = DbServerRegistryConfig()
     dmm_config = DataModelManagementConfig()
     moma_config = MomaManagementConfig()
+
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -105,6 +107,16 @@ def dataset_profiling():
                                                                      datetime.now(timezone.utc), profile_type)
         log.info_payload("payload", payload, True)
         response = http_put(url=url, headers=headers, data=payload)
+        log.info_payload("server response", response, True)
+        return response
+
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=INGEST_CDD_ID, doc_md=INGEST_CDD_DOC)
+    def ingest_cdd(stringified_profile_data: str):
+        log = Logger()
+        url, headers = ingest_cdd_builder(discovery_auth_service.get_token(), discovery_config, stringified_profile_data)
+        response = http_post(url=url, headers=headers)
         log.info_payload("server response", response, True)
         return response
 
