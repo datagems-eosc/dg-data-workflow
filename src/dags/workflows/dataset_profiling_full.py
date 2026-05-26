@@ -138,6 +138,8 @@ def dataset_profiling():
 
     fetched_heavy_profile = fetch_profile(heavy_fetched_id)
 
+    _ = ingest_cdd(fetched_heavy_profile)
+
     converted_heavy = convert_profiling(fetched_heavy_profile, MomaProfileType.HEAVY.value)
 
     data_management_heavy_id = update_data_management(converted_heavy, fetched_heavy_profile,
