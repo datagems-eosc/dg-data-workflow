@@ -1,7 +1,6 @@
 import json
 from datetime import datetime
 from typing import Any
-from urllib.parse import urlencode
 
 from airflow.sdk import Context
 from dateutil import parser as date_parser
@@ -105,13 +104,13 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
     return url, headers, payload
 
 
-def ingest_cdd_builder(auth_token: str, config: DatasetDiscoveryConfig, stringified_profile_data: str) -> tuple[str, dict[str, str]]:
-    query_params = {
-        "path_to_profile" : json.loads(stringified_profile_data)["cdd_profile"]["path"]
-    }
-    url: str = config.options.base_url + config.options.dataset.insert + "?" + urlencode(query_params)
+def pass_index_files_builder(auth_token: str, dag_context: Context, config: DatasetDiscoveryConfig,
+                             stringified_profile_data: str) -> tuple[str, dict[str, str], dict[str, str]]:
+    # TODO: this method should be implemented when the cross dataset discovery is
+    url: str = config.options.base_url + config.options.dataset.insert
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
-    return url, headers
+    payload = {"data_placeholder": stringified_profile_data}
+    return url, headers, payload
 
 
 def profile_cleanup_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[

@@ -40,9 +40,9 @@ UPDATE_DATA_MANAGEMENT_DOC = """
 Updates the data model management API with the generated information from 
 """
 
-INGEST_CDD_ID = "pass_index_file"
+PASS_INDEX_FILES_ID = "pass_index_files"
 
-INGEST_CDD_DOC = """
+PASS_INDEX_FILES_DOC = """
 # Pass Index Files
 
 Does something
