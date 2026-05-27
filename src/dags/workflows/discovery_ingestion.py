@@ -76,3 +76,7 @@ def discovery_ingestion():
             log.error(error_message)
             raise AirflowFailException(error_message)
         return status is CddIngestionStatus.COMPLETED
+
+    _ = wait_for_completion(begin_ingestion(fetch_profile_path()))
+    
+discovery_ingestion()
