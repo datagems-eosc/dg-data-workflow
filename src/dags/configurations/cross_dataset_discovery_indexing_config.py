@@ -8,12 +8,13 @@ class DatasetDiscoveryConfig:
         class DatasetConfig:
             def __init__(self, data: dict):
                 self.insert = data["insert"]
-                self.remove = data["remove"]
+                self.status = data["status"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
             self.scope = data.get("scope")
-            self.dataset = self.DatasetConfig(data.get("dataset"))
+            self.poke_interval = data.get("poke_interval")
+            self.endpoints = self.DatasetConfig(data.get("endpoints"))
 
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")

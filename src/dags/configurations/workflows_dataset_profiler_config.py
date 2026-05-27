@@ -12,6 +12,7 @@ class ProfilerConfig:
                 self.get_profile = data["get_profile"]
                 self.cleanup = data["cleanup"]
                 self.poke_interval = data["poke_interval"]
+                self.fetch_cdd_profile = data["fetch_cdd_profile"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
@@ -22,7 +23,6 @@ class ProfilerConfig:
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
             self.scope = data.get("scope")
-            # TODO: add the class and mappings to the endpoints
 
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")
