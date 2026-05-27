@@ -32,6 +32,7 @@ def discovery_ingestion():
         context = get_current_context()
 
         url, headers = fetch_profile_path_builder(profiler_auth.get_token(), context, profiler_config)
+        log.info_payload("request url", url)
 
         response = http_get(url=url, headers=headers)
         log.info_payload("server response", response, True)
@@ -51,6 +52,7 @@ def discovery_ingestion():
         context = get_current_context()
 
         url, headers = begin_ingestion_builder(discovery_auth.get_token(), path, discovery_config)
+        log.info_payload("request url", url)
 
         response = http_post(url=url, headers=headers)
         log.info_payload("server response", response, True)
@@ -67,6 +69,8 @@ def discovery_ingestion():
         log = Logger()
 
         url, headers = wait_for_completion_builder(discovery_auth.get_token(), job_id, discovery_config)
+        log.info_payload("request url", url)
+
         response = http_get(url=url, headers=headers)
         log.info_payload("server response", response, True)
 
@@ -78,5 +82,5 @@ def discovery_ingestion():
         return status is CddIngestionStatus.COMPLETED
 
     _ = wait_for_completion(begin_ingestion(fetch_profile_path()))
-    
+
 discovery_ingestion()
