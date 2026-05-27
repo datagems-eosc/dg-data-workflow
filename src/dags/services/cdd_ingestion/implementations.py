@@ -15,7 +15,7 @@ def fetch_profile_path_builder(auth_token: str, dag_context: Context, config: Pr
 
 def begin_ingestion_builder(auth_token: str, path: str, config: DatasetDiscoveryConfig) -> tuple[str, dict[str, str]]:
     params = {"path_to_profile": path}
-    url: str = config.options.base_url + config.options.endpoints.insert + urlencode(params)
+    url: str = config.options.base_url + config.options.endpoints.insert + "?" + urlencode(params)
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
     return url, headers
 
