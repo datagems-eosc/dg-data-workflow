@@ -1,10 +1,10 @@
 import json
+import requests.exceptions
+from airflow.exceptions import AirflowException, AirflowFailException
+from airflow.sdk import dag, task, get_current_context
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from typing import Any
-
-from airflow.exceptions import AirflowException
-from airflow.sdk import dag, task, get_current_context
 
 from authorization.data_model_management_auth import DataModelManagementAuthService
 from common.enum import DataLocationKind
@@ -14,8 +14,8 @@ from common.extensions.file_extensions import process_location, get_staged_path,
 from common.extensions.http_requests import http_post, http_put
 from common.types import DataLocation
 from configurations import DataModelManagementConfig, DatasetOnboardingConfig
-from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, \
-    STAGE_DATASET_FILES_DOC, REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
+from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, STAGE_DATASET_FILES_DOC, \
+    REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
 from services.data_management import DataRetriever, DataStagingService
 from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, register_dataset_builder, load_dataset_builder
 from services.logging import Logger
@@ -42,9 +42,7 @@ def dataset_onboarding():
         with ThreadPoolExecutor() as executor:
             future_to_location = {
                 executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service, log,
-                                dataset_onboarding_config): loc
-                for loc in data_locations
-            }
+                                dataset_onboarding_config): loc for loc in data_locations}
 
             for future in as_completed(future_to_location):
                 loc = future_to_location[future]
@@ -59,10 +57,8 @@ def dataset_onboarding():
                     failed_locations.append(loc)
 
         if failed_locations:
-            raise AirflowException(
-                f"Failed to process dataset locations: "
-                f"{[l.get('location') for l in failed_locations]}"
-            )
+            raise AirflowException(f"Failed to process dataset locations: "
+                                   f"{[l.get('location') for l in failed_locations]}")
         return [res.to_dict() for res in results]
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
@@ -78,24 +74,53 @@ def dataset_onboarding():
         log.info_payload("server response", response, True)
         return response
 
-
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC)
+          on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC, retries=5,
+          retry_delay=timedelta(seconds=2))
     def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
         dag_context = get_current_context()
         dataset_id = dag_context["params"]["id"]
         data_locations = [DataLocation.from_dict(d) for d in raw_data_locations]
-        if data_locations and len(data_locations) == 1 and data_locations[0].kind is DataLocationKind.Database:
+        is_database_load = (
+                len(data_locations) == 1
+                and data_locations[0].kind == DataLocationKind.Database
+        )
+
+        if is_database_load:
             new_dir = create_folder(get_staged_path(dataset_id))
             _ = create_file(new_dir.as_posix(), dataset_id)
 
-        url, headers, payload = load_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config,
-                                                     data_locations,
+        url, headers, payload = load_dataset_builder(dmm_auth.get_token(), dag_context, dmm_config, data_locations,
                                                      datetime.now(timezone.utc))
         log.info_payload("payload", payload, True)
-        response = http_put(url=url, headers=headers, data=payload)
+        try:
+            response = http_put(url=url, headers=headers, data=payload)
+        except requests.exceptions.HTTPError as ex:
+            status_code = ex.response.status_code if ex.response is not None else None
+            error_message = ""
+            if ex.response is not None:
+                try:
+                    response_body = ex.response.json()
+                    error_message = str(response_body.get("error", ""))
+                except ValueError:
+                    error_message = ex.response.text or ""
+
+            if is_database_load and status_code == 404 and "Source dataset not found at expected location" in error_message:
+                raise AirflowException(f"Source dataset is not visible yet at expected location. Retrying...") from ex
+
+            raise AirflowFailException(
+                f"Load dataset failed with a non-retryable HTTP error. "
+                f"Status code: {status_code}. "
+                f"Error: {error_message or ex}"
+            ) from ex
+        except Exception as ex:
+            raise AirflowFailException(
+                f"Load dataset failed with a non-retryable error. "
+                f"Original error: {ex}"
+            ) from ex
+
         log.info_payload("server response", response, True)
         return response
 
