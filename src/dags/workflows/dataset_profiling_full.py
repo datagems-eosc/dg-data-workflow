@@ -5,14 +5,13 @@ from typing import Any
 from airflow.exceptions import AirflowFailException
 from airflow.sdk import dag, task, get_current_context
 
-from authorization.discovery_auth import DiscoveryAuthService
-from authorization.dwo_gateway_auth import DwoGatewayAuthService
+from authorization.moma_management_auth import MomaManagementAuthService
 from authorization.profiler_auth import ProfilerAuthService
 from common.enum import ProfileStatus, MomaProfileType
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
     on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get, http_put
-from configurations import DatasetDiscoveryConfig, GatewayConfig, ProfilerConfig, DataModelManagementConfig, \
+from configurations import ProfilerConfig, DataModelManagementConfig, \
     MomaManagementConfig, DbServerRegistryConfig
 from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_ID, TRIGGER_PROFILE_DOC, \
     WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC, FETCH_PROFILE_ID, FETCH_PROFILE_DOC, UPDATE_DATA_MANAGEMENT_ID, \
@@ -26,14 +25,11 @@ from services.logging import Logger
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_profiling():
     profiler_auth_service = ProfilerAuthService()
-    gateway_auth_service = DwoGatewayAuthService()
-    discovery_auth_service = DiscoveryAuthService()
     profiler_config = ProfilerConfig()
-    gateway_config = GatewayConfig()
-    discovery_config = DatasetDiscoveryConfig()
     db_server_registry = DbServerRegistryConfig()
     dmm_config = DataModelManagementConfig()
     moma_config = MomaManagementConfig()
+    moma_auth = MomaManagementAuthService()
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
@@ -55,7 +51,7 @@ def dataset_profiling():
                  doc_md=WAIT_FOR_COMPLETION_DOC)
     def wait_for_completion(profile_id: str) -> Any:
         log = Logger()
-        url, headers = wait_for_completion_builder(gateway_auth_service.get_token(), get_current_context(),
+        url, headers = wait_for_completion_builder(profiler_auth_service.get_token(), get_current_context(),
                                                    profiler_config, profile_id)
         status_response = http_get(url=url, headers=headers)
         profile_status = ProfileStatus(status_response)
@@ -76,7 +72,7 @@ def dataset_profiling():
           on_skipped_callback=on_skipped_callback, task_id=FETCH_PROFILE_ID, doc_md=FETCH_PROFILE_DOC)
     def fetch_profile(profile_id: str) -> str:
         log = Logger()
-        url, headers = fetch_profile_builder(gateway_auth_service.get_token(), get_current_context(), profiler_config,
+        url, headers = fetch_profile_builder(profiler_auth_service.get_token(), get_current_context(), profiler_config,
                                              profile_id)
         fetch_profile_response = http_get(url=url, headers=headers)
         log.info_payload("server response", fetch_profile_response, True)
@@ -87,7 +83,7 @@ def dataset_profiling():
           on_skipped_callback=on_skipped_callback, task_id=CONVERT_PROFILING_ID, doc_md=CONVERT_PROFILING_DOC)
     def convert_profiling(stringified_profile_data: str, profile_type: str) -> Any:
         log = Logger()
-        url, headers, payload = convert_profiling_builder(gateway_auth_service.get_token(), get_current_context(),
+        url, headers, payload = convert_profiling_builder(moma_auth.get_token(), get_current_context(),
                                                           moma_config, stringified_profile_data, profile_type)
         log.info_payload("payload", payload, True)
         response = http_post(url=url, headers=headers, data=payload)
@@ -99,7 +95,7 @@ def dataset_profiling():
           on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
     def update_data_management(converted_profile: str, original_profile: str, profile_type: str) -> Any:
         log = Logger()
-        url, headers, payload = update_data_model_management_builder(gateway_auth_service.get_token(),
+        url, headers, payload = update_data_model_management_builder(moma_auth.get_token(),
                                                                      get_current_context(), dmm_config,
                                                                      converted_profile, original_profile,
                                                                      datetime.now(timezone.utc), profile_type)
@@ -130,8 +126,6 @@ def dataset_profiling():
 
     data_management_heavy_id = update_data_management(converted_heavy, fetched_heavy_profile,
                                                       MomaProfileType.HEAVY.value)
-
-    # passed_index_files_response = pass_index_files(fetched_heavy_profile)
 
     heavy_profile_cleanup_response = profile_cleanup(heavy_fetched_id)
 

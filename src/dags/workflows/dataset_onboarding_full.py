@@ -3,7 +3,7 @@ import requests.exceptions
 from airflow.exceptions import AirflowException, AirflowFailException
 from airflow.sdk import dag, task, get_current_context
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any
 
 from authorization.data_model_management_auth import DataModelManagementAuthService

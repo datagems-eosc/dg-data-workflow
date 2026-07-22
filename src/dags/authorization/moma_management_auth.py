@@ -1,11 +1,11 @@
-from configurations.dwo_gateway_config import GatewayConfig
+from configurations.moma_management_config import MomaManagementConfig
 from common.extensions.http_requests import http_post
 from .base_auth_service import BaseAuthService
 
 
-class DwoGatewayAuthService(BaseAuthService):
+class MomaManagementAuthService(BaseAuthService):
     def __init__(self):
-        self.config = GatewayConfig()
+        self.config = MomaManagementConfig()
         super().__init__(
             client_id=self.config.login_client_id,
             client_secret=self.config.login_client_password,
