@@ -55,7 +55,7 @@ def on_execute_callback(context) -> None:
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
         "WorkflowTaskInstanceDetails": build_callback_payload(context, "execute"),
-        "Status": WorkflowProcessStepExecutionStatus.InProgress
+        "Status": WorkflowProcessStepExecutionStatus.InProgress.value
     }
     log = Logger()
     log.info_payload('test', payload, True)
