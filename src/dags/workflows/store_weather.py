@@ -3,8 +3,6 @@ from datetime import timedelta, datetime
 
 from airflow.sdk import task, dag, get_current_context
 
-from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
-    on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_get
 from common.types import FeatureCollection
 from configurations import NoaGeoConfig
@@ -20,9 +18,7 @@ from services.meteo_db_context import PostgresDatabase
 def geo_ingest():
     noa_geo_config = NoaGeoConfig()
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+    @task()
     def fetch_weather() -> str:
         dag_context = get_current_context()
         log = Logger()
@@ -31,9 +27,7 @@ def geo_ingest():
         log.info(f"Server responded with {response}")
         return json.dumps(response)
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback)
+    @task()
     def store_data(stringified_data: str) -> None:
         dag_context = get_current_context()
         log = Logger()

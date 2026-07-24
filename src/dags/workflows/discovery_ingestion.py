@@ -6,8 +6,6 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.discovery_auth import DiscoveryAuthService
 from authorization.profiler_auth import ProfilerAuthService
 from common.enum import CddIngestionStatus
-from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
-    on_retry_callback, on_failure_callback
 from common.extensions.http_requests import http_get, http_post
 from common.extensions.xcom_logging import xcom_task_logging
 from configurations import DatasetDiscoveryConfig, ProfilerConfig
@@ -25,9 +23,7 @@ def discovery_ingestion():
     profiler_config = ProfilerConfig()
     profiler_auth = ProfilerAuthService()
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=CDD_FETCH_FILE_ID, doc_md=CDD_FETCH_FILE_DOC)
+    @task(task_id=CDD_FETCH_FILE_ID, doc_md=CDD_FETCH_FILE_DOC)
     def fetch_profile_path():
         with xcom_task_logging() as log:
             context = log.context
@@ -42,9 +38,7 @@ def discovery_ingestion():
                 raise AirflowFailException(error_message)
             return path
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=CDD_BEGIN_INGEST_ID, doc_md=CDD_BEGIN_INGEST_DOC)
+    @task(task_id=CDD_BEGIN_INGEST_ID, doc_md=CDD_BEGIN_INGEST_DOC)
     def begin_ingestion(path: str):
         with xcom_task_logging() as log:
             url, headers = begin_ingestion_builder(discovery_auth.get_token(), path, discovery_config)
@@ -55,9 +49,7 @@ def discovery_ingestion():
             return job_id
 
     @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
-                 on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-                 on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-                 on_skipped_callback=on_skipped_callback, task_id=WAIT_FOR_COMPLETION_ID,
+                 task_id=WAIT_FOR_COMPLETION_ID,
                  doc_md=WAIT_FOR_COMPLETION_DOC)
     def wait_for_completion(job_id: str) -> Any:
         with xcom_task_logging() as log:

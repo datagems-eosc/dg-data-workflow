@@ -1,13 +1,15 @@
 import json
 import requests.exceptions
 from airflow.exceptions import AirflowException, AirflowFailException
-from airflow.sdk import dag, task, get_current_context
+from airflow.sdk import dag, task, get_current_context, Param
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from typing import Any
 
 from authorization.data_model_management_auth import DataModelManagementAuthService
 from common.enum import DataLocationKind
+from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
+    on_retry_callback, on_failure_callback
 from common.extensions.file_extensions import process_location, get_staged_path, create_folder, create_file
 from common.extensions.http_requests import http_post, http_put
 from common.types import DataLocation
@@ -15,17 +17,37 @@ from configurations import DataModelManagementConfig, DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, STAGE_DATASET_FILES_DOC, \
     REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
 from services.data_management import DataRetriever, DataStagingService
-from services.dataset_onboarding import DAG_ID, DAG_PARAMS, DAG_TAGS, register_dataset_builder, load_dataset_builder
+from services.dataset_onboarding import DAG_ID, register_dataset_builder, load_dataset_builder
 from services.logging import Logger
 
+DAG_PARAMS = {
+    "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
+    "name": Param(None, type=["null","string"]),
+    "description": Param(None, type=["null","string"]),
+    "headline": Param(None, type=["null","string"]),
+    "fields_of_science": Param(None, type=["null","array"]),
+    "languages": Param(None, type=["null","array"]),
+    "keywords": Param(None, type=["null","array"]),
+    "countries": Param(None, type=["null","array"]),
+    "publishedUrl": Param(None, type=["null","string"], format="uri"),
+    "citeAs": Param(None, type=["null","string"]),
+    "license": Param(None, type=["null","string"]),
+    "dataLocations": Param([], type="string"),
+    "date_published": Param(f"{date.today()}", type=["null","string"], format="date"),
+    "userId": Param(None, type=["null","string"]),
+    "doi": Param(None, type=["null", "string"]),
+    "workflow_process_step_information": Param(type="object")
+}
 
-@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
+@dag(DAG_ID + "_test", params=DAG_PARAMS, tags=["DatasetOnboarding_test", ], dag_display_name=DAG_DISPLAY_NAME + "_test")
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     dmm_config = DataModelManagementConfig()
     dmm_auth = DataModelManagementAuthService()
 
-    @task(task_id=STAGE_DATASET_FILES_ID, doc_md=STAGE_DATASET_FILES_DOC)
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=STAGE_DATASET_FILES_ID, doc_md=STAGE_DATASET_FILES_DOC)
     def stage_dataset_files() -> list[dict[str, int | str | None]]:
         dag_context = get_current_context()
         log = Logger()
@@ -57,7 +79,9 @@ def dataset_onboarding():
                                    f"{[l.get('location') for l in failed_locations]}")
         return [res.to_dict() for res in results]
 
-    @task(task_id=REGISTER_DATASET_ID, doc_md=REGISTER_DATASET_DOC)
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=REGISTER_DATASET_ID, doc_md=REGISTER_DATASET_DOC)
     def register_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()
         url, headers, payload = register_dataset_builder(dmm_auth.get_token(), get_current_context(), dmm_config,
@@ -68,7 +92,9 @@ def dataset_onboarding():
         log.info_payload("server response", response, True)
         return response
 
-    @task(task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC, retries=5,
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC, retries=5,
           retry_delay=timedelta(seconds=2))
     def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
         log = Logger()

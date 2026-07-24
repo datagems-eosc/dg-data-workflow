@@ -8,8 +8,6 @@ from airflow.sdk import dag, task, get_current_context
 from authorization.moma_management_auth import MomaManagementAuthService
 from authorization.profiler_auth import ProfilerAuthService
 from common.enum import ProfileStatus, MomaProfileType
-from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
-    on_failure_callback, on_skipped_callback
 from common.extensions.http_requests import http_post, http_get, http_put
 from configurations import ProfilerConfig, DataModelManagementConfig, \
     MomaManagementConfig, DbServerRegistryConfig
@@ -31,9 +29,7 @@ def dataset_profiling():
     moma_config = MomaManagementConfig()
     moma_auth = MomaManagementAuthService()
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=TRIGGER_PROFILE_ID, doc_md=TRIGGER_PROFILE_DOC)
+    @task(task_id=TRIGGER_PROFILE_ID, doc_md=TRIGGER_PROFILE_DOC)
     def trigger_profile(is_light: bool) -> Any:
         log = Logger()
         trigger_profile_url, trigger_profile_headers, trigger_profile_payload = trigger_profile_builder(
@@ -45,9 +41,7 @@ def dataset_profiling():
         return trigger_response["job_id"]
 
     @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
-                 on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-                 on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-                 on_skipped_callback=on_skipped_callback, task_id=WAIT_FOR_COMPLETION_ID,
+                 task_id=WAIT_FOR_COMPLETION_ID,
                  doc_md=WAIT_FOR_COMPLETION_DOC)
     def wait_for_completion(profile_id: str) -> Any:
         log = Logger()
@@ -67,9 +61,7 @@ def dataset_profiling():
             log.info_payload(f"Profile {profile_id} status", profile_status)
         return profile_status is ProfileStatus.HEAVY_PROFILES_READY
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=FETCH_PROFILE_ID, doc_md=FETCH_PROFILE_DOC)
+    @task(task_id=FETCH_PROFILE_ID, doc_md=FETCH_PROFILE_DOC)
     def fetch_profile(profile_id: str) -> str:
         log = Logger()
         url, headers = fetch_profile_builder(profiler_auth_service.get_token(), get_current_context(), profiler_config,
@@ -78,9 +70,7 @@ def dataset_profiling():
         log.info_payload("server response", fetch_profile_response, True)
         return json.dumps(fetch_profile_response)
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=CONVERT_PROFILING_ID, doc_md=CONVERT_PROFILING_DOC)
+    @task(task_id=CONVERT_PROFILING_ID, doc_md=CONVERT_PROFILING_DOC)
     def convert_profiling(stringified_profile_data: str, profile_type: str) -> Any:
         log = Logger()
         url, headers, payload = convert_profiling_builder(moma_auth.get_token(), get_current_context(),
@@ -90,9 +80,7 @@ def dataset_profiling():
         log.info_payload("server response", response, True)
         return json.dumps(response)
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
+    @task(task_id=UPDATE_DATA_MANAGEMENT_ID, doc_md=UPDATE_DATA_MANAGEMENT_DOC)
     def update_data_management(converted_profile: str, original_profile: str, profile_type: str) -> Any:
         log = Logger()
         url, headers, payload = update_data_model_management_builder(moma_auth.get_token(),
@@ -104,9 +92,7 @@ def dataset_profiling():
         log.info_payload("server response", response, True)
         return response
 
-    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
-          on_skipped_callback=on_skipped_callback, task_id=PROFILE_CLEANUP_ID, doc_md=PROFILE_CLEANUP_DOC)
+    @task(task_id=PROFILE_CLEANUP_ID, doc_md=PROFILE_CLEANUP_DOC)
     def profile_cleanup(profile_id: str) -> Any:
         log = Logger()
         url, headers, payload = profile_cleanup_builder(profiler_auth_service.get_token(), get_current_context(),

@@ -2,7 +2,10 @@ from typing import Any
 
 from airflow.sdk import Context
 
+from authorization.gateway_auth import GatewayAuthService
+from common.enum.workflow_process_step_execution_status import WorkflowProcessStepExecutionStatus
 from common.extensions.xcom_logging import TASK_LOGS_XCOM_KEY
+from configurations import GatewayConfig
 from services.logging import Logger
 
 
@@ -42,7 +45,20 @@ def build_callback_payload(context: Context, event: str,) -> dict[str, Any]:
 
 
 def on_execute_callback(context) -> None:
-    payload = build_callback_payload(context, "execute")
+    config = GatewayConfig()
+    auth = GatewayAuthService()
+    url: str = config.options.base_url + config.options.endpoints.process_step_update
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+               "Connection": "keep-alive"}
+    payload = {
+        "Id": context["params"]["workflow_process_step_information"]["id"],
+        "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
+        "StepId": context["params"]["workflow_process_step_information"]["step_id"],
+        "WorkflowTaskInstanceDetails": build_callback_payload(context, "execute"),
+        "Status": WorkflowProcessStepExecutionStatus.InProgress
+    }
+    log = Logger()
+    log.info_payload('test', payload, True)
 
 
 def on_retry_callback(context) -> None:
