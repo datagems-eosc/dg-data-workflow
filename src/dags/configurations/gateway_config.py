@@ -8,6 +8,11 @@ class GatewayConfig:
         class DatasetConfig:
             def __init__(self, data: dict):
                 self.process_step_update = data["process_step_update"]
+                self.onboarding_step_complete = data["onboarding_step_complete"]
+                self.profiling_step_complete = data["profiling_step_complete"]
+                self.packaging_step_complete = data["packaging_step_complete"]
+                self.recommendation_step_complete = data["recommendation_step_complete"]
+                self.cdd_ingestion_step_complete = data["cdd_ingestion_step_complete"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")

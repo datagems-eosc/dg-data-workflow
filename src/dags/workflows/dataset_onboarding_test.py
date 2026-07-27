@@ -9,7 +9,7 @@ from typing import Any
 from authorization.data_model_management_auth import DataModelManagementAuthService
 from common.enum import DataLocationKind
 from common.extensions.callbacks import on_execute_callback, on_success_callback, on_skipped_callback, \
-    on_retry_callback, on_failure_callback
+    on_retry_callback, on_failure_callback, on_success_onboarding_callback
 from common.extensions.file_extensions import process_location, get_staged_path, create_folder, create_file
 from common.extensions.http_requests import http_post, http_put
 from common.types import DataLocation
@@ -93,7 +93,7 @@ def dataset_onboarding():
         return response
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_success_callback=on_success_onboarding_callback, on_failure_callback=on_failure_callback,
           on_skipped_callback=on_skipped_callback, task_id=LOAD_DATASET_ID, doc_md=LOAD_DATASET_DOC, retries=5,
           retry_delay=timedelta(seconds=2))
     def load_dataset(raw_data_locations: list[dict[str, int | str | None]]) -> Any:
