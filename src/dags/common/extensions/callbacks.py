@@ -107,7 +107,7 @@ def on_success_onboarding_callback(context) -> None:
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
             "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
-            "Status": WorkflowProcessStepExecutionStatus.InProgress.value
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
         },
         "Profiling": {
             "Id": context["params"]["id"],
@@ -131,7 +131,7 @@ def on_success_profiling_callback(context) -> None:
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
             "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
-            "Status": WorkflowProcessStepExecutionStatus.InProgress.value
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
         },
         "DatasetId": context["params"]["id"],
     }
@@ -151,7 +151,7 @@ def on_success_packaging_callback(context) -> None:
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
             "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
-            "Status": WorkflowProcessStepExecutionStatus.InProgress.value
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
         },
         "DatasetId": context["params"]["id"],
     }
@@ -171,7 +171,7 @@ def on_success_recommendation_callback(context) -> None:
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
             "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
-            "Status": WorkflowProcessStepExecutionStatus.InProgress.value
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
         },
         "DatasetId": context["params"]["id"],
     }
@@ -191,7 +191,7 @@ def on_success_cdd_ingestion_callback(context) -> None:
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
             "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
-            "Status": WorkflowProcessStepExecutionStatus.InProgress.value
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
         },
         "DatasetId": context["params"]["id"],
     }
