@@ -4,12 +4,11 @@ from typing import Any
 from airflow.sdk import Context
 
 from authorization.gateway_auth import GatewayAuthService
-from common.enum import WorkflowProcessStepExecutionStatus
+from common.enum import WorkflowProcessStepExecutionStatus, DataLocationKind
 from common.extensions.http_requests import http_post
 from common.extensions.xcom_logging import TASK_LOGS_XCOM_KEY
+from common.types import DataLocation
 from configurations import GatewayConfig
-from dags.common.enum.data_store_kind import DataLocationKind
-from dags.common.types.data_location import DataLocation
 
 
 def pull_task_logs(context: dict[str, Any]) -> list[dict[str, Any]]:
@@ -20,7 +19,7 @@ def pull_task_logs(context: dict[str, Any]) -> list[dict[str, Any]]:
     return records if isinstance(records, list) else []
 
 
-def build_callback_payload(context: Context, event: str,) -> dict[str, Any]:
+def build_callback_payload(context: Context, event: str, ) -> dict[str, Any]:
     task = context["task"]
     task_instance = context["ti"]
     exception = context.get("exception")
@@ -57,7 +56,7 @@ def on_execute_callback(context) -> None:
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-        "WorkflowTaskInstanceDetails": build_callback_payload(context, "execute"),
+        "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "execute")),
         "Status": WorkflowProcessStepExecutionStatus.InProgress.value
     }
     _ = http_post(url=url, headers=headers, data=payload)
@@ -73,7 +72,7 @@ def on_retry_callback(context) -> None:
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-        "WorkflowTaskInstanceDetails": build_callback_payload(context, "retry"),
+        "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "retry")),
         "Status": WorkflowProcessStepExecutionStatus.InProgress.value
     }
     _ = http_post(url=url, headers=headers, data=payload)
@@ -89,10 +88,11 @@ def on_success_callback(context) -> None:
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-        "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+        "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
         "Status": WorkflowProcessStepExecutionStatus.InProgress.value
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_success_onboarding_callback(context) -> None:
     config = GatewayConfig()
@@ -102,20 +102,21 @@ def on_success_onboarding_callback(context) -> None:
                "Connection": "keep-alive"}
     data_location = [DataLocation.from_dict(d) for d in json.loads(context["params"]["dataLocations"])][0]
     payload = {
-        "WorkflowProcessStep" : {
+        "WorkflowProcessStep": {
             "Id": context["params"]["workflow_process_step_information"]["id"],
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-            "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
             "Status": WorkflowProcessStepExecutionStatus.InProgress.value
         },
         "Profiling": {
             "Id": context["params"]["id"],
             "DataStoreKind": 1 if data_location.kind is DataLocationKind.Database else 0,
             "DatabaseName": data_location.location if data_location.kind is DataLocationKind.Database else None,
-        }        
+        }
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_success_profiling_callback(context) -> None:
     config = GatewayConfig()
@@ -123,18 +124,19 @@ def on_success_profiling_callback(context) -> None:
     url: str = config.options.base_url + config.options.endpoints.profiling_step_complete
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
                "Connection": "keep-alive"}
-    
+
     payload = {
-        "WorkflowProcessStep" : {
+        "WorkflowProcessStep": {
             "Id": context["params"]["workflow_process_step_information"]["id"],
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-            "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
             "Status": WorkflowProcessStepExecutionStatus.InProgress.value
         },
-        "DatasetId": context["params"]["id"],      
+        "DatasetId": context["params"]["id"],
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_success_packaging_callback(context) -> None:
     config = GatewayConfig()
@@ -142,18 +144,19 @@ def on_success_packaging_callback(context) -> None:
     url: str = config.options.base_url + config.options.endpoints.packaging_step_complete
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
                "Connection": "keep-alive"}
-    
+
     payload = {
-        "WorkflowProcessStep" : {
+        "WorkflowProcessStep": {
             "Id": context["params"]["workflow_process_step_information"]["id"],
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-            "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
             "Status": WorkflowProcessStepExecutionStatus.InProgress.value
         },
-        "DatasetId": context["params"]["id"],      
+        "DatasetId": context["params"]["id"],
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_success_recommendation_callback(context) -> None:
     config = GatewayConfig()
@@ -161,18 +164,19 @@ def on_success_recommendation_callback(context) -> None:
     url: str = config.options.base_url + config.options.endpoints.recommendation_step_complete
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
                "Connection": "keep-alive"}
-    
+
     payload = {
-        "WorkflowProcessStep" : {
+        "WorkflowProcessStep": {
             "Id": context["params"]["workflow_process_step_information"]["id"],
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-            "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
             "Status": WorkflowProcessStepExecutionStatus.InProgress.value
         },
-        "DatasetId": context["params"]["id"],      
+        "DatasetId": context["params"]["id"],
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_success_cdd_ingestion_callback(context) -> None:
     config = GatewayConfig()
@@ -180,18 +184,19 @@ def on_success_cdd_ingestion_callback(context) -> None:
     url: str = config.options.base_url + config.options.endpoints.cdd_ingestion_step_complete
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
                "Connection": "keep-alive"}
-    
+
     payload = {
-        "WorkflowProcessStep" : {
+        "WorkflowProcessStep": {
             "Id": context["params"]["workflow_process_step_information"]["id"],
             "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
             "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-            "WorkflowTaskInstanceDetails": build_callback_payload(context, "success"),
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
             "Status": WorkflowProcessStepExecutionStatus.InProgress.value
         },
-        "DatasetId": context["params"]["id"],      
+        "DatasetId": context["params"]["id"],
     }
     _ = http_post(url=url, headers=headers, data=payload)
+
 
 def on_failure_callback(context) -> None:
     config = GatewayConfig()
@@ -203,7 +208,7 @@ def on_failure_callback(context) -> None:
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-        "WorkflowTaskInstanceDetails": build_callback_payload(context, "failure"),
+        "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "failure")),
         "Status": WorkflowProcessStepExecutionStatus.Failed.value
     }
     _ = http_post(url=url, headers=headers, data=payload)
@@ -219,7 +224,7 @@ def on_skipped_callback(context) -> None:
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
         "StepId": context["params"]["workflow_process_step_information"]["step_id"],
-        "WorkflowTaskInstanceDetails": build_callback_payload(context, "skipped"),
+        "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "skipped")),
         "Status": WorkflowProcessStepExecutionStatus.InProgress.value
     }
     _ = http_post(url=url, headers=headers, data=payload)

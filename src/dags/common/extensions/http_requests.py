@@ -42,6 +42,16 @@ HttpTimeout: TypeAlias = (float | tuple[float, float] | tuple[float, None] | Non
 HttpHooks: TypeAlias = (Mapping[str, Iterable[Callable[[Response], Any]] | Callable[[Response], Any]] | None)
 HttpCert: TypeAlias = (str | tuple[str, str] | None)
 
+def _parse_response(response: Response) -> Any:
+    if response.status_code == requests.codes.no_content or not response.content:
+        return None
+
+    content_type = response.headers.get("Content-Type", "").lower()
+
+    if "application/json" in content_type:
+        return response.json()
+
+    return response.text
 
 def _sanitize_for_json(obj: Any) -> Any:
     """Recursively replace NaN/Infinity values with None."""
@@ -75,7 +85,7 @@ def http_request(method: HttpMethod, **kwargs) -> Response:
 def http_get(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,
              auth: HttpAuth = None) -> Any:
     response = http_request(HttpMethod.GET, url=url, params=params, headers=headers, auth=auth)
-    return response.json()
+    return _parse_response(response)
 
 
 def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None,
@@ -83,14 +93,14 @@ def http_post(url: str | bytes, params: HttpSupportsItems = None, headers: HttpH
     if data is not None and headers.get('Content-Type') == 'application/json':
         data = _safe_json_dumps(data)
     response = http_request(HttpMethod.POST, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
-    return response.json()
+    return _parse_response(response)
 
 def http_put(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None, auth: HttpAuth = None,
               data: HttpData = None, files: HttpFiles = None, ) -> Any:
     if data is not None and headers.get('Content-Type') == 'application/json':
         data = _safe_json_dumps(data)
     response = http_request(HttpMethod.PUT, url=url, params=params, headers=headers, auth=auth, data=data, files=files)
-    return response.json()
+    return _parse_response(response)
 
 
 def http_get_raw(url: str | bytes, params: HttpSupportsItems = None, headers: HttpHeaders = None,

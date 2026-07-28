@@ -6,8 +6,6 @@ DAG_ID = "CDD_INGEST"
 
 DAG_PARAMS = {
     "id": Param("00000000-0000-0000-0000-000000000000", type=["string"], format="uuid"),
-    "workflow_process_id": Param(type=["string"], format="uuid"),
-    "step_id": Param(type=["string"], format="uuid")
 }
 
 DAG_TAGS = ["CDD_Ingest", ]
