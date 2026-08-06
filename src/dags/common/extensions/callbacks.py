@@ -1,3 +1,4 @@
+import base64
 import json
 from typing import Any
 
@@ -9,6 +10,7 @@ from common.extensions.http_requests import http_post
 from common.extensions.xcom_logging import TASK_LOGS_XCOM_KEY
 from common.types import DataLocation
 from configurations import GatewayConfig
+from services.logging import Logger
 
 
 def pull_task_logs(context: dict[str, Any]) -> list[dict[str, Any]]:
@@ -49,8 +51,11 @@ def build_callback_payload(context: Context, event: str, ) -> dict[str, Any]:
 def on_execute_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
