@@ -54,7 +54,7 @@ def gather_prerequisites() -> tuple[GatewayConfig, dict[str, str]]:
     config = GatewayConfig()
     auth = GatewayAuthService()
     token = auth.get_token()
-    default_logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
+    # default_logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     return config, headers
