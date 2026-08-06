@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 from typing import Any
 
 from airflow.sdk import Context
@@ -47,12 +48,13 @@ def build_callback_payload(context: Context, event: str, ) -> dict[str, Any]:
         "logs": pull_task_logs(context),
     }
 
+default_logger = logging.getLogger(__name__)
+
 def gather_prerequisites() -> tuple[GatewayConfig, dict[str, str]]:
     config = GatewayConfig()
     auth = GatewayAuthService()
-    logger = Logger()
     token = auth.get_token()
-    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
+    default_logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     return config, headers
