@@ -70,8 +70,11 @@ def on_execute_callback(context) -> None:
 def on_retry_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
@@ -86,8 +89,11 @@ def on_retry_callback(context) -> None:
 def on_success_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
@@ -102,8 +108,11 @@ def on_success_callback(context) -> None:
 def on_success_onboarding_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.onboarding_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     data_location = [DataLocation.from_dict(d) for d in json.loads(context["params"]["dataLocations"])][0]
     payload = {
@@ -126,8 +135,11 @@ def on_success_onboarding_callback(context) -> None:
 def on_success_profiling_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.profiling_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
 
     payload = {
@@ -146,8 +158,11 @@ def on_success_profiling_callback(context) -> None:
 def on_success_packaging_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.packaging_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
 
     payload = {
@@ -166,8 +181,11 @@ def on_success_packaging_callback(context) -> None:
 def on_success_recommendation_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.recommendation_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
 
     payload = {
@@ -186,8 +204,11 @@ def on_success_recommendation_callback(context) -> None:
 def on_success_cdd_ingestion_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.cdd_ingestion_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
 
     payload = {
@@ -206,8 +227,11 @@ def on_success_cdd_ingestion_callback(context) -> None:
 def on_failure_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
@@ -222,8 +246,11 @@ def on_failure_callback(context) -> None:
 def on_skipped_callback(context) -> None:
     config = GatewayConfig()
     auth = GatewayAuthService()
+    logger = Logger()
+    token = auth.get_token()
+    logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
