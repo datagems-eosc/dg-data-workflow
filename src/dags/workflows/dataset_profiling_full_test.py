@@ -80,7 +80,7 @@ def dataset_profiling():
             url, headers = wait_for_completion_builder(profiler_auth_service.get_token(), dag_context,
                                                        profiler_config, profile_id)
             status_response = http_get(url=url, headers=headers)
-            profile_status = ProfileStatus(status_response)
+            profile_status = ProfileStatus(status_response["status"])
             if profile_status is ProfileStatus.CLEANED_UP:
                 error_message = f"Profile {profile_id} is cleaned up"
                 log.error(error_message)
@@ -91,7 +91,7 @@ def dataset_profiling():
                 raise AirflowFailException(error_message)
             else:
                 log.info_payload(f"Profile {profile_id} status", profile_status)
-            return profile_status is ProfileStatus.HEAVY_PROFILES_READY
+            return profile_status is ProfileStatus.HEAVY_PROFILE_READY
 
     @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
           on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,

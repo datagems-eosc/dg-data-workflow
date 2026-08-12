@@ -59,7 +59,7 @@ def dataset_profiling():
             raise AirflowFailException(error_message)
         else:
             log.info_payload(f"Profile {profile_id} status", profile_status)
-        return profile_status is ProfileStatus.HEAVY_PROFILES_READY
+        return profile_status is ProfileStatus.HEAVY_PROFILE_READY
 
     @task(task_id=FETCH_PROFILE_ID, doc_md=FETCH_PROFILE_DOC)
     def fetch_profile(profile_id: str) -> str:

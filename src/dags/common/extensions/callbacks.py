@@ -1,4 +1,6 @@
+import base64
 import json
+import logging
 from typing import Any
 
 from airflow.sdk import Context
@@ -9,6 +11,7 @@ from common.extensions.http_requests import http_post
 from common.extensions.xcom_logging import TASK_LOGS_XCOM_KEY
 from common.types import DataLocation
 from configurations import GatewayConfig
+from services.logging import Logger
 
 
 def pull_task_logs(context: dict[str, Any]) -> list[dict[str, Any]]:
@@ -45,13 +48,20 @@ def build_callback_payload(context: Context, event: str, ) -> dict[str, Any]:
         "logs": pull_task_logs(context),
     }
 
+default_logger = logging.getLogger(__name__)
 
-def on_execute_callback(context) -> None:
+def gather_prerequisites() -> tuple[GatewayConfig, dict[str, str]]:
     config = GatewayConfig()
     auth = GatewayAuthService()
-    url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
+    token = auth.get_token()
+    # default_logger.info(base64.urlsafe_b64encode(token.encode("utf-8")))
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}",
                "Connection": "keep-alive"}
+    return config, headers
+
+def on_execute_callback(context) -> None:
+    config, headers = gather_prerequisites()
+    url: str = config.options.base_url + config.options.endpoints.process_step_update
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
@@ -63,11 +73,8 @@ def on_execute_callback(context) -> None:
 
 
 def on_retry_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
@@ -79,11 +86,8 @@ def on_retry_callback(context) -> None:
 
 
 def on_success_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
@@ -95,11 +99,8 @@ def on_success_callback(context) -> None:
 
 
 def on_success_onboarding_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.onboarding_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
     data_location = [DataLocation.from_dict(d) for d in json.loads(context["params"]["dataLocations"])][0]
     payload = {
         "WorkflowProcessStep": {
@@ -119,11 +120,8 @@ def on_success_onboarding_callback(context) -> None:
 
 
 def on_success_profiling_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.profiling_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
 
     payload = {
         "WorkflowProcessStep": {
@@ -139,11 +137,8 @@ def on_success_profiling_callback(context) -> None:
 
 
 def on_success_packaging_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.packaging_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
 
     payload = {
         "WorkflowProcessStep": {
@@ -159,11 +154,8 @@ def on_success_packaging_callback(context) -> None:
 
 
 def on_success_recommendation_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.recommendation_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
 
     payload = {
         "WorkflowProcessStep": {
@@ -179,11 +171,8 @@ def on_success_recommendation_callback(context) -> None:
 
 
 def on_success_cdd_ingestion_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.cdd_ingestion_step_complete
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
 
     payload = {
         "WorkflowProcessStep": {
@@ -199,11 +188,8 @@ def on_success_cdd_ingestion_callback(context) -> None:
 
 
 def on_failure_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
@@ -215,11 +201,8 @@ def on_failure_callback(context) -> None:
 
 
 def on_skipped_callback(context) -> None:
-    config = GatewayConfig()
-    auth = GatewayAuthService()
+    config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.process_step_update
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth.get_token()}",
-               "Connection": "keep-alive"}
     payload = {
         "Id": context["params"]["workflow_process_step_information"]["id"],
         "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
