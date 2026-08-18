@@ -3,10 +3,10 @@ import uuid
 from pathlib import Path
 
 from common.enum.data_store_kind import DataLocationKind
+from common.extensions.xcom_logging import XComTaskLogger
 from common.types.data_location import DataLocation
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from services.data_management import DataRetriever, DataStagingService
-from services.logging import Logger
 
 
 def build_file_path(directory: str, guid: str, name: str, extension: str | None = None) -> Path:
@@ -20,12 +20,16 @@ def build_file_path(directory: str, guid: str, name: str, extension: str | None 
 
 
 def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
-                     stage_service: DataStagingService, log: Logger,
+                     stage_service: DataStagingService, log: XComTaskLogger,
                      config: DatasetOnboardingConfig) -> DataLocation | bool:
-    if location.kind == DataLocationKind.File or location.kind == DataLocationKind.Remote or location.kind == DataLocationKind.Staged or location.kind == DataLocationKind.Database:
+    if location.kind == DataLocationKind.Remote or location.kind == DataLocationKind.Staged or location.kind == DataLocationKind.Database:
         return location
     try:
-        with stream_service.retrieve(location) as retrieved_file:
+        retrieved = stream_service.retrieve(location)
+        if retrieved is None:
+            log.error(f"Could not retrieve location: {location}")
+            return False
+        with retrieved as retrieved_file:
             base_name = Path(retrieved_file.file_name).stem
             extension = retrieved_file.file_extension
             unique_name = f"{base_name}.{uuid.uuid4()}"
