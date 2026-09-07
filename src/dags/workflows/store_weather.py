@@ -24,6 +24,8 @@ def geo_ingest():
         log = Logger()
         url, headers = fetch_weather_builder(noa_geo_config, dag_context)
         response = http_get(url=url, headers=headers)
+        if isinstance(response, str):
+            response = json.loads(response)
         log.info(f"Server responded with {response}")
         return json.dumps(response)
 
