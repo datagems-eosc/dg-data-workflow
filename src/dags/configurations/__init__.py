@@ -1,5 +1,6 @@
 from configurations.cross_dataset_discovery_indexing_config import DatasetDiscoveryConfig
 from configurations.data_model_management_config import DataModelManagementConfig
+from configurations.dataset_linking_config import DatasetLinkingConfig
 from configurations.dataset_packaging_config import DatasetPackagingConfig
 from configurations.dataset_recommender_config import DatasetRecommenderConfig
 from configurations.db_server_registry_config import DbServerRegistryConfig
@@ -10,4 +11,5 @@ from configurations.workflows_dataset_profiler_config import ProfilerConfig
 from configurations.gateway_config import GatewayConfig
 
 __all__ = ["DatasetDiscoveryConfig", "GatewayConfig", "DataModelManagementConfig", "ProfilerConfig", "DatasetRecommenderConfig",
-    "DatasetOnboardingConfig", "MomaManagementConfig", "NoaGeoConfig", "DbServerRegistryConfig", "DatasetPackagingConfig"]
+    "DatasetOnboardingConfig", "MomaManagementConfig", "NoaGeoConfig", "DbServerRegistryConfig", "DatasetPackagingConfig", 
+           "DatasetLinkingConfig"]
