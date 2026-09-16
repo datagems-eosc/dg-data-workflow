@@ -6,7 +6,7 @@ from airflow.sdk import dag, task
 from authorization.dataset_linking_auth import DatasetLinkingAuthService
 from common.enum import DatasetLinkingStatus
 from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
-    on_skipped_callback, on_failure_callback, on_success_profiling_callback
+    on_skipped_callback, on_failure_callback, on_success_profiling_callback, on_success_dataset_linking_report
 from common.extensions.http_requests import http_post, http_get, http_put
 from common.extensions.xcom_logging import xcom_task_logging
 from configurations import DatasetLinkingConfig
@@ -36,7 +36,7 @@ def dataset_linking_report():
             return trigger_response["job_id"]
 
     @task.sensor(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
-                 on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+                 on_success_callback=on_success_dataset_linking_report, on_failure_callback=on_failure_callback,
                  on_skipped_callback=on_skipped_callback, poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL,
                  mode="reschedule",
                  task_id=WAIT_FOR_COMPLETION_ID,

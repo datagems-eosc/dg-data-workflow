@@ -136,6 +136,23 @@ def on_success_profiling_callback(context) -> None:
     _ = http_post(url=url, headers=headers, data=payload)
 
 
+def on_success_dataset_linking_report(context) -> None:
+    config, headers = gather_prerequisites()
+    url: str = config.options.base_url + config.options.endpoints.dataset_linking_report_complete
+
+    payload = {
+        "WorkflowProcessStep": {
+            "Id": context["params"]["workflow_process_step_information"]["id"],
+            "ProcessId": context["params"]["workflow_process_step_information"]["process_id"],
+            "StepId": context["params"]["workflow_process_step_information"]["step_id"],
+            "WorkflowTaskInstanceDetails": json.dumps(build_callback_payload(context, "success")),
+            "Status": WorkflowProcessStepExecutionStatus.Succeeded.value
+        },
+        "DatasetId": context["params"]["id"],
+    }
+    _ = http_post(url=url, headers=headers, data=payload)
+
+
 def on_success_packaging_callback(context) -> None:
     config, headers = gather_prerequisites()
     url: str = config.options.base_url + config.options.endpoints.packaging_step_complete

@@ -13,6 +13,7 @@ class GatewayConfig:
                 self.packaging_step_complete = data["packaging_step_complete"]
                 self.recommendation_step_complete = data["recommendation_step_complete"]
                 self.cdd_ingestion_step_complete = data["cdd_ingestion_step_complete"]
+                self.dataset_linking_report_complete = data["dataset_linking_report_complete"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
