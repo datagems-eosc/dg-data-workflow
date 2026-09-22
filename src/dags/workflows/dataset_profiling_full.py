@@ -48,7 +48,7 @@ def dataset_profiling():
         url, headers = wait_for_completion_builder(profiler_auth_service.get_token(), get_current_context(),
                                                    profiler_config, profile_id)
         status_response = http_get(url=url, headers=headers)
-        profile_status = ProfileStatus(status_response)
+        profile_status = ProfileStatus(status_response["status"])
         if profile_status is ProfileStatus.CLEANED_UP:
             error_message = f"Profile {profile_id} is cleaned up"
             log.error(error_message)
