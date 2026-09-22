@@ -17,7 +17,7 @@ def trigger_report_builder(auth_token: str, dag_context: Context, config: Datase
         payload["head"] = dag_context["params"]["head"]
     if dag_context["params"].get("th") is not None:
         payload["th"] = dag_context["params"]["th"]
-    if dag_context["params"].get("keyword_method") is not None:
+    if dag_context["params"].get("keyword_method"):
         payload["keyword_method"] = dag_context["params"]["keyword_method"]
     if dag_context["params"].get("include_chunks") is not None:
         payload["include_chunks"] = dag_context["params"]["include_chunks"]
