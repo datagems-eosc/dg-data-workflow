@@ -12,11 +12,10 @@ DAG_PARAMS = {
     "th": Param(None, type=["number", "null"], minimum=0.0, maximum=100.0,
                 description="Pair similarity threshold, percentage 0..100"),
     "keyword_method": Param(
-        "",
+        "jaccard",
         type="string",
-        enum=["", "jaccard", "sbert"],
+        enum=["jaccard", "sbert"],
         values_display={
-            "": "Not selected",
             "jaccard": "Jaccard",
             "sbert": "SBERT",
         },
