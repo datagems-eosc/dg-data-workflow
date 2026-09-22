@@ -4,12 +4,15 @@ from configurations.dataset_linking_config import DatasetLinkingConfig
 from configurations.dataset_packaging_config import DatasetPackagingConfig
 from configurations.dataset_recommender_config import DatasetRecommenderConfig
 from configurations.db_server_registry_config import DbServerRegistryConfig
+from configurations.gateway_config import GatewayConfig
 from configurations.moma_management_config import MomaManagementConfig
 from configurations.noa_geo_config import NoaGeoConfig
+from configurations.streaming_interval_profiler_config import StreamingIntervalProfilerConfig
 from configurations.workflows_dataset_onboarding_config import DatasetOnboardingConfig
 from configurations.workflows_dataset_profiler_config import ProfilerConfig
-from configurations.gateway_config import GatewayConfig
 
-__all__ = ["DatasetDiscoveryConfig", "GatewayConfig", "DataModelManagementConfig", "ProfilerConfig", "DatasetRecommenderConfig",
-    "DatasetOnboardingConfig", "MomaManagementConfig", "NoaGeoConfig", "DbServerRegistryConfig", "DatasetPackagingConfig", 
-           "DatasetLinkingConfig"]
+__all__ = ["DatasetDiscoveryConfig", "GatewayConfig", "DataModelManagementConfig", "ProfilerConfig",
+           "DatasetRecommenderConfig",
+           "DatasetOnboardingConfig", "MomaManagementConfig", "NoaGeoConfig", "DbServerRegistryConfig",
+           "DatasetPackagingConfig",
+           "DatasetLinkingConfig", "StreamingIntervalProfilerConfig"]
