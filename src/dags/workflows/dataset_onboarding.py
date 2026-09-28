@@ -19,30 +19,10 @@ from configurations import DataModelManagementConfig, DatasetOnboardingConfig
 from documentations.dataset_onboarding_full import DAG_DISPLAY_NAME, STAGE_DATASET_FILES_ID, STAGE_DATASET_FILES_DOC, \
     REGISTER_DATASET_ID, REGISTER_DATASET_DOC, LOAD_DATASET_ID, LOAD_DATASET_DOC
 from services.data_management import DataRetriever, DataStagingService
-from services.dataset_onboarding import DAG_ID, register_dataset_builder, load_dataset_builder
-
-DAG_PARAMS = {
-    "id": Param("00000000-0000-0000-0000-000000000000", type="string", format="uuid"),
-    "name": Param(None, type=["null", "string"]),
-    "description": Param(None, type=["null", "string"]),
-    "headline": Param(None, type=["null", "string"]),
-    "fields_of_science": Param(None, type=["null", "array"]),
-    "languages": Param(None, type=["null", "array"]),
-    "keywords": Param(None, type=["null", "array"]),
-    "countries": Param(None, type=["null", "array"]),
-    "publishedUrl": Param(None, type=["null", "string"], format="uri"),
-    "citeAs": Param(None, type=["null", "string"]),
-    "license": Param(None, type=["null", "string"]),
-    "dataLocations": Param([], type="string"),
-    "date_published": Param(f"{date.today()}", type=["null", "string"], format="date"),
-    "userId": Param(None, type=["null", "string"]),
-    "doi": Param(None, type=["null", "string"]),
-    "workflow_process_step_information": Param(type="object")
-}
+from services.dataset_onboarding import DAG_ID, register_dataset_builder, load_dataset_builder, DAG_PARAMS, DAG_TAGS
 
 
-@dag(DAG_ID + "_test", params=DAG_PARAMS, tags=["DatasetOnboarding_test", ],
-     dag_display_name=DAG_DISPLAY_NAME + "_test")
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_onboarding():
     dataset_onboarding_config = DatasetOnboardingConfig()
     dmm_config = DataModelManagementConfig()

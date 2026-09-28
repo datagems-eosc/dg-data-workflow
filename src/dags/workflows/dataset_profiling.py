@@ -19,33 +19,10 @@ from documentations.dataset_profiling import DAG_DISPLAY_NAME, TRIGGER_PROFILE_I
     UPDATE_DATA_MANAGEMENT_DOC, PROFILE_CLEANUP_ID, PROFILE_CLEANUP_DOC, CONVERT_PROFILING_ID, CONVERT_PROFILING_DOC
 from services.dataset_profiling import DAG_ID, trigger_profile_builder, \
     wait_for_completion_builder, fetch_profile_builder, WAIT_FOR_COMPLETION_POKE_INTERVAL, profile_cleanup_builder, \
-    update_data_model_management_builder, convert_profiling_builder
-
-DAG_PARAMS = {
-    "id": Param("00000000-0000-0000-0000-000000000000", type=["string"], format="uuid"),
-    "name": Param(None, type=["null", "string"]),
-    "description": Param(None, type=["null", "string"]),
-    "license": Param(None, type=["null", "string"]),
-    "url": Param(None, type=["null", "string"], format="uri"),
-    "headline": Param(None, type=["null", "string"]),
-    "keywords": Param(None, type=["null", "array"]),
-    "fields_of_science": Param(None, type=["null", "array"]),
-    "languages": Param(None, type=["null", "array"]),
-    "countries": Param(None, type=["null", "array"]),
-    "date_published": Param(f"{date.today()}", type=["null", "string"], format="date"),
-    "dataset_file_path": Param(None, type=["null", "string"]),
-    "userId": Param(None, type=["null", "string"]),
-    "citeAs": Param(None, type=["null", "string"]),
-    "conformsTo": Param(None, type=["null", "string"]),
-    "data_store_kind": Param(DataStoreKind.FileSystem.value, type="integer", enum=[c.value for c in DataStoreKind]),
-    "archivedAt": Param(None, type=["null", "string"]),
-    "doi": Param(None, type=["null", "string"]),
-    "database_name": Param(None, type=["null", "string"]),
-    "workflow_process_step_information": Param(type="object"),
-}
+    update_data_model_management_builder, convert_profiling_builder, DAG_PARAMS, DAG_TAGS
 
 
-@dag(DAG_ID + "_test", params=DAG_PARAMS, tags=["DatasetProfiling_test", ], dag_display_name=DAG_DISPLAY_NAME + "_test")
+@dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
 def dataset_profiling():
     profiler_auth_service = ProfilerAuthService()
     profiler_config = ProfilerConfig()

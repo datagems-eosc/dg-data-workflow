@@ -1,19 +1,22 @@
 from typing import Any
 
 from airflow.exceptions import AirflowFailException
-from airflow.sdk import dag, task, get_current_context
+from airflow.sdk import dag, task, Param
 
 from authorization.discovery_auth import DiscoveryAuthService
 from authorization.profiler_auth import ProfilerAuthService
 from common.enum import CddIngestionStatus
+from common.extensions.callbacks import on_execute_callback, on_retry_callback, on_success_callback, \
+    on_failure_callback, on_skipped_callback, on_success_cdd_ingestion_callback
 from common.extensions.http_requests import http_get, http_post
 from common.extensions.xcom_logging import xcom_task_logging
 from configurations import DatasetDiscoveryConfig, ProfilerConfig
 from documentations.cdd_ingest import DAG_DISPLAY_NAME, CDD_FETCH_FILE_ID, CDD_FETCH_FILE_DOC, CDD_BEGIN_INGEST_ID, \
     CDD_BEGIN_INGEST_DOC, WAIT_FOR_COMPLETION_ID, WAIT_FOR_COMPLETION_DOC
-from services.cdd_ingestion import DAG_ID, DAG_PARAMS, DAG_TAGS, fetch_profile_path_builder, begin_ingestion_builder, \
-    WAIT_FOR_COMPLETION_POKE_INTERVAL, wait_for_completion_builder
-from services.logging import Logger
+from services.cdd_ingestion import DAG_ID, fetch_profile_path_builder, begin_ingestion_builder, \
+    WAIT_FOR_COMPLETION_POKE_INTERVAL, wait_for_completion_builder, DAG_PARAMS, DAG_TAGS
+
+
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
@@ -23,7 +26,9 @@ def discovery_ingestion():
     profiler_config = ProfilerConfig()
     profiler_auth = ProfilerAuthService()
 
-    @task(task_id=CDD_FETCH_FILE_ID, doc_md=CDD_FETCH_FILE_DOC)
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=CDD_FETCH_FILE_ID, doc_md=CDD_FETCH_FILE_DOC)
     def fetch_profile_path():
         with xcom_task_logging() as log:
             context = log.context
@@ -38,7 +43,9 @@ def discovery_ingestion():
                 raise AirflowFailException(error_message)
             return path
 
-    @task(task_id=CDD_BEGIN_INGEST_ID, doc_md=CDD_BEGIN_INGEST_DOC)
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=CDD_BEGIN_INGEST_ID, doc_md=CDD_BEGIN_INGEST_DOC)
     def begin_ingestion(path: str):
         with xcom_task_logging() as log:
             url, headers = begin_ingestion_builder(discovery_auth.get_token(), path, discovery_config)
@@ -48,7 +55,10 @@ def discovery_ingestion():
             job_id: str = response["job_id"]
             return job_id
 
-    @task.sensor(poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL, mode="reschedule",
+    @task.sensor(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+                 on_success_callback=on_success_cdd_ingestion_callback, on_failure_callback=on_failure_callback,
+                 on_skipped_callback=on_skipped_callback, poke_interval=WAIT_FOR_COMPLETION_POKE_INTERVAL,
+                 mode="reschedule",
                  task_id=WAIT_FOR_COMPLETION_ID,
                  doc_md=WAIT_FOR_COMPLETION_DOC)
     def wait_for_completion(job_id: str) -> Any:
@@ -65,5 +75,6 @@ def discovery_ingestion():
             return status is CddIngestionStatus.COMPLETED
 
     _ = wait_for_completion(begin_ingestion(fetch_profile_path()))
+
 
 discovery_ingestion()

@@ -1,11 +1,15 @@
-from airflow.sdk import dag, task, get_current_context
+from airflow.sdk import dag, task, Param
 
 from authorization.dataset_recommender_auth import DatasetRecommenderAuthService
+from common.extensions.callbacks import on_execute_callback, on_skipped_callback, \
+    on_retry_callback, on_failure_callback, on_success_recommendation_callback
 from common.extensions.http_requests import http_post
+from common.extensions.xcom_logging import xcom_task_logging
 from configurations import DatasetRecommenderConfig
 from documentations.dataset_recommender_registering import DAG_DISPLAY_NAME, IMPORT_DATASET_ID, IMPORT_DATASET_DOC
-from services.dataset_recommender import DAG_ID, DAG_PARAMS, DAG_TAGS, dataset_recommendation_registering_builder
-from services.logging import Logger
+from services.dataset_recommender import DAG_ID, dataset_recommendation_registering_builder, DAG_PARAMS, DAG_TAGS
+
+
 
 
 @dag(DAG_ID, params=DAG_PARAMS, tags=DAG_TAGS, dag_display_name=DAG_DISPLAY_NAME)
@@ -13,16 +17,17 @@ def dataset_recommendation_registering():
     dataset_packaging_config = DatasetRecommenderConfig()
     dataset_packaging_auth = DatasetRecommenderAuthService()
 
-    @task(task_id=IMPORT_DATASET_ID, doc_md=IMPORT_DATASET_DOC)
+    @task(on_execute_callback=on_execute_callback, on_retry_callback=on_retry_callback,
+          on_success_callback=on_success_recommendation_callback, on_failure_callback=on_failure_callback,
+          on_skipped_callback=on_skipped_callback, task_id=IMPORT_DATASET_ID, doc_md=IMPORT_DATASET_DOC)
     def import_dataset() -> bool:
-        log = Logger()
-        context = get_current_context()
-
-        url, headers = dataset_recommendation_registering_builder(dataset_packaging_auth.get_token(), context,
-                                                                  dataset_packaging_config)
-        response = http_post(url=url, headers=headers)
-        log.info_payload("Server response", response, True)
-        return True
+        with xcom_task_logging() as log:
+            context = log.context
+            url, headers = dataset_recommendation_registering_builder(dataset_packaging_auth.get_token(), context,
+                                                                      dataset_packaging_config)
+            response = http_post(url=url, headers=headers)
+            log.info_payload("Server response", response, True)
+            return True
 
     _ = import_dataset()
 
