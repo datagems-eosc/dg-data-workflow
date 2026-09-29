@@ -79,7 +79,7 @@ REGISTER_DATASET_TEMPLATE = """
             ,"datePublished": "{{ dataset_date_published }}"
         {% endif %}
         {% if dataset_description %}
-            ,"description": "{{ dataset_description }}"
+            ,"description": {{ dataset_description | string | tojson }}
         {% endif %}
         {% if dataset_fields_of_science %}
             ,"fieldOfScience": {{ dataset_fields_of_science }}
