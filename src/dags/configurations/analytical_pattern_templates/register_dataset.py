@@ -70,7 +70,7 @@ REGISTER_DATASET_TEMPLATE = """
             ,"archivedAt": "{{ dataset_archived_at }}"
         {% endif %}
         {% if dataset_cite_as %}
-            ,"citeAs": "{{ dataset_cite_as }}"
+            ,"citeAs": {{ dataset_cite_as | string | tojson }}
         {% endif %}
         {% if dataset_country is not none %}
             ,"country": "{{ dataset_country }}"
@@ -85,7 +85,7 @@ REGISTER_DATASET_TEMPLATE = """
             ,"fieldOfScience": {{ dataset_fields_of_science }}
         {% endif %}
         {% if dataset_headline %}
-            ,"headline": "{{ dataset_headline }}"
+            ,"headline": {{ dataset_headline | string | tojson }}
         {% endif %}
         {% if dataset_languages %}
             ,"inLanguage": {{ dataset_languages }}
@@ -94,13 +94,13 @@ REGISTER_DATASET_TEMPLATE = """
             ,"keywords": {{ dataset_keywords }}
         {% endif %}
         {% if dataset_license %}
-            ,"license": "{{ dataset_license }}"
+            ,"license": {{ dataset_license | string | tojson }}
         {% endif %}
         {% if dataset_name %}
-            ,"name": "{{ dataset_name }}"
+            ,"name": {{ dataset_name | string | tojson }}
         {% endif %}
         {% if dataset_doi %}
-            ,"doi": "{{ dataset_doi }}"
+            ,"doi": {{ dataset_doi | string | tojson }}
         {% endif %}
         {% if analytical_pattern_node_status %}
             ,"status": "{{ analytical_pattern_node_status }}"
