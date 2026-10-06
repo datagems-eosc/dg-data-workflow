@@ -6,7 +6,7 @@ from airflow.sdk import task, dag, get_current_context
 from authorization.streaming_interval_profiler_auth import StreamingIntervalProfilerAuthService
 from common.extensions.http_requests import http_post
 from configurations import StreamingIntervalProfilerConfig
-from documentations.geo_ingest import DAG_DISPLAY_NAME, DESCRIPTION
+from documentations.streaming_interval_profiling import DAG_DISPLAY_NAME, DESCRIPTION
 from services.logging import Logger
 from services.streaming_interval_profiling import DAG_PARAMS, DAG_TAGS, DAG_ID, fetch_profile_builder, \
     MINUTES_TIMEDELTA
@@ -24,6 +24,7 @@ def streaming_interval_profiling():
         log = Logger()
         url, headers, body = fetch_profile_builder(streaming_interval_profiler_config, dag_context,
                                                    streaming_interval_profiler_auth.get_token())
+        log.info(f"Request {body}")
         response = http_post(url=url, headers=headers, data=body)
         if isinstance(response, str):
             response = json.loads(response)
