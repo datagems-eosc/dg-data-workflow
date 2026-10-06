@@ -13,6 +13,7 @@ class StreamingIntervalProfilerConfig:
             self.base_url = data.get("base_url")
             self.scope = data.get("scope")
             self.endpoints = self.EndpointsConfig(data.get("endpoints"))
+            self.dataset_id = data.get("dataset_id")
 
     def __init__(self):
         self.login_client_id = Variable.get("dwo_aai_clientid")
