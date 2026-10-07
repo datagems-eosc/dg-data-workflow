@@ -10,6 +10,7 @@ class DataModelManagementConfig:
                 self.register = data["register"]
                 self.load = data["load"]
                 self.update = data["update"]
+                self.get = data["get"]
 
         def __init__(self, data: dict):
             self.base_url = data.get("base_url")
