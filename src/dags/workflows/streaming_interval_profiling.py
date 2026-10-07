@@ -40,7 +40,7 @@ def streaming_interval_profiling():
             dag_context = log.context
             url, headers = fetch_moma_builder(dmm_config, dmm_auth.get_token(), stringified_data)
             response = http_get(url=url, headers=headers)
-            log.info_payload("payload", body, True)
+            log.info_payload("server response", response, True)
             url, headers, body = upsert_moma_builder(dmm_config, dmm_auth.get_token(), stringified_data, response)
             log.info_payload("payload", body, True)
             response = http_put(url=url, headers=headers, data=body)
