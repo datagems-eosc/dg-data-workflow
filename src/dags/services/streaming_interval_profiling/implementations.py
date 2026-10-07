@@ -19,7 +19,7 @@ def fetch_profile_builder(config: StreamingIntervalProfilerConfig, dag_context: 
 
 def fetch_moma_builder(config: DataModelManagementConfig, auth_token: str, streaming_profiler_response: str):
     obj = json.loads(streaming_profiler_response)
-    url: str = config.options.base_url + config.options.dataset.get.format(id=obj["dataset_id"])
+    url: str = config.options.base_url + config.options.dataset.get.format(id=obj["datasetId"])
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
     return url, headers
 
