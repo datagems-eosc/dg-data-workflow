@@ -30,7 +30,12 @@ def upsert_moma_builder(config: DataModelManagementConfig, auth_token: str,
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
 
     obj = json.loads(streaming_profiler_response)
-    payload: dict[str, Any] = []
+    payload: dict[str, Any] = {
+        "ap": {
+            "nodes": [],
+            "edges": []
+        }
+    }
     nodes = [
                 {"id": x["nodeId"], "properties": x["properties"]}
                 for x in obj["momaUpdates"]
