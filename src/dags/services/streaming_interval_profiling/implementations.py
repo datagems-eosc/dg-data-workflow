@@ -1,11 +1,9 @@
 import json
-from datetime import datetime, timezone
 from typing import Any
 
 from airflow.sdk import Context
 
 from configurations import StreamingIntervalProfilerConfig, DataModelManagementConfig
-from services.graphs import AnalyticalPatternParser
 
 
 def fetch_profile_builder(config: StreamingIntervalProfilerConfig, dag_context: Context, auth_token: str) -> tuple[
@@ -17,7 +15,9 @@ def fetch_profile_builder(config: StreamingIntervalProfilerConfig, dag_context: 
     }
     return url, headers, body
 
-def fetch_moma_builder(config: DataModelManagementConfig, auth_token: str, streaming_profiler_response: str):
+
+def fetch_moma_builder(config: DataModelManagementConfig, auth_token: str, streaming_profiler_response: str) -> tuple[
+    str, dict[str, str]]:
     obj = json.loads(streaming_profiler_response)
     url: str = config.options.base_url + config.options.dataset.get.format(id=obj["datasetId"])
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
@@ -25,7 +25,8 @@ def fetch_moma_builder(config: DataModelManagementConfig, auth_token: str, strea
 
 
 def upsert_moma_builder(config: DataModelManagementConfig, auth_token: str,
-                        streaming_profiler_response: str, fetch_response: Any) -> tuple[str, dict[str, str], dict[str, Any]]:
+                        streaming_profiler_response: str, fetch_response: Any) -> tuple[
+    str, dict[str, str], dict[str, Any]]:
     url: str = config.options.base_url + config.options.dataset.update
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
 
