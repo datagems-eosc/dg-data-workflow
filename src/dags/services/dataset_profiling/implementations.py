@@ -104,15 +104,6 @@ def update_data_model_management_builder(access_token: str, dag_context: Context
     return url, headers, payload
 
 
-def pass_index_files_builder(auth_token: str, dag_context: Context, config: DatasetDiscoveryConfig,
-                             stringified_profile_data: str) -> tuple[str, dict[str, str], dict[str, str]]:
-    # TODO: this method should be implemented when the cross dataset discovery is
-    url: str = config.options.base_url + config.options.dataset.insert
-    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {auth_token}", "Connection": "keep-alive"}
-    payload = {"data_placeholder": stringified_profile_data}
-    return url, headers, payload
-
-
 def profile_cleanup_builder(auth_token: str, dag_context: Context, config: ProfilerConfig, profile_id: str) -> tuple[
     str, dict[str, str], dict[str, str]]:
     url: str = config.options.base_url + config.options.profiler.cleanup
