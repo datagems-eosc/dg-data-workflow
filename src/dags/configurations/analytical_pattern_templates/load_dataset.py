@@ -70,13 +70,11 @@ LOAD_DATASET_TEMPLATE = """
       }
     },
     {
-      "id": "{{ user_node_id }}",
+      "id": "{{ user_id }}",
       "labels": [
         "User"
       ],
-      "properties": {
-        "UserId": "{{ user_id }}"
-      }
+      "properties": {}
     },
     {
       "id": "{{ task_node_id }}",

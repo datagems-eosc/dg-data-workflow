@@ -111,15 +111,11 @@ REGISTER_DATASET_TEMPLATE = """
       }
     },
     {
-      "id": "{{ user_node_id }}",
+      "id": "{{ user_id }}",
       "labels": [
         "User"
       ]
-      {% if user_id %}
-          ,"properties": {
-            "UserId": "{{ user_id }}"
-          }
-      {% endif %}
+      ,"properties": {}
     },
     {
       "id": "{{ task_node_id }}",

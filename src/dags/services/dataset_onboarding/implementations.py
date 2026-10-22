@@ -30,7 +30,6 @@ def register_dataset_builder(access_token, dag_context, dmm_config, data_locatio
         "dataset_name": dag_context["params"]["name"],
         "dataset_url": dag_context["params"]["publishedUrl"],
         "dataset_doi": dag_context["params"]["doi"],
-        "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4(),
         "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED.value
@@ -50,7 +49,6 @@ def load_dataset_builder(access_token, dag_context, dmm_config, data_locations, 
         "published_date": utc_now.strftime("%d-%m-%Y"),
         "start_time": utc_now.strftime("%H:%M:%S"),
         "dataset_archived_at": normalize_s3_path(get_staged_path(dag_context["params"]["id"])),
-        "user_node_id": uuid.uuid4(),
         "user_id": dag_context["params"]["userId"],
         "task_node_id": uuid.uuid4(),
         "analytical_pattern_node_status": AnalyticalPatternNodeStatus.STAGED.value
