@@ -1,85 +1,88 @@
 # Dataset Onboarding Workflow
 
-The Dataset Onboarding Workflow provides a unified and controlled process for registering and ingesting datasets into the platform, regardless of their original storage location.
-The workflow accepts dataset metadata together with one or more dataset locations and guides the dataset through a well-defined lifecycle that separates physical data handling from logical dataset management.
+The Dataset Onboarding Workflow (`DATASET_ONBOARDING`) provides a unified, controlled process for bringing a dataset into the platform, wherever it is originally stored.
+It accepts the dataset's metadata together with one or more data locations, makes the data available in the platform's storage, and registers the dataset in the Data Model Management service.
 
 ## Input
 
-In in the initial step, the workflow is provided with the following information:
+The workflow accepts the following parameters:
 
-| Parameter         | Type                                              | Special Format | Mandatory | Description                                                                                                                                                                                                                                                                                                                                       |
-| ----------------- | ------------------------------------------------- | -------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                | string                                            | uuid           | yes       | A globally unique identifier for the dataset. This identifier is used consistently throughout the workflow to associate metadata, staged files, and lifecycle events with the same dataset entity.                                                                                                                                                |
-| code              | string                                            |                | no        | An optional short or human-friendly code used to reference the dataset. This may correspond to an internal catalog code or business identifier.                                                                                                                                                                                                   |
-| name              | string                                            |                | no        | The human-readable name of the dataset. Used for display, discovery, and identification purposes.                                                                                                                                                                                                                                                 |
-| description       | string                                            |                | no        | A detailed textual description of the dataset contents, scope, and purpose. Helps users understand what the dataset represents and how it can be used.                                                                                                                                                                                            |
-| headline          | string                                            |                | no        | A short, high-level summary or tagline describing the dataset. Typically used in user interfaces or dataset listings.                                                                                                                                                                                                                             |
-| fields_of_science | array of strings                                  |                | no        | A list of scientific or domain classifications associated with the dataset. Used for categorization, filtering, and discovery.                                                                                                                                                                                                                    |
-| languages         | array of strings                                  |                | no        | The languages represented in the dataset content. This may refer to the language of textual data or metadata.                                                                                                                                                                                                                                     |
-| keywords          | string                                            |                | no        | Free-form keywords associated with the dataset. Used to improve searchability and discoverability.                                                                                                                                                                                                                                                |
-| countries         | array of strings                                  |                | no        |                                                                                                                                                                                                                                                                                                                                                   |
-| publishedUrl      | string                                            | uri            | no        | A public or external URL where the dataset is published or described. This may point to documentation, landing pages, or external repositories.                                                                                                                                                                                                   |
-| citeAs            | string                                            |                | no        | A recommended citation string for referencing the dataset in publications. Used to support proper attribution and academic reuse.                                                                                                                                                                                                                 |
-| conformsTo        | string                                            |                | no        | A reference to a standard, schema, or specification that the dataset conforms to. This may include formal data models or community standards.                                                                                                                                                                                                     |
-| license           | string                                            |                | no        | The license under which the dataset is distributed. Defines usage rights, redistribution terms, and legal constraints.                                                                                                                                                                                                                            |
-| size              | number                                            | integer        | no        |                                                                                                                                                                                                                                                                                                                                                   |
-| dataLocations     | array of objects {Kind: string, location: string} |                | yes       | A list of locations describing where the dataset is physically stored or accessed. Each entry specifies the type of location (e.g. file system, remote service, database), and the corresponding access reference (path, URI, connection, etc.). This parameter is mandatory and drives staging, branching, and loading behavior in the workflow. |
-| version           | string                                            |                | no        | The version identifier of the dataset. Used to distinguish between different releases or revisions of the same dataset.                                                                                                                                                                                                                           |
-| mime_type         | string                                            |                | no        | The MIME type representing the datase's format (e.g. text/csv, application/json). Helps downstream systems interpret and process the data correctly.                                                                                                                                                                                              |
-| date_published    | string                                            | date           | no        | The publication date of the dataset. Used for provenance tracking and lifecycle management.                                                                                                                                                                                                                                                       |
-| userId            | string                                            |                | no        | An identifier representing the user or actor initiating the onboarding process. Used for attribution, auditing, and ownership tracking.                                                                                                                                                                                                           |
+| Parameter | Type | Format | Mandatory | Description |
+| --------- | ---- | ------ | --------- | ----------- |
+| id | string | uuid | yes | Globally unique identifier of the dataset. It's used throughout the workflow to associate metadata, stored files and lifecycle events with the same dataset. |
+| dataLocations | string | JSON array | yes | JSON-encoded list of the locations where the dataset's data can be found. See [Data Locations](#data-locations). |
+| name | string | | no | Human-readable name of the dataset. |
+| description | string | | no | Detailed description of the dataset's contents, scope and purpose. |
+| headline | string | | no | Short, high-level summary of the dataset, typically shown in listings. |
+| fields_of_science | array of strings | | no | Scientific or domain classifications of the dataset. |
+| languages | array of strings | | no | Languages represented in the dataset's content. |
+| keywords | array of strings | | no | Free-form keywords that improve discoverability. |
+| countries | array of strings | | no | Countries relevant to the dataset, such as its geographic coverage. |
+| publishedUrl | string | uri | no | Public URL where the dataset is published or described. |
+| citeAs | string | | no | Recommended citation for the dataset. |
+| license | string | | no | License under which the dataset is distributed. |
+| doi | string | | no | Digital Object Identifier of the dataset, if one exists. |
+| date_published | string | date | no | Publication date of the dataset. Defaults to the current date. |
+| userId | string | | no | Identifier of the user who requested the onboarding, used for attribution and provenance. |
+| workflow_process_step_information | object | | yes | Tracking information for the platform process step that this run belongs to. Supplied automatically by the platform. See [Platform Integration](integration.md). |
 
-All the fields except dataLocations contain metadata information. The dataLocations contains the information where the Dataset is located. The following locations are supported:
+### Data Locations
 
-- File: The dataset is stored inside a file somewhere in the mounted filesystem.
-- Http: The dataset can be accessed via a URI.
-- Ftp: The dataset is stored inside an FTP server. The location should be an FTP URI.
-- Remote: TODO
-- Staged: The dataset is already staged.
-- Database: The dataset is stored inside a relational database.
+Each entry in `dataLocations` is an object with a `kind` and a `location`:
+
+```json
+[
+  { "kind": "Http", "location": "https://example.org/data/measurements.csv" },
+  { "kind": "Ftp",  "location": "ftp://ftp.example.org/pub/measurements.csv" }
+]
+```
+
+`kind` can be given by name or by its numeric value:
+
+| Kind | Value | Description |
+| ---- | ----- | ----------- |
+| File | 0 | The data is a file on a filesystem that's accessible to the orchestrator. |
+| Http | 1 | The data can be downloaded from an HTTP(S) URL. |
+| Ftp | 2 | The data can be downloaded from an FTP server. The location is an FTP URI. |
+| Remote | 3 | The data is in a remote store that the platform accesses directly. |
+| Staged | 4 | The data is already in the platform's storage. |
+| Database | 5 | The data is in a relational database. The location identifies the database. |
 
 ## Tasks
 
-This workflow follows the diagram that will be explained below:
-
-![alt text](images/onboarding_flow.png)
+```mermaid
+flowchart LR
+    A[Stage Dataset Files] --> B[Register Dataset]
+    B --> C[Load Dataset]
+    C --> D((Finish))
+```
 
 #### Stage Dataset Files
 
-This task ensures that all dataset files are available in a controlled, local staging area before the dataset is registered or loaded.
-Because datasets may originate from heterogeneous storage systems, this step acts as a normalization phase: regardless of where the data comes from, downstream tasks interact with a consistent file-based representation whenever applicable.
-The task iterates over all declared dataset locations and applies the appropriate handling strategy for each one.
+This task makes sure the dataset's data is available in the platform's storage area before the dataset is registered. Datasets come from many kinds of storage, so this step normalises them: downstream steps always work with locations that the platform controls.
 
-If the dataset is already available on the local filesystem, already staged by a previous process, stored in a relational database, or referenced by a location type that does not require materialization, then no action is performed and the location is passed through unchanged.
+All declared locations are processed in parallel:
 
-If the dataset is hosted externally (for example via HTTP or FTP), the dataset files are retrieved from the remote source, stored in a predefined staging directory associated with the dataset and assigned unique filenames to avoid collisions or ambiguity.
+- **File**, **Http** and **Ftp** locations are retrieved and stored in a staging area dedicated to the dataset. Each stored file gets a unique name, so files never collide.
+- **Remote**, **Staged** and **Database** locations are already accessible to the platform and are passed on unchanged.
 
-The task produces a normalized list of dataset locations that reflects the effective access points for the dataset:
-
-- unchanged locations for sources that do not require staging,
-- staged file locations for externally retrieved datasets.
-
-This output is used by subsequent tasks to register the dataset metadata and decide whether the dataset should be physically loaded or only registered.
-
-If any dataset location cannot be accessed, retrieved, or staged successfully, the workflow fails at this step.
-This prevents partial or inconsistent dataset onboarding.
+The task outputs the effective list of locations for the dataset.
+If any location can't be accessed or stored, the workflow fails at this step, so a dataset is never partially onboarded.
 
 #### Register Dataset
 
-This task registers the dataset and its metadata in the central Data Model Management system, making the dataset discoverable, traceable, and addressable within the platform. The task uses the metadata provided at workflow start, together with the effective dataset locations produced by the staging step, to create a canonical dataset representation.
-The task returns the response from the Data Model Management system, which is primarily informational; downstream control flow is determined by the dataset location types rather than this response.
+This task registers the dataset and its metadata in the Data Model Management service, which makes the dataset discoverable, traceable and addressable in the platform.
+The registration also records provenance: which user requested the onboarding and when.
 
-If the registration request fails, the workflow terminates immediately. No dataset loading is attempted unless the dataset has been successfully registered.
-
-#### Choose if the Dataset will be loaded
-
-This step determines whether the workflow should proceed with physically loading the dataset or stop after registration. The decision is based on the types of dataset locations associated with the dataset: If the dataset is stored in a relational database, the workflow ends after registration. Otherwise, the workflow continues to the loading step.
-By explicitly separating registration from loading, the workflow supports multiple dataset lifecycle patterns while maintaining a consistent onboarding process.
+If registration fails, the workflow stops. A dataset is never loaded unless it has been registered.
 
 #### Load Dataset
 
-This task performs the physical ingestion of the dataset into downstream systems after it has been successfully registered. Loading is only executed for datasets that require file-based processing. Database-resident datasets and other non-loadable sources are explicitly excluded by the preceding decision step. This operation does not redefine dataset metadata; it acts upon the dataset entity created during registration.
+This task completes onboarding by informing the Data Model Management service that the dataset's data is in its final storage location, and updating the dataset's state.
+It doesn't change the metadata recorded at registration.
 
-The task returns the response from the Data Model Management system which is primarily informational and does not affect further workflow execution.
+If the storage location isn't available yet when this step runs (for example, because an upstream process is still making it available), the step automatically retries a few times. Any other error fails the workflow immediately. The dataset stays registered, so the problem can be investigated and loading retried.
 
-If loading fails, the workflow fails at this stage. The dataset remains registered but is not marked as loaded, allowing the issue to be diagnosed and retried without re-registration.
+## Completion
+
+When the dataset has been loaded, the workflow notifies the platform that onboarding has finished. The notification includes how the dataset is stored (file-based or in a relational database), so the platform can configure the [Dataset Profiling](workflow-dataset-profiling.md) step that typically follows.

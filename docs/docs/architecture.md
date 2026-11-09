@@ -1,6 +1,6 @@
 # Service Architecture
 
-This service is built using the [Apache/Airflow](https://airflow.apache.org/) tool. Apache Airflow is an open-source platform for developing, scheduling, and monitoring batch-oriented workflows. It offers an extensible Python framework that enables us to build workflows connecting with virtually any technology. A web-based UI helps us visualize, manage, and debug our workflows.
+This service is built using the [Apache/Airflow](https://airflow.apache.org/) tool. Apache Airflow is an open-source platform for developing, scheduling, and monitoring batch-oriented workflows. It offers an extensible Python framework that enables us to build workflows connecting with virtually any technology. A web-based UI helps us visualize, manage, and debug our workflows. For how the orchestrator fits into the wider DataGEMS platform, see [Platform Integration](integration.md); for the workflows it offers, see the [Workflow Overview](workflow-overview.md).
 
 ## Why Apache Airflow
 
@@ -50,7 +50,7 @@ These features provide immediate insight into system behavior and even controlle
 
 ![alt text](images/example_airflow_ui.png)
 
-## Techical Information
+## Technical Information
 
 Airflow's core components include the following, which form the backbone of its orchestration system:
 

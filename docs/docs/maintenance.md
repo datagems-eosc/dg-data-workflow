@@ -1,6 +1,6 @@
 # Maintenance
 
-The service is part of the DataGEMS platform offered through an existing deployment, following the DataGEMS release and deployment procedures over a managed infrasrtucture along with the maintenance activities that are scheduled within the platform. The purpose of this section is not to detail the maintenance activities put in place by the DataGEMS team.
+The service is part of the DataGEMS platform offered through an existing deployment, following the DataGEMS release and deployment procedures over a managed infrastructure along with the maintenance activities that are scheduled within the platform. The purpose of this section is not to detail the maintenance activities put in place by the DataGEMS team.
 
 ## Healthchecks
 
@@ -27,7 +27,7 @@ An example of a healthcheck response that returns 200 OK for healthy state is:
 }
 ```
 
-## Verions & Updates
+## Versions & Updates
 
 The service follows the versioning and update scheme that Airflow supports.
 

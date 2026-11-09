@@ -7,10 +7,18 @@ nav:
   - Overview: index.md
   - System:
     - Architecture: architecture.md
+    - Platform Integration: integration.md
     - Datastores: datastore.md
   - Workflows:
+    - Overview: workflow-overview.md
     - Dataset Onboarding: workflow-dataset-onboarding.md
     - Dataset Profiling: workflow-dataset-profiling.md
+    - Cross-Dataset Discovery Indexing: workflow-cross-dataset-discovery.md
+    - Dataset Packaging: workflow-dataset-packaging.md
+    - Recommender Registration: workflow-dataset-recommender.md
+    - Dataset Linking Report: workflow-dataset-linking-report.md
+    - Streaming Interval Profiling: workflow-streaming-interval-profiling.md
+    - Weather Observations Ingestion: workflow-weather-ingestion.md
   - Setup & Monitoring:
     - Automations: automations.md
     - Deployment: deployment.md
@@ -49,7 +57,11 @@ plugins:
 
 markdown_extensions:
   - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - toc:
