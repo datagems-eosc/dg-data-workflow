@@ -38,4 +38,4 @@ This task checks the report job's status at regular intervals until the job comp
 
 ## Completion
 
-When the report is complete, the workflow notifies the platform, which can then retrieve the report from the Dataset Linking service.
+When the report is complete, the workflow notifies the platform, which can then retrieve the report from the Dataset Linking service. The platform then starts the next step of the dataset's lifecycle, the [Dataset Packaging](workflow-dataset-packaging.md) workflow.

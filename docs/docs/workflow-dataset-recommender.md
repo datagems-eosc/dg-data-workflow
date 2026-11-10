@@ -23,4 +23,4 @@ If the request is rejected, the workflow stops with a failure.
 
 ## Completion
 
-When registration succeeds, the workflow notifies the platform that the recommender registration step is complete.
+When registration succeeds, the workflow notifies the platform that the recommender registration step is complete. The platform then starts the next step of the dataset's lifecycle, the [Cross-Dataset Discovery Indexing](workflow-cross-dataset-discovery.md) workflow.

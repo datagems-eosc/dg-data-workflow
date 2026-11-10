@@ -2,7 +2,7 @@
 
 The Cross-Dataset Discovery Indexing Workflow (`CDD_INGEST`) adds a dataset to the index of the Cross-Dataset Discovery service, so that it can be found through discovery queries that span the platform's datasets.
 
-The dataset must have been profiled before it can be indexed. See [Dataset Profiling](workflow-dataset-profiling.md).
+The dataset must have been profiled before it can be indexed. See [Dataset Profiling](workflow-dataset-profiling.md). In a dataset's lifecycle, this is the last workflow of the chain: the platform starts it after [Recommender Registration](workflow-dataset-recommender.md) completes. See [Workflow Overview](workflow-overview.md#available-workflows).
 
 ## Input
 
@@ -36,4 +36,4 @@ This task checks the indexing job's status at regular intervals until the job co
 
 ## Completion
 
-When indexing completes, the workflow notifies the platform that the dataset is available for cross-dataset discovery.
+When indexing completes, the workflow notifies the platform that the dataset is available for cross-dataset discovery. This completes the dataset's lifecycle chain.

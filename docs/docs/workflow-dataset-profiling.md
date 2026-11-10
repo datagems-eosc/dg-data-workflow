@@ -75,4 +75,4 @@ Cleanup runs only after the results are stored, so no information is lost.
 
 ## Completion
 
-When cleanup finishes, the workflow notifies the platform that profiling is complete. The dataset can then move on to later steps such as [Cross-Dataset Discovery Indexing](workflow-cross-dataset-discovery.md).
+When cleanup finishes, the workflow notifies the platform that profiling is complete. The platform then starts the next step of the dataset's lifecycle, the [Dataset Linking Report](workflow-dataset-linking-report.md) workflow.

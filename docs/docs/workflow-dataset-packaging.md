@@ -23,4 +23,4 @@ If the request is rejected, the workflow stops with a failure.
 
 ## Completion
 
-When the request is accepted, the workflow notifies the platform that the packaging step is complete.
+When the request is accepted, the workflow notifies the platform that the packaging step is complete. The platform then starts the next step of the dataset's lifecycle, the [Recommender Registration](workflow-dataset-recommender.md) workflow.

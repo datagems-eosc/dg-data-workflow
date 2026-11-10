@@ -8,24 +8,31 @@ The Data Workflow Orchestrator hosts the data management workflows of the DataGE
 | -------- | ------ | ---------- | ------- |
 | [Dataset Onboarding](workflow-dataset-onboarding.md) | `DATASET_ONBOARDING` | Platform | Brings a dataset's files into the platform's storage and registers the dataset and its metadata in Data Model Management. |
 | [Dataset Profiling](workflow-dataset-profiling.md) | `DATASET_PROFILING` | Platform | Generates a profile of an onboarded dataset and enriches its representation in Data Model Management. |
-| [Cross-Dataset Discovery Indexing](workflow-cross-dataset-discovery.md) | `CDD_INGEST` | Platform | Indexes a profiled dataset in the Cross-Dataset Discovery service so it can be found through discovery queries. |
+| [Dataset Linking Report](workflow-dataset-linking-report.md) | `DATASET_LINKING_REPORT` | Platform | Produces a report of similarities and links between datasets. |
 | [Dataset Packaging](workflow-dataset-packaging.md) | `DATASET_PACKAGING` | Platform | Asks the Dataset Packaging service to package a dataset. |
 | [Recommender Registration](workflow-dataset-recommender.md) | `DATASET_RECOMMENDATION_REGISTERING` | Platform | Registers a dataset with the Dataset Recommender service. |
-| [Dataset Linking Report](workflow-dataset-linking-report.md) | `DATASET_LINKING_REPORT` | Platform | Produces a report of similarities and links between datasets. |
+| [Cross-Dataset Discovery Indexing](workflow-cross-dataset-discovery.md) | `CDD_INGEST` | Platform | Indexes a profiled dataset in the Cross-Dataset Discovery service so it can be found through discovery queries. |
 | [Streaming Interval Profiling](workflow-streaming-interval-profiling.md) | `STREAMING_INTERVAL_PROFILING` | Schedule | Keeps the metadata of a continuously updated dataset in sync with its latest data interval. |
 | [Weather Observations Ingestion](workflow-weather-ingestion.md) | `GEO_INGEST` | Schedule | Collects weather station observations for use-case datasets. |
 
-The typical lifecycle of a newly contributed dataset chains several of these workflows:
+The typical lifecycle of a newly contributed dataset chains several of these workflows in a fixed order:
 
 ```mermaid
 flowchart LR
     A[Dataset Onboarding] --> B[Dataset Profiling]
-    B --> C[Cross-Dataset Discovery Indexing]
-    B --> D[Recommender Registration]
-    B --> E[Dataset Packaging]
+    B --> C[Dataset Linking Report]
+    C --> D[Dataset Packaging]
+    D --> E[Recommender Registration]
+    E --> F[Cross-Dataset Discovery Indexing]
 ```
 
-The platform decides which steps run, and in what order, for each dataset. Each workflow only performs its own step.
+The workflows run one at a time, never in parallel. The platform starts each workflow in this predetermined order, and the chain is driven by completion callbacks:
+
+1. The platform starts the first workflow of the chain.
+2. When the final task of a workflow succeeds, its success callback notifies the platform that the step is complete.
+3. The platform then starts the next workflow in the chain.
+
+A workflow is therefore only started after the previous one has completed successfully. If a workflow fails, the platform isn't notified of completion and the next workflow isn't started. Each workflow only performs its own step. See [Platform Integration](integration.md#progress-reporting).
 
 ## Common Behaviour
 

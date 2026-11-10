@@ -85,4 +85,4 @@ If the storage location isn't available yet when this step runs (for example, be
 
 ## Completion
 
-When the dataset has been loaded, the workflow notifies the platform that onboarding has finished. The notification includes how the dataset is stored (file-based or in a relational database), so the platform can configure the [Dataset Profiling](workflow-dataset-profiling.md) step that typically follows.
+When the dataset has been loaded, the workflow notifies the platform that onboarding has finished. The notification includes how the dataset is stored (file-based or in a relational database), so the platform can configure and start the [Dataset Profiling](workflow-dataset-profiling.md) workflow, which is the next step of the dataset's lifecycle.

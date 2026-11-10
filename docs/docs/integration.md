@@ -33,7 +33,7 @@ While a platform-started workflow runs, each task reports its lifecycle events t
 
 Each report includes a summary of the task's execution, which lets the platform show detailed progress and help diagnose failures.
 
-When the final task of a workflow succeeds, the orchestrator sends a completion notification for that kind of step (for example, onboarding complete or profiling complete). The platform can then move the dataset on to the next step of its process.
+When the final task of a workflow succeeds, its success callback sends a completion notification for that kind of step (for example, onboarding complete or profiling complete). This notification is what moves the dataset forward: on receiving it, the platform starts the next workflow of the dataset's lifecycle. The workflows of a lifecycle therefore run one at a time, in a predetermined order, and never in parallel. If a workflow fails, no completion notification is sent and the next workflow isn't started. See [Workflow Overview](workflow-overview.md#available-workflows) for the order.
 
 Scheduled workflows such as [Streaming Interval Profiling](workflow-streaming-interval-profiling.md) and [Weather Observations Ingestion](workflow-weather-ingestion.md) aren't part of a platform process, so they don't send these reports.
 
