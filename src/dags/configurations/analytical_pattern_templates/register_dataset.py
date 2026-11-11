@@ -102,6 +102,9 @@ REGISTER_DATASET_TEMPLATE = """
         {% if dataset_doi %}
             ,"doi": {{ dataset_doi | string | tojson }}
         {% endif %}
+        {% if user_id %}
+            ,"uploadedBy": "{{ user_id }}"
+        {% endif %}
         {% if analytical_pattern_node_status %}
             ,"status": "{{ analytical_pattern_node_status }}"
         {% endif %}
