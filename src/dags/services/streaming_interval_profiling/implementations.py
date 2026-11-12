@@ -48,4 +48,16 @@ def upsert_moma_builder(config: DataModelManagementConfig, auth_token: str,
         payload["ap"]["nodes"].extend(creation["nodes"])
         payload["ap"]["edges"].extend(creation["edges"])
 
+    dataset_node = next(
+        (node for node in payload["ap"]["nodes"] if "sc:Dataset" in node.get("labels", [])),
+        None
+    )
+    uploaded_by = (dataset_node or {}).get("properties", {}).get("uploadedBy")
+    if uploaded_by and uploaded_by not in nodes_by_id:
+        payload["ap"]["nodes"].append({
+            "id": uploaded_by,
+            "labels": ["User"],
+            "properties": {}
+        })
+
     return url, headers, payload
