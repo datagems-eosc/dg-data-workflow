@@ -61,9 +61,9 @@ flowchart LR
 
 This task makes sure the dataset's data is available in the platform's storage area before the dataset is registered. Datasets come from many kinds of storage, so this step normalises them: downstream steps always work with locations that the platform controls.
 
-All declared locations are processed in parallel:
+All declared locations are processed one after the other, in the order they are declared:
 
-- **File**, **Http** and **Ftp** locations are retrieved and stored in a staging area dedicated to the dataset. Each stored file gets a unique name, so files never collide.
+- **File**, **Http** and **Ftp** locations are retrieved and stored in a staging area dedicated to the dataset. Each stored file keeps its original name. If a file with the same name is already staged, a number is appended to the new one (for example `data(01).csv`), so files never collide.
 - **Remote**, **Staged** and **Database** locations are already accessible to the platform and are passed on unchanged.
 
 The task outputs the effective list of locations for the dataset.

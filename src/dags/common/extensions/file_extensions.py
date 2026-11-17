@@ -1,5 +1,4 @@
 import os
-import uuid
 from pathlib import Path
 
 from common.enum.data_store_kind import DataLocationKind
@@ -19,6 +18,16 @@ def build_file_path(directory: str, guid: str, name: str, extension: str | None 
     return Path(directory) / guid / filename
 
 
+def unique_file_path(path: Path) -> Path:
+    """Returns `path`, or `name(01).ext`, `name(02).ext`, ... if it already exists."""
+    candidate = path
+    counter = 0
+    while candidate.exists():
+        counter += 1
+        candidate = path.with_name(f"{path.stem}({counter:02d}){path.suffix}")
+    return candidate
+
+
 def process_location(guid: str, location: DataLocation, stream_service: DataRetriever,
                      stage_service: DataStagingService, log: XComTaskLogger,
                      config: DatasetOnboardingConfig) -> DataLocation | bool:
@@ -32,8 +41,8 @@ def process_location(guid: str, location: DataLocation, stream_service: DataRetr
         with retrieved as retrieved_file:
             base_name = Path(retrieved_file.file_name).stem
             extension = retrieved_file.file_extension
-            unique_name = f"{base_name}.{uuid.uuid4()}"
-            full_path = os.fspath(build_file_path(config.local_staging_path, guid, unique_name, extension))
+            full_path = os.fspath(
+                unique_file_path(build_file_path(config.local_staging_path, guid, base_name, extension)))
             should_decode = location.kind is DataLocationKind.Http
             stage_service.store(retrieved_file.stream, full_path, decode=should_decode)
             return DataLocation(DataLocationKind.File, full_path)

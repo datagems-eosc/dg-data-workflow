@@ -1,5 +1,4 @@
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta, date
 from typing import Any
 
@@ -40,23 +39,17 @@ def dataset_onboarding():
             results: list[DataLocation] = []
             failed_locations = []
             data_locations = [DataLocation.from_dict(d) for d in json.loads(dag_context["params"]["dataLocations"])]
-            with ThreadPoolExecutor() as executor:
-                future_to_location = {
-                    executor.submit(process_location, dag_context["params"]["id"], loc, stream_service, stage_service,
-                                    log,
-                                    dataset_onboarding_config): loc for loc in data_locations}
-
-                for future in as_completed(future_to_location):
-                    loc = future_to_location[future]
-                    try:
-                        result = future.result()
-                        if result:
-                            results.append(result)
-                        else:
-                            failed_locations.append(loc)
-                    except Exception as e:
-                        log.error(f"Unexpected error processing {loc.location}: {e}")
+            for loc in data_locations:
+                try:
+                    result = process_location(dag_context["params"]["id"], loc, stream_service, stage_service, log,
+                                              dataset_onboarding_config)
+                    if result:
+                        results.append(result)
+                    else:
                         failed_locations.append(loc)
+                except Exception as e:
+                    log.error(f"Unexpected error processing {loc.location}: {e}")
+                    failed_locations.append(loc)
 
             if failed_locations:
                 raise AirflowException(f"Failed to process dataset locations: "
